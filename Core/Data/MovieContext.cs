@@ -14,16 +14,15 @@ namespace Core.Data
 
         protected override void OnModelCreating(ModelBuilder b)
         {
-            b.Entity<Question>()
-                .HasKey(q => q.Id);
+            b.Configure<Question>(x =>
+                x.HasKey(q => q.Id));
 
-            b.Entity<Choice>()
-                .HasKey(c => new {c.QuestionId, c.Text});
-            b.Entity<Choice>()
-                .HasOne(c => c.Question)
-                .WithMany(q => q.Choices)
-                .HasForeignKey(c => c.QuestionId)
-                .OnDelete(DeleteBehavior.Cascade);
+            b.Configure<Choice>(x =>
+                x.HasKey(c => new {c.QuestionId, c.Text}), x =>
+                x.HasOne(c => c.Question)
+                    .WithMany(q => q.Choices)
+                    .HasForeignKey(c => c.QuestionId)
+                    .OnDelete(DeleteBehavior.Cascade));
         }
     }
 }
