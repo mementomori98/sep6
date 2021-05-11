@@ -1,0 +1,55 @@
+﻿@page "/Questions"
+@using Core.Data.Models
+@using Core.Data
+@using Microsoft.EntityFrameworkCore
+
+<h3>Questions</h3>
+
+@foreach (var q in QuestionsList)
+{
+    @q.Text
+        @foreach (var c in q.Choices)
+        {
+            <MudGrid>
+                <MudItem><MudText>- @c.Text (@c.Votes)</MudText></MudItem>
+                <MudItem><MudButton OnClick="() => Vote(c)">Vote</MudButton></MudItem>
+                <MudItem><MudButton OnClick="() => Unvote(c)">Unvote</MudButton></MudItem>
+            </MudGrid>
+        }
+}
+
+@code {
+
+    public IEnumerable<Question> QuestionsList { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await FetchData();
+    }
+
+    private async Task Vote(Choice choice)
+    {
+        choice.Votes++;
+        await using var context = new MovieContext();
+        context.Update(choice);
+        await context.SaveChangesAsync();
+    }
+
+    private async Task Unvote(Choice choice)
+    {
+        choice.Votes--;
+        await using var context = new MovieContext();
+        context.Update(choice);
+        await context.SaveChangesAsync();
+    }
+
+    private async Task FetchData()
+    {
+        await using var context = new MovieContext();
+        QuestionsList = await context
+            .Set<Question>()
+            .Include(q => q.Choices)
+            .ToListAsync();
+    }
+
+}
