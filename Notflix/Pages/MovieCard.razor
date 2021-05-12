@@ -1,12 +1,12 @@
 ﻿@page "/MovieCard"
 
 <Card>
-    <MudGrid>
-        <MudItem xs="2">
+    <MudGrid Class="d-flex flex-xs-column flex-sm-row">
+        <MudItem xs="4" md="2" lg="3" Class="d-flex pa-4 flex-grow-1">
             <img src="/Images/testIm.jpg" asp-append-version="true" width="200px" />
         </MudItem>
-        <MudItem xs="9" Class="pa-4">
-            <MudItem Class="d-flex justify-space-between py-2 px-1 mt-6">
+        <MudItem xs="7" md="9" lg="8" Class="pa-4">
+            <MudItem Class="d-flex justify-space-between px-1 flex-column flex-sm-row">
                 <MudText Typo="Typo.h5">Movie title</MudText>
                 <MudRating Size="Size.Large" />
             </MudItem>
@@ -17,7 +17,7 @@
                 The title names the story's main antagonist, the Dark Lord Sauron, who had in an earlier age created the One Ring to rule the other Rings of Power as the ultimate weapon in his campaign to conquer and rule all of Middle-earth. From homely beginnings in the Shire, a hobbit land reminiscent of the English countryside, the story ranges across Middle-earth, following the quest to destroy the One Ring mainly through the eyes of the hobbits Frodo, Sam, Merry and Pippin.
             </MudText>
         </MudItem>
-        <MudItem xs="1">
+        <MudItem xs="1" Class="d-flex flex-sm-column justify-end">
             <MudIconButton Icon="@Icons.Material.Filled.ThumbUp" Color="Color.Success" Size="Size.Large" />
             <MudIconButton Icon="@Icons.Material.Filled.ThumbDown" Color="Color.Dark" Size="Size.Large" />
             <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" Size="Size.Large" />
