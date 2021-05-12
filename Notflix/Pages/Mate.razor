@@ -1,0 +1,24 @@
+﻿@page "/Mate"
+@using Core.Services.Movies
+@using Core.Services.Movies.Models
+
+@inject IMovieService MovieService;
+
+@code {
+
+    private string Text { get; set; } = "";
+    private IEnumerable<MovieListItem> Results;
+
+    private async Task Search()
+    {
+        Results = await MovieService.SearchList(Text);
+    }
+
+}
+
+<TextField @bind-Value="@(Text)"></TextField>
+<MudButton OnClick="Search">Search</MudButton>
+@foreach (var movie in Results ?? new List<MovieListItem>())
+{
+    <MovieListItemView Content="@movie"/>
+}
