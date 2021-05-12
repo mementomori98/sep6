@@ -5,18 +5,17 @@
 <MudSnackbarProvider/>
 
 <MudLayout>
-    <MudAppBar Elevation="1">
-        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
-        <MudText Typo="Typo.h5" Class="ml-3">Application</MudText>
+    <MudAppBar Elevation="4">
         <MudAppBarSpacer />
-        <MudIconButton Icon="@Icons.Material.Filled.MoreVert" Color="Color.Inherit" Edge="Edge.End" />
+        <MudIconButton Icon="@(Icons.Filled.MoreVert)" Color="Color.Inherit" Edge="Edge.End" />
     </MudAppBar>
-    <MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
+    <MudDrawer Open="true" ClipMode="DrawerClipMode.Always" Elevation="4">
         <MudNavMenu>
             <MudText Typo="Typo.h6" Class="pa-3">Notflix</MudText>
             <MudDivider Class="mb-3"/>
             <MudNavLink Href="/" Icon="@(Icons.Outlined.Home)">Home</MudNavLink>
             <MudNavLink Href="/Questions" Icon="@(Icons.Outlined.Brush)">Questions</MudNavLink>
+            <MudNavLink Href="/Mate" Icon="@(Icons.Outlined.Brush)">Mate Tests</MudNavLink>
         </MudNavMenu>
     </MudDrawer>
     <MudMainContent>
@@ -25,10 +24,5 @@
 </MudLayout>
 
 @code {
-    bool _drawerOpen = true;
-
-    void DrawerToggle()
-    {
-        _drawerOpen = !_drawerOpen;
-    }
+    
 }
