@@ -16,6 +16,9 @@
     public Variant Variant { get; set; } = Variant.Outlined;
 
     [Parameter]
+    public double DebounceInterval { get; set; }
+
+    [Parameter]
     public string Value { set; get; }
 
     [Parameter]
@@ -24,12 +27,13 @@
 }
 
 <MudTextField
-    Label="Label"
+    Label="@Label"
     Adornment="Adornment"
     AdornmentIcon="AdornmentIcon"
     Disabled="Disabled"
     Immediate="true"
-    
+    DebounceInterval="@DebounceInterval"
     Value="Value"
     Variant="Variant"
-    ValueChanged="ValueChanged" />
+    ValueChanged="ValueChanged"
+    Class=""/>

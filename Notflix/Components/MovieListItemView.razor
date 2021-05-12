@@ -7,15 +7,10 @@
 
 }
 
-<Card>
-    
-    <MudGrid >
-        <MudItem xs="1">
-                <MudAvatar Image="@(Content.Poster)" Square="true"></MudAvatar>
-            </MudItem>
-        <MudItem xs="11">
-            <MudText Typo="Typo.body1">@Content.Title</MudText>
-            <MudText Typo="Typo.body2">@Content.Year</MudText>
-        </MudItem>
-    </MudGrid>
-</Card>
+<div class="d-flex">
+    <img src="@(Content.Poster)" Class="mr-4 ml-0" style="max-height: 60px"/>
+    <div class="d-flex flex-column">
+        <MudText Typo="Typo.body1">@Content.Title</MudText>
+        <MudText Typo="Typo.body2">@Content.Year</MudText>
+    </div>
+</div>

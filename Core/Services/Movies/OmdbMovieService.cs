@@ -14,6 +14,8 @@ namespace Core.Services.Movies
             var response = await client.GetAsync($"http://www.omdbapi.com/?apikey=720a2f69&s={text}");
             var content = await response.Content.ReadAsStringAsync();
             var dict = JsonSerializer.Deserialize<Dictionary<string, object>>(content);
+            if (!dict.ContainsKey("Search"))
+                return new MovieListItem[0];
             var array = dict["Search"];
             return JsonSerializer.Deserialize<IEnumerable<MovieListItem>>(array.ToString());
         }

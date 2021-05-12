@@ -1,0 +1,54 @@
+﻿@using Core.Services.Movies.Models
+@using Core.Services.Movies
+@inject IMovieService MovieService
+
+@code {
+
+    private IEnumerable<MovieListItem> _results;
+    private bool PopoverOpen => _isOpen;
+
+    private bool _isOpen;
+
+    private async Task Search(string text)
+    {
+        if (text.Length > 3)
+            _results = await MovieService.SearchList(text);
+        if (_results.Any())
+            _isOpen = true;
+    }
+
+    private void CheckResults()
+    {
+        if (_results?.Any() ?? false)
+            _isOpen = true;
+    }
+
+}
+
+<div>
+    <MudOverlay @bind-Visible="@_isOpen" DarkBackground="false" AutoClose="true" ZIndex="100"/>
+    <MudTextField
+        Margin="Margin.Dense"
+        T="string"
+        ValueChanged="@(o => Search(o.ToString()))"
+        DebounceInterval="1000"
+        Immediate="true"
+        Placeholder="Search movies..."
+        Variant="Variant.Outlined"
+        Class="mud-theme-primary lighten"
+        @onfocusin="CheckResults"
+        Style="z-index: 101"/>
+    <MudPopover Open="@(PopoverOpen)" Direction="Direction.Bottom" OffsetY="true" Class="pa-2" Style="max-width: 45%">
+        @for (var i = 0; i < _results?.Count(); i++)
+        {
+            var movie = _results.ToList()[i];
+            <MovieListItemView Content="@movie"/>
+            if (i != _results.Count() - 1)
+            {
+                <MudDivider Class="my-2"/>
+            }
+                
+        }
+
+    </MudPopover>
+</div>
