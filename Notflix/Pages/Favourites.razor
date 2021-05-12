@@ -1,0 +1,16 @@
+﻿@page "/Favourites"
+@using Core.Services.Movies
+@using Core.Services.Movies.Models
+
+<FavouriteMovieItemView Content="@GetDummyItem()" />
+
+@code {
+    private FavouriteMovieItem GetDummyItem()
+    {
+        FavouriteMovieItem fav = new FavouriteMovieItem();
+        fav.Title = "Lord of the rings";
+        fav.Plot = "The Lord of the Rings is an epic high fantasy novel[a] by the English author and scholar J. R. R. Tolkien. Set in Middle-earth, the world at some distant time in the past, the story began as a sequel to Tolkien's 1937 children's book The Hobbit, but eventually developed into a much larger work. Written in stages between 1937 and 1949, The Lord of the Rings is one of the best-selling books ever written, with over 150 million copies sold. The title names the story's main antagonist, the Dark Lord Sauron, who had in an earlier age created the One Ring to rule the other Rings of Power as the ultimate weapon in his campaign to conquer and rule all of Middle-earth. From homely beginnings in the Shire, a hobbit land reminiscent of the English countryside, the story ranges across Middle-earth, following the quest to destroy the One Ring mainly through the eyes of the hobbits Frodo, Sam, Merry and Pippin.";
+        fav.Poster = "/Images/testIm.jpg";
+        return fav;
+    }
+}
