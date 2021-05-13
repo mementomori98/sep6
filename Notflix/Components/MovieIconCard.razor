@@ -20,10 +20,10 @@
                         Director: <span style="color: white">@Content.Director</span>
                     </MudText>
                     <MudText Class="red-text bold" Typo="Typo.subtitle2">
-                        Length: <span style="color: white">@Content.Length</span>
+                        Length: <span style="color: white">@Content.Runtime</span>
                     </MudText>
                     <MudPaper Class="red white-text" Style="width: 28px; height: 28px;position: absolute;right: 0px; bottom: 0px; margin:5px">
-                        <MudText Align="Align.Center" Typo="Typo.body1">@Content.imdbRating</MudText>
+                        <MudText Align="Align.Center" Typo="Typo.body1">@Content.ImdbRating</MudText>
                     </MudPaper>
                 </div>
             </div>
@@ -51,7 +51,7 @@
 
         protected void OnMouseUp(MouseEventArgs mouseEvent)
         {
-            navigationManager.NavigateTo($"/Main/{Content.imdbId}");
+            navigationManager.NavigateTo($"/Main/{Content.ImdbId}");
         }
 
         [Parameter]

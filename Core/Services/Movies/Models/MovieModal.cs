@@ -10,13 +10,32 @@ namespace Core.Services.Movies.Models
     {
         public string Title { get; set; }
         public string Year { get; set; }
-        public string Director { get; set; }
-        public string Length { get; set; }
+        public string ImdbId { get; set; }
+        public string Runtime { get; set; }
         public string Type { get; set; }
         public string Poster { get; set; }
-        public string imdbRating { get; set; }
-        public string imdbId { get; set; }
+        public string Genre { get; set; }
+        public string Director { get; set; }
         public string Plot { get; set; }
-        public string Actors { get; set; }
+        public string ImdbRating { get; set; }
+        public string ImdbVotes { get; set; }
+        public List<string> Actors { get; set; }
+        public List<DiscussionItem> DiscusionItems { get; set; }
+
+        public MovieModal(MovieApiModal apiModel)
+        {
+            this.Title = apiModel.Title;
+            this.Year = apiModel.Year;
+            this.ImdbId = apiModel.imdbID;
+            this.Runtime = apiModel.Runtime;
+            this.Type = apiModel.Type;
+            this.Poster = apiModel.Poster;
+            this.Genre = apiModel.Genre;
+            this.Director = apiModel.Director;
+            this.Plot = apiModel.Plot;
+            this.ImdbRating = apiModel.imdbRating;
+            this.ImdbVotes = apiModel.imdbVotes;
+            this.Actors = apiModel.Actors.Split(", ").ToList();
+        }
     }
 }
