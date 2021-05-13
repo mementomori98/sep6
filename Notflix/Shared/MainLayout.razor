@@ -1,20 +1,94 @@
-﻿@inherits LayoutComponentBase
+﻿@using Core.Services.Authentication
+@using Core.Services.Authentication.Models
+@using Notflix.Utils
+@inherits LayoutComponentBase
+@inject IDialogService DialogService
+
+@code {
+
+    [Inject]
+    NavigationManager NavigationManager { get; set; }
+
+    [Inject]
+    IAuthenticationService AuthenticationService { get; set; }
+
+    [Inject]
+    LocalStorage LocalStorage { get; set; }
+
+    private AuthToken Token { get; set; }
+    private bool IsLoggedIn { get; set; }
+
+    MudTheme Theme = new MudTheme
+    {
+        Palette = new Palette
+        {
+        }
+    };
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        var initIsLoggedIn = IsLoggedIn;
+        Token = await LocalStorage.Get<AuthToken>("authToken");
+        IsLoggedIn = await AuthenticationService.IsLoggedIn(Token);
+        if (initIsLoggedIn != IsLoggedIn)
+            StateHasChanged();
+    }
+
+    private async Task Logout()
+    {
+        if (IsLoggedIn)
+        {
+            await AuthenticationService.Logout(Token);
+            await LocalStorage.Remove("authToken");
+            StateHasChanged();
+        }
+    }
+
+    private async Task Login()
+    {
+        var parameters = new DialogParameters();
+        parameters.Add("SuccessCallback", new Action(StateHasChanged));
+        DialogService.Show<LoginDialog>("Sign in", parameters);
+    }
+
+    private async Task Signup()
+    {
+        var parameters = new DialogParameters();
+        parameters.Add("SuccessCallback", new Action(StateHasChanged));
+        DialogService.Show<SignupDialog>("Sign up", parameters);
+    }
+
+}
 
 <MudThemeProvider/>
-<MudDialogProvider/>
+<MudDialogProvider
+    FullWidth="true"
+    MaxWidth="MaxWidth.ExtraSmall"
+    Position="DialogPosition.Center"/>
 <MudSnackbarProvider/>
 
 <MudLayout>
     <MudAppBar Elevation="4">
-        <MudAppBarSpacer />
+        <MudAppBarSpacer/>
         <MovieSearch/>
-        <MudAppBarSpacer />
-        <MudIconButton Icon="@(Icons.Filled.MoreVert)" Color="Color.Inherit" Edge="Edge.End" />
+        <MudAppBarSpacer/>
+        @if (IsLoggedIn)
+        {
+            <MudMenu Icon="@(Icons.Filled.Person)" Direction="Direction.Left" OffsetX="true">
+                <MudMenuItem OnClick="Logout">Log out</MudMenuItem>
+            </MudMenu>
+        }
+        else
+        {
+            <MudButton OnClick="Signup" Variant="Variant.Outlined">Sign up</MudButton>
+            <MudButton OnClick="Login" Variant="Variant.Outlined">Sign in</MudButton>
+        }
+
     </MudAppBar>
     <MudDrawer Open="true" ClipMode="DrawerClipMode.Always" Elevation="4">
         <MudNavMenu>
             <MudText Typo="Typo.h6" Class="pa-3">Notflix</MudText>
-            <MudDivider Class="mb-3" />
+            <MudDivider Class="mb-3"/>
             <MudNavLink Href="/" Icon="@(Icons.Outlined.Home)">Home</MudNavLink>
             <MudNavLink Href="/Questions" Icon="@(Icons.Outlined.Brush)">Questions</MudNavLink>
             <MudNavLink Href="/Mate" Icon="@(Icons.Outlined.Brush)">Mate Test Page</MudNavLink>
@@ -24,10 +98,6 @@
     <MudMainContent>
         <MudContainer>
             @Body
-        </MudContainer>        
+        </MudContainer>
     </MudMainContent>
 </MudLayout>
-
-@code {
-    
-}

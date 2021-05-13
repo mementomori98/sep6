@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Core.Services.Authentication;
 using Core.Services.Movies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Hosting;
@@ -10,8 +12,9 @@ using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using MudBlazor;
 using MudBlazor.Services;
-using Notflix.Data;
+using Notflix.Utils;
 
 namespace Notflix
 {
@@ -30,9 +33,18 @@ namespace Notflix
         {
             services.AddRazorPages();
             services.AddServerSideBlazor();
-            services.AddSingleton<WeatherForecastService>();
-            services.AddMudServices();
+            services.AddMudServices(c =>
+            {
+                c.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.TopRight;
+                c.SnackbarConfiguration.NewestOnTop = true;
+                c.SnackbarConfiguration.VisibleStateDuration = 1600;
+                c.SnackbarConfiguration.ShowTransitionDuration = 200;
+                c.SnackbarConfiguration.HideTransitionDuration = 200;
+                c.SnackbarConfiguration.SnackbarVariant = Variant.Filled;
+            });
             services.AddTransient<IMovieService, OmdbMovieService>();
+            services.AddTransient<LocalStorage>();
+            services.AddTransient<IAuthenticationService, AuthenticationService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
