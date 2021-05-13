@@ -1,9 +1,33 @@
 ﻿@page "/Mate"
 @using Core.Services.Movies
-@using Core.Services.Movies.Models
+@using Notflix.Utils
 
-@inject IMovieService MovieService;
+@inject LocalStorage LocalStorage;
 
 @code {
+    
+    private string Key { get; set; }
+    private string Value { get; set; }
+
+    private async Task Set()
+    {
+        await LocalStorage.Set(Key, Value);
+    }
+
+    private async Task Get()
+    {
+        Value = await LocalStorage.Get<string>(Key);
+    }
+
+    private async Task Remove()
+    {
+        await LocalStorage.Remove(Key);
+    }
 
 }
+
+<MudTextField @bind-Value="Key" />
+<MudTextField @bind-Value="Value"/>
+<MudButton OnClick="Set">Set</MudButton>
+<MudButton OnClick="Get">Get</MudButton>
+<MudButton OnClick="Remove">Remove</MudButton>
