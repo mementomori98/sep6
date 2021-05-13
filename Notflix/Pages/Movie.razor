@@ -1,31 +1,17 @@
 ﻿@page "/Main/{id}"
 @using Core.Services.Movies.Models
-
+@using Core.Services.Movies
+@inject IMovieService MovieService
 
    Hello movie
 
 @code {
     [Parameter]
     public string id { get; set; }
+    private MovieModal movieModal;
 
-    protected override void OnParametersSet()
+    protected override async Task OnInitializedAsync()
     {
-        //the param will be set now
-        // MovieIconCardItem test = await GetMovieById(id);
-    }
-
-    private MovieModal GetDummyItem()
-    {
-        MovieModal dummy = new MovieModal();
-        dummy.Title = "Lord of the rings";
-        dummy.Poster = "/Images/testIm.jpg";
-        dummy.Director = "Peter Jackson, Hukala Muki";
-        dummy.Year = "2002";
-        dummy.Length = "2.5h";
-        dummy.imdbRating = "8.6";
-        dummy.imdbId = "1233423563747";
-        dummy.Plot = "The Lord of the Rings is an epic high fantasy novel[a] by the English author and scholar J. R. R. Tolkien. Set in Middle-earth, the world at some distant time in the past, the story began as a sequel to Tolkien's 1937 children's book The Hobbit, but eventually developed into a much larger work. Written in stages between 1937 and 1949, The Lord of the Rings is one of the best-selling books ever written, with over 150 million copies sold. The title names the story's main antagonist, the Dark Lord Sauron, who had in an earlier age created the One Ring to rule the other Rings of Power as the ultimate weapon in his campaign to conquer and rule all of Middle-earth. From homely beginnings in the Shire, a hobbit land reminiscent of the English countryside, the story ranges across Middle-earth, following the quest to destroy the One Ring mainly through the eyes of the hobbits Frodo, Sam, Merry and Pippin.";
-
-        return dummy;
+        movieModal = await MovieService.GetMovieDetails(id);
     }
 }
