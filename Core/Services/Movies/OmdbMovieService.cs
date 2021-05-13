@@ -8,10 +8,22 @@ namespace Core.Services.Movies
 {
     public class OmdbMovieService : IMovieService
     {
+        private static HttpClient client = new HttpClient();
+        private static string ApiKey = "720a2f69";
+
+        public async Task<Movie> GetMovieDetails(string ImdbId)
+        {
+            var response = await client.GetAsync($"http://www.omdbapi.com/?apikey={ApiKey}&i={ImdbId}");
+            var content = await response.Content.ReadAsStringAsync();
+
+            //to add the discussion items
+            
+            return new Movie(JsonSerializer.Deserialize<MovieApiModel>(content));
+        }
+
         public async Task<IEnumerable<MovieListItem>> SearchList(string text)
         {
-            using var client = new HttpClient();
-            var response = await client.GetAsync($"http://www.omdbapi.com/?apikey=720a2f69&s={text}");
+            var response = await client.GetAsync($"http://www.omdbapi.com/?apikey={ApiKey}&s={text}");
             var content = await response.Content.ReadAsStringAsync();
             var dict = JsonSerializer.Deserialize<Dictionary<string, object>>(content);
             if (!dict.ContainsKey("Search"))
