@@ -1,0 +1,59 @@
+﻿@using Core.Services.Movies.Models
+@using Microsoft.AspNetCore.Components.Web
+@inject NavigationManager navigationManager
+
+
+<div style="width: 200px; height: 300px; margin:10px">
+    <div class="iconCard">
+        <img src="@(Content.Poster)" asp-append-version="true" width="200" />
+    </div>
+    <div class="iconCard">
+        <MudText class="iconCard__header">@Content.Title</MudText>
+        @if (_IsHovering)
+        {
+            <div class="hovered iconCard">
+                <div class="iconCard__content">
+                    <MudText Class="red-text bold" Typo="Typo.subtitle2">
+                        Year: <span style="color: white">@Content.Year</span>
+                    </MudText>
+                    <MudText Class="red-text bold" Typo="Typo.subtitle2">
+                        Director: <span style="color: white">@Content.Director</span>
+                    </MudText>
+                    <MudText Class="red-text bold" Typo="Typo.subtitle2">
+                        Length: <span style="color: white">@Content.Length</span>
+                    </MudText>
+                    <MudPaper Class="red white-text" Style="width: 28px; height: 28px;position: absolute;right: 0px; bottom: 0px; margin:5px">
+                        <MudText Align="Align.Center" Typo="Typo.body1">@Content.Rating</MudText>
+                    </MudPaper>
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="iconCard" @onmouseout="@OnMouseOut" @onmouseover="@OnMouseOver" @onmouseup="@OnMouseUp" style="cursor:pointer"/>
+
+    </div>
+
+
+    @code {
+
+        bool _IsHovering = false;
+
+        protected void OnMouseOver(MouseEventArgs mouseEvent)
+        {
+            if (!_IsHovering) _IsHovering = true;
+        }
+
+        protected void OnMouseOut(MouseEventArgs mouseEvent)
+        {
+            _IsHovering = false;
+        }
+
+        protected void OnMouseUp(MouseEventArgs mouseEvent)
+        {
+            navigationManager.NavigateTo($"/Main/{Content.ImdbId}");
+        }
+
+        [Parameter]
+        public MovieIconCardItem Content { get; set; }
+    }

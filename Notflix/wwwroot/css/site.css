@@ -1,3 +1,28 @@
 .mud-theme-primary.lighten {
     background-color: var(--mud-palette-primary-lighten) !important;
 }
+
+.iconCard {
+    position: absolute;
+    width: 200px;
+    height: 300px;
+}
+
+.hovered.iconCard {
+    background-color: rgba(0, 0, 0, 0.70)
+}
+
+.iconCard__header {
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.85);
+    color: white;
+    text-align: center;
+    font-size: 14px;
+    position: absolute;
+    z-index: 1;
+}
+
+.iconCard__content {
+    padding-top: 30px;
+    padding-left: 5px;
+}
