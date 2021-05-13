@@ -1,0 +1,47 @@
+﻿@page "/Main"
+@using Core.Services.Movies.Models
+    <MudGrid Justify="Justify.Center" Class="d-flex flex-xs-column flex-sm-row" Style="margin-top:20px">
+        <MovieIconCard Content="@GetDummyItem()" />
+        <MovieIconCard Content="@GetDummyItem()" />
+        <MovieIconCard Content="@GetDummyItem()" />
+        <MovieIconCard Content="@GetDummyItem()" />
+        <MovieIconCard Content="@GetDummyItem()" />
+        <MovieIconCard Content="@GetDummyItem()" />
+        <MovieIconCard Content="@GetDummyItem()" />
+        <MovieIconCard Content="@GetDummyItem()" />
+        <MovieIconCard Content="@GetDummyItem()" />
+        <MovieIconCard Content="@GetDummyItem()" />
+        <MovieIconCard Content="@GetDummyItem()" />
+        <MovieIconCard Content="@GetDummyItem()" />
+        <MovieIconCard Content="@GetDummyItem()" />
+        <MovieIconCard Content="@GetDummyItem()" />
+        <MovieIconCard Content="@GetDummyItem()" />
+        <MovieIconCard Content="@GetDummyItem()" />
+        <MovieIconCard Content="@GetDummyItem()" />
+        <MovieIconCard Content="@GetDummyItem()" />
+        <MovieIconCard Content="@GetDummyItem()" />
+        <MovieIconCard Content="@GetDummyItem()" />
+        <MovieIconCard Content="@GetDummyItem()" />
+        <MovieIconCard Content="@GetDummyItem()" />
+        <MovieIconCard Content="@GetDummyItem()" />
+        <MovieIconCard Content="@GetDummyItem()" />
+        <MovieIconCard Content="@GetDummyItem()" />
+        <MovieIconCard Content="@GetDummyItem()" />
+        <MovieIconCard Content="@GetDummyItem()" />
+
+    </MudGrid>
+    @code {
+        private MovieModal GetDummyItem()
+        {
+            MovieModal dummy = new MovieModal();
+            dummy.Title = "Lord of the rings";
+            dummy.Poster = "/Images/testIm.jpg";
+            dummy.Director = "Peter Jackson, Hukala Muki";
+            dummy.Year = "2002";
+            dummy.Length = "2.5h";
+            dummy.imdbRating = "8.6";
+            dummy.imdbId = "1233423563747";
+
+            return dummy;
+        }
+    }

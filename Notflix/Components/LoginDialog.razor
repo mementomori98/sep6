@@ -1,0 +1,54 @@
+﻿@using Core.Services.Authentication
+@using Core.Services.Authentication.Models
+@using Notflix.Utils
+@using InputType = MudBlazor.InputType
+@inject IAuthenticationService AuthenticationService
+@inject LocalStorage LocalStorage
+@inject ISnackbar Snackbar
+
+@code {
+    
+    [CascadingParameter]
+    MudDialogInstance MudDialog { get; set; }
+    
+    [Parameter]
+    public string Redirect { get; set; }
+    
+    [Parameter]
+    public Action SuccessCallback { get; set; }
+
+    private string Username { get; set; }
+    private string Password { get; set; }
+    private string Error { get; set; }
+
+    private async Task DoLogin()
+    {
+        var token = await AuthenticationService.Login(new LoginRequest
+        {
+            Username = Username,
+            Password = Password
+        });
+        await LocalStorage.Set("authToken", token);
+        if (token != null)
+        {
+            MudDialog.Close();
+            Snackbar.Add("Login successful", Severity.Success);
+            SuccessCallback.Invoke();
+        }
+        else
+            Error = "Incorrect username or password";
+    }
+
+}
+
+<MudDialog Style="">
+    <DialogContent>
+        <MudTextField @bind-Value="Username" Label="Username" Placeholder="admin..."/>
+        <MudTextField @bind-Value="Password" Label="Password" Placeholder="admin..." InputType="InputType.Password"/>
+        <MudText Color="Color.Error" Typo="Typo.body2">@Error</MudText>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="MudDialog.Close" Variant="Variant.Filled" Color="Color.Secondary">Cancel</MudButton>
+        <MudButton OnClick="DoLogin" Variant="Variant.Filled" Color="Color.Primary">Log in</MudButton>
+    </DialogActions>
+</MudDialog>

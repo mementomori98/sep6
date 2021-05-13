@@ -1,6 +1,6 @@
 ﻿namespace Core.Services.Movies.Models
 {
-    public class MovieListItem
+    public class MovieListModal
     {
         public string Title { get; set; }
         public string Year { get; set; }

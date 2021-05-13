@@ -27,9 +27,9 @@ namespace Core.Services.Movies
             var content = await response.Content.ReadAsStringAsync();
             var dict = JsonSerializer.Deserialize<Dictionary<string, object>>(content);
             if (!dict.ContainsKey("Search"))
-                return new MovieListItem[0];
+                return new MovieListModal[0];
             var array = dict["Search"];
-            return JsonSerializer.Deserialize<IEnumerable<MovieListItem>>(array.ToString());
+            return JsonSerializer.Deserialize<IEnumerable<MovieListModal>>(array.ToString());
         }
     }
 }

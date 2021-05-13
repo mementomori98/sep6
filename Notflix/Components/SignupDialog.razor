@@ -1,0 +1,64 @@
+﻿@using Core.Services.Authentication
+@using Core.Services.Authentication.Models
+@using Notflix.Utils
+@using InputType = MudBlazor.InputType
+@inject IAuthenticationService AuthenticationService
+@inject LocalStorage LocalStorage
+@inject ISnackbar Snackbar
+
+@code {
+    
+    [CascadingParameter]
+    MudDialogInstance MudDialog { get; set; }
+    
+    [Parameter]
+    public string Redirect { get; set; }
+    
+    [Parameter]
+    public Action SuccessCallback { get; set; }
+
+    private string Username { get; set; }
+    private string Password { get; set; }
+    private string PasswordConfirm { get; set; }
+    private string Error { get; set; }
+
+    private async Task Create()
+    {
+        if (Password != PasswordConfirm)
+        {
+            Error = "Passwords don't match";
+            return;
+        }
+        try
+        {
+            var token = await AuthenticationService.CreateUser(new CreateUserRequest
+            {
+                Username = Username,
+                Password = Password
+            });
+            await LocalStorage.Set("authToken", token);
+
+            MudDialog.Close();
+            Snackbar.Add("Account created successfully", Severity.Success);
+            SuccessCallback.Invoke();
+        }
+        catch (Exception e)
+        {
+            Error = e.Message;
+        }
+    }
+
+}
+
+<MudDialog>
+    <DialogContent>
+        <MudTextField @bind-Value="Username" Label="Username" Placeholder="username..."/>
+        <MudTextField @bind-Value="Password" Label="Password" Placeholder="password..." InputType="InputType.Password"/>
+        <MudTextField @bind-Value="PasswordConfirm" Label="Confirm Password" Placeholder="password..." InputType="InputType.Password"/>
+        <MudText Color="Color.Error" Typo="Typo.body2">@Error</MudText>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="MudDialog.Close" Variant="Variant.Filled" Color="Color.Secondary">Cancel</MudButton>
+        <MudButton OnClick="Create" Variant="Variant.Filled" Color="Color.Primary">Sign up</MudButton>
+    </DialogActions>
+</MudDialog>
