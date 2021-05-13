@@ -26,3 +26,21 @@
     padding-top: 30px;
     padding-left: 5px;
 }
+
+.testContainer {
+    position: relative;
+}
+
+.movieFigure {
+    width: 100%; /*container-width*/
+    overflow: hidden; /*hide bounds of image */
+    margin: 0; /*reset margin of figure tag*/
+    margin-bottom:20px;
+}
+
+.movieFigure__clip {
+    display: block; /*remove inline-block spaces*/
+    width: 100%; /*make image streatch*/
+    margin-bottom: -100%;
+    margin-top: -20%;
+}
