@@ -31,16 +31,16 @@
 
     </MudGrid>
     @code {
-        private MovieIconCardItem GetDummyItem()
+        private MovieModal GetDummyItem()
         {
-            MovieIconCardItem dummy = new MovieIconCardItem();
+            MovieModal dummy = new MovieModal();
             dummy.Title = "Lord of the rings";
             dummy.Poster = "/Images/testIm.jpg";
             dummy.Director = "Peter Jackson, Hukala Muki";
             dummy.Year = "2002";
             dummy.Length = "2.5h";
-            dummy.Rating = "8.6";
-            dummy.ImdbId = "1233423563747";
+            dummy.imdbRating = "8.6";
+            dummy.imdbId = "1233423563747";
 
             return dummy;
         }

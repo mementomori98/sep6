@@ -8,16 +8,16 @@ namespace Core.Services.Movies
 {
     public class OmdbMovieService : IMovieService
     {
-        public async Task<IEnumerable<MovieListItem>> SearchList(string text)
+        public async Task<IEnumerable<MovieListModal>> SearchList(string text)
         {
             using var client = new HttpClient();
             var response = await client.GetAsync($"http://www.omdbapi.com/?apikey=720a2f69&s={text}");
             var content = await response.Content.ReadAsStringAsync();
             var dict = JsonSerializer.Deserialize<Dictionary<string, object>>(content);
             if (!dict.ContainsKey("Search"))
-                return new MovieListItem[0];
+                return new MovieListModal[0];
             var array = dict["Search"];
-            return JsonSerializer.Deserialize<IEnumerable<MovieListItem>>(array.ToString());
+            return JsonSerializer.Deserialize<IEnumerable<MovieListModal>>(array.ToString());
         }
     }
 }

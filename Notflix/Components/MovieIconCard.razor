@@ -23,7 +23,7 @@
                         Length: <span style="color: white">@Content.Length</span>
                     </MudText>
                     <MudPaper Class="red white-text" Style="width: 28px; height: 28px;position: absolute;right: 0px; bottom: 0px; margin:5px">
-                        <MudText Align="Align.Center" Typo="Typo.body1">@Content.Rating</MudText>
+                        <MudText Align="Align.Center" Typo="Typo.body1">@Content.imdbRating</MudText>
                     </MudPaper>
                 </div>
             </div>
@@ -51,9 +51,9 @@
 
         protected void OnMouseUp(MouseEventArgs mouseEvent)
         {
-            navigationManager.NavigateTo($"/Main/{Content.ImdbId}");
+            navigationManager.NavigateTo($"/Main/{Content.imdbId}");
         }
 
         [Parameter]
-        public MovieIconCardItem Content { get; set; }
+        public MovieModal Content { get; set; }
     }
