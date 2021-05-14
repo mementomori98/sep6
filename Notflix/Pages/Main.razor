@@ -2,53 +2,53 @@
 @using Core.Services.Movies.Models
 @using Core.Services.Movies
 @inject IMovieService MovieService
-@if (movieModal != null)
+@if (_movieModel != null)
 {
     <MudGrid Justify="Justify.Center" Class="d-flex flex-xs-column flex-sm-row" Style="margin-top:20px">
-        <MovieIconCard Content="@movieModal" />
-        <MovieIconCard Content="@movieModal" />
-        <MovieIconCard Content="@movieModal" />
-        <MovieIconCard Content="@movieModal" />
-        <MovieIconCard Content="@movieModal" />
-        <MovieIconCard Content="@movieModal" />
-        <MovieIconCard Content="@movieModal" />
-        <MovieIconCard Content="@movieModal" />
-        <MovieIconCard Content="@movieModal" />
-        <MovieIconCard Content="@movieModal" />
-        <MovieIconCard Content="@movieModal" />
-        <MovieIconCard Content="@movieModal" />
-        <MovieIconCard Content="@movieModal" />
-        <MovieIconCard Content="@movieModal" />
-        <MovieIconCard Content="@movieModal" />
-        <MovieIconCard Content="@movieModal" />
-        <MovieIconCard Content="@movieModal" />
-        <MovieIconCard Content="@movieModal" />
-        <MovieIconCard Content="@movieModal" />
-        <MovieIconCard Content="@movieModal" />
-        <MovieIconCard Content="@movieModal" />
-        <MovieIconCard Content="@movieModal" />
-        <MovieIconCard Content="@movieModal" />
-        <MovieIconCard Content="@movieModal" />
-        <MovieIconCard Content="@movieModal" />
-        <MovieIconCard Content="@movieModal" />
-        <MovieIconCard Content="@movieModal" />
-        <MovieIconCard Content="@movieModal" />
-        <MovieIconCard Content="@movieModal" />
-        <MovieIconCard Content="@movieModal" />
-        <MovieIconCard Content="@movieModal" />
-        <MovieIconCard Content="@movieModal" />
-        <MovieIconCard Content="@movieModal" />
-        <MovieIconCard Content="@movieModal" />
-        <MovieIconCard Content="@movieModal" />
-        <MovieIconCard Content="@movieModal" />
+        <MovieIconCard Content="@_movieModel" />
+        <MovieIconCard Content="@_movieModel" />
+        <MovieIconCard Content="@_movieModel" />
+        <MovieIconCard Content="@_movieModel" />
+        <MovieIconCard Content="@_movieModel" />
+        <MovieIconCard Content="@_movieModel" />
+        <MovieIconCard Content="@_movieModel" />
+        <MovieIconCard Content="@_movieModel" />
+        <MovieIconCard Content="@_movieModel" />
+        <MovieIconCard Content="@_movieModel" />
+        <MovieIconCard Content="@_movieModel" />
+        <MovieIconCard Content="@_movieModel" />
+        <MovieIconCard Content="@_movieModel" />
+        <MovieIconCard Content="@_movieModel" />
+        <MovieIconCard Content="@_movieModel" />
+        <MovieIconCard Content="@_movieModel" />
+        <MovieIconCard Content="@_movieModel" />
+        <MovieIconCard Content="@_movieModel" />
+        <MovieIconCard Content="@_movieModel" />
+        <MovieIconCard Content="@_movieModel" />
+        <MovieIconCard Content="@_movieModel" />
+        <MovieIconCard Content="@_movieModel" />
+        <MovieIconCard Content="@_movieModel" />
+        <MovieIconCard Content="@_movieModel" />
+        <MovieIconCard Content="@_movieModel" />
+        <MovieIconCard Content="@_movieModel" />
+        <MovieIconCard Content="@_movieModel" />
+        <MovieIconCard Content="@_movieModel" />
+        <MovieIconCard Content="@_movieModel" />
+        <MovieIconCard Content="@_movieModel" />
+        <MovieIconCard Content="@_movieModel" />
+        <MovieIconCard Content="@_movieModel" />
+        <MovieIconCard Content="@_movieModel" />
+        <MovieIconCard Content="@_movieModel" />
+        <MovieIconCard Content="@_movieModel" />
+        <MovieIconCard Content="@_movieModel" />
 
     </MudGrid>
     }
     @code {
-private MovieModal movieModal;
+private MovieModel _movieModel;
 
     protected override async Task OnInitializedAsync()
     {
-        movieModal = await MovieService.GetMovieDetails("tt0120737");
+        _movieModel = await MovieService.GetMovieDetails("tt0120737");
     }
     }

@@ -2,17 +2,17 @@
 @using Core.Services.Movies.Models
 @using Core.Services.Movies
 @inject IMovieService MovieService
-@if(movieModal != null)
+@if(_movieModel != null)
 {
-<TopListItemView Content="@movieModal" />
+<TopListItemView Content="@_movieModel" />
 }
 
 
 @code {
-    private MovieModal movieModal;
+    private MovieModel _movieModel;
 
     protected override async Task OnInitializedAsync()
     {
-        movieModal = await MovieService.GetMovieDetails("tt0120737");
+        _movieModel = await MovieService.GetMovieDetails("tt0120737");
     }
 }

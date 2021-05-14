@@ -8,10 +8,10 @@
 @code {
     [Parameter]
     public string id { get; set; }
-    private MovieModal movieModal;
+    private MovieModel _movieModel;
 
     protected override async Task OnInitializedAsync()
     {
-        movieModal = await MovieService.GetMovieDetails(id);
+        _movieModel = await MovieService.GetMovieDetails(id);
     }
 }

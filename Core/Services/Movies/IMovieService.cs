@@ -6,7 +6,7 @@ namespace Core.Services.Movies
 {
     public interface IMovieService
     {
-        Task<IEnumerable<MovieListModal>> SearchList(string text);
-        Task<MovieModal> GetMovieDetails(string ImdbId);
+        Task<IEnumerable<MovieListModel>> SearchList(string text);
+        Task<MovieModel> GetMovieDetails(string ImdbId);
     }
 }
