@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Core.Services.Movies.Models
 {
-    public class MovieApiModal
+    public class MovieApiModel
     {
         public string Title { get; set; }
         public string Year { get; set; }

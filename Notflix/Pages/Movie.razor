@@ -3,13 +3,13 @@
 @using Core.Services.Movies
 @inject IMovieService MovieService
 
-@if (movieModal != null)
+@if (movieModel != null)
 {
     <Card>
-        <figure class="movieFigure"><img class="movieFigure__clip" src="@(movieModal.Poster)" /></figure>
+        <figure class="movieFigure"><img class="movieFigure__clip" src="@(movieModel.Poster)" /></figure>
         <MudGrid>
             <MudItem sm="8" lg="8">
-                <MudText Typo="Typo.body2">@movieModal.Plot</MudText>
+                <MudText Typo="Typo.body2">@movieModel.Plot</MudText>
             </MudItem>
             <MudItem sm="4" lg="4" Class="white">
                 <MudText Typo="Typo.body2">asdasdasdasd a sfbfb  iwefbiwe bfksfhsw bfhwe h fwf sdjkf wef nwejf wejf ijwejf iwef wie fjiwe fiw</MudText>
@@ -23,12 +23,10 @@
     @code {
         [Parameter]
         public string id { get; set; }
-        private MovieModal movieModal;
+        private MovieModel movieModel;
 
         protected async override Task OnParametersSetAsync()
         {
-            movieModal = await MovieService.GetMovieDetails(id);
+            movieModel = await MovieService.GetMovieDetails(id);
         }
-
-
     }

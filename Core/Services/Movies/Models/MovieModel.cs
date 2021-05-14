@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Core.Services.Movies.Models
 {
-    public class MovieModal
+    public class MovieModel
     {
         public string Title { get; set; }
         public string Year { get; set; }
@@ -22,7 +22,7 @@ namespace Core.Services.Movies.Models
         public List<string> Actors { get; set; }
         public List<DiscussionItem> DiscusionItems { get; set; }
 
-        public MovieModal(MovieApiModal apiModel)
+        public MovieModel(MovieApiModel apiModel)
         {
             this.Title = apiModel.Title;
             this.Year = apiModel.Year;
@@ -39,3 +39,6 @@ namespace Core.Services.Movies.Models
         }
     }
 }
+
+
+
