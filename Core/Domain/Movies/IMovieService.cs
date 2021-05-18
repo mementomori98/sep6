@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Core.Services.Movies.Models;
+using Core.Domain.Movies.Models;
 
-namespace Core.Services.Movies
+namespace Core.Domain.Movies
 {
     public interface IMovieService
     {

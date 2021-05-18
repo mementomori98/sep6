@@ -1,8 +1,8 @@
 ﻿using System.Threading.Tasks;
 using Core.Data.Models;
-using Core.Services.Authentication.Models;
+using Core.Domain.Authentication.Models;
 
-namespace Core.Services.Authentication
+namespace Core.Domain.Authentication
 {
     public interface IAuthenticationService
     {

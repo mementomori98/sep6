@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
-namespace Core.Services.Movies.Models
+namespace Core.Domain.Movies.Models
 {
     public class MovieModel
     {
@@ -22,6 +20,11 @@ namespace Core.Services.Movies.Models
         public List<string> Actors { get; set; }
         public List<DiscussionItem> DiscusionItems { get; set; }
 
+        public MovieModel()
+        {
+            
+        }
+        
         public MovieModel(MovieApiModel apiModel)
         {
             this.Title = apiModel.Title;

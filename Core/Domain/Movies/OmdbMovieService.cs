@@ -2,9 +2,9 @@
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Core.Services.Movies.Models;
+using Core.Domain.Movies.Models;
 
-namespace Core.Services.Movies
+namespace Core.Domain.Movies
 {
     public class OmdbMovieService : IMovieService
     {
@@ -29,6 +29,11 @@ namespace Core.Services.Movies
             if (!dict.ContainsKey("Search"))
                 return new MovieListModel[0];
             var array = dict["Search"];
+            new MovieModel
+            {
+                
+            };
+            
             return JsonSerializer.Deserialize<IEnumerable<MovieListModel>>(array.ToString());
         }
     }

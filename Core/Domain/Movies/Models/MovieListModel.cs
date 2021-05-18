@@ -1,4 +1,4 @@
-﻿namespace Core.Services.Movies.Models
+﻿namespace Core.Domain.Movies.Models
 {
     public class MovieListModel
     {

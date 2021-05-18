@@ -1,4 +1,4 @@
-﻿namespace Core.Services.Authentication.Models
+﻿namespace Core.Domain.Authentication.Models
 {
     public class LoginRequest
     {
