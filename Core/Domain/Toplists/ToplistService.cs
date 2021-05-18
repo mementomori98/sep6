@@ -50,12 +50,12 @@ namespace Core.Domain.Toplists
             var user = await _authenticationService.GetCurrentUser(request.Token);
             if (user == null)
                 throw new Exception("Unauthorized");
-            
+
             await using var context = new MovieContext();
             var toplist = await context.Set<Toplist>()
                 .Include(tl => tl.ToplistMovies)
                 .SingleOrDefaultAsync(tl => tl.Id == request.ToplistId);
-            
+
             if (toplist == null)
                 throw new ArgumentException("Toplist does not exist");
             if (toplist.UserId != user.Id)
@@ -73,6 +73,7 @@ namespace Core.Domain.Toplists
             {
                 tlm.Position += 1;
             }
+
             toplist.ToplistMovies.Add(new ToplistMovie
             {
                 ToplistId = toplist.Id,
@@ -89,7 +90,7 @@ namespace Core.Domain.Toplists
             var user = await _authenticationService.GetCurrentUser(request.Token);
             if (user == null)
                 throw new Exception("Unauthorized");
-            
+
             await using var context = new MovieContext();
             var toplist = await context.Set<Toplist>()
                 .Include(tl => tl.ToplistMovies)
@@ -115,7 +116,7 @@ namespace Core.Domain.Toplists
             var user = await _authenticationService.GetCurrentUser(request.Token);
             if (user == null)
                 throw new Exception("Unauthorized");
-            
+
             await using var context = new MovieContext();
             var toplist = await Fetch(request.ToplistId);
 
@@ -135,9 +136,21 @@ namespace Core.Domain.Toplists
             return Map(await Fetch(toplist.Id));
         }
 
-        public async Task<ToplistModel> Delete(DeleteToplistRequest request)
+        public async Task Delete(DeleteToplistRequest request)
         {
-            throw new NotImplementedException();
+            var user = await _authenticationService.GetCurrentUser(request.Token);
+            if (user == null)
+                throw new Exception("Unauthorized");
+            
+            var toplist = await Fetch(request.ToplistId);
+            if (toplist == null)
+                throw new ArgumentException("Toplist does not exist");
+            if (toplist.UserId != user.Id)
+                throw new Exception("Used does not own this toplist");
+
+            await using var context = new MovieContext();
+            context.Set<Toplist>().Remove(toplist);
+            await context.SaveChangesAsync();
         }
 
         private async Task<Toplist> Fetch(long toplistId)
@@ -164,3 +177,4 @@ namespace Core.Domain.Toplists
             };
         }
     }
+}
