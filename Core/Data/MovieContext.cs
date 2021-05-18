@@ -20,7 +20,8 @@ namespace Core.Data
         {
             b.Configure<User>(x =>
                 x.HasKey(u => u.Id), x =>
-                x.HasIndex(u => u.Username).IsUnique());
+                x.HasIndex(u => u.Username).IsUnique(), x =>
+                x.Property(u => u.Username).IsRequired());
 
             b.Configure<LoginSession>(x =>
                 x.HasKey(ls => ls.Id), x =>

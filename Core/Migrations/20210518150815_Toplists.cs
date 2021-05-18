@@ -17,7 +17,8 @@ namespace Core.Migrations
                 name: "Username",
                 table: "User",
                 type: "varchar(767)",
-                nullable: true,
+                nullable: false,
+                defaultValue: "",
                 oldClrType: typeof(string),
                 oldType: "text",
                 oldNullable: true);
@@ -28,7 +29,8 @@ namespace Core.Migrations
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
-                    ImdbId = table.Column<string>(type: "varchar(767)", nullable: false)
+                    ImdbId = table.Column<string>(type: "varchar(767)", nullable: false),
+                    Title = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -41,6 +43,7 @@ namespace Core.Migrations
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
+                    Name = table.Column<string>(type: "text", nullable: true),
                     UserId = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
@@ -113,8 +116,7 @@ namespace Core.Migrations
                 type: "text",
                 nullable: true,
                 oldClrType: typeof(string),
-                oldType: "varchar(767)",
-                oldNullable: true);
+                oldType: "varchar(767)");
 
             migrationBuilder.CreateTable(
                 name: "Question",

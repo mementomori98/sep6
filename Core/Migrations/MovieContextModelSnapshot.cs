@@ -53,6 +53,9 @@ namespace Core.Migrations
                         .IsRequired()
                         .HasColumnType("varchar(767)");
 
+                    b.Property<string>("Title")
+                        .HasColumnType("text");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ImdbId")
@@ -66,6 +69,9 @@ namespace Core.Migrations
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("text");
 
                     b.Property<long>("UserId")
                         .HasColumnType("bigint");
@@ -104,6 +110,7 @@ namespace Core.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("Username")
+                        .IsRequired()
                         .HasColumnType("varchar(767)");
 
                     b.HasKey("Id");
@@ -127,7 +134,7 @@ namespace Core.Migrations
 
             modelBuilder.Entity("Core.Data.Models.ToplistMovie", b =>
                 {
-                    b.HasOne("Core.Data.Models.Movie", null)
+                    b.HasOne("Core.Data.Models.Movie", "Movie")
                         .WithMany()
                         .HasForeignKey("MovieId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -138,6 +145,8 @@ namespace Core.Migrations
                         .HasForeignKey("ToplistId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Movie");
                 });
 
             modelBuilder.Entity("Core.Data.Models.Toplist", b =>
