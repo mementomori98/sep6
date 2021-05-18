@@ -50,12 +50,15 @@ namespace Core.Domain.Movies
             if (!dict.ContainsKey("Search"))
                 return new MovieListModel[0];
             var array = dict["Search"];
-            new MovieModel
+            var list = JsonSerializer.Deserialize<IEnumerable<MovieListApiModel>>(array.ToString());
+            return list.Select(m => new MovieListModel
             {
-                
-            };
-            
-            return JsonSerializer.Deserialize<IEnumerable<MovieListModel>>(array.ToString());
+                ImageUrl = m.Poster,
+                Title = m.Title,
+                ImdbId = m.ImdbId,
+                Type = m.Type,
+                Year = m.Year
+            });
         }
     }
 }
