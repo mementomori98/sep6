@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Core.Data;
 using Core.Data.Models;
-using Core.Services.Authentication.Models;
+using Core.Domain.Authentication.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace Core.Services.Authentication
+namespace Core.Domain.Authentication
 {
     public class AuthenticationService : IAuthenticationService
     {
