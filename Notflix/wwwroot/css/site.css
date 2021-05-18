@@ -2,6 +2,18 @@
     background-color: var(--mud-palette-primary-lighten) !important;
 }
 
+.movieListItem{
+    padding: 8px;
+    cursor: pointer;
+}
+
+.movieListItem:hover{
+    background-color: #e1e1e1;
+}
+.movieListItem:active{
+    background-color: #c3c3c3;
+}
+
 .iconCard {
     position: absolute;
     width: 200px;
