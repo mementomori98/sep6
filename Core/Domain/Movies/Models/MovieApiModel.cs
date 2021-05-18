@@ -1,4 +1,6 @@
-﻿namespace Core.Domain.Movies.Models
+﻿using System.Collections.Generic;
+
+namespace Core.Domain.Movies.Models
 {
     public class MovieApiModel
     {
@@ -14,5 +16,6 @@
         public string imdbRating { get; set; }
         public string imdbVotes { get; set; }
         public string Actors { get; set; }
+        public IEnumerable<Rating> Ratings { get; set; }
     }
 }

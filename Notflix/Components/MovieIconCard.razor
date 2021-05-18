@@ -5,7 +5,7 @@
 
 <div style="width: 200px; height: 300px; margin:10px">
     <div class="iconCard">
-        <img src="@(Content.Poster)" asp-append-version="true" width="200" />
+        <img src="@(Content.ImageUrl)" asp-append-version="true" width="200" />
     </div>
     <div class="iconCard">
         <MudText class="iconCard__header">@Content.Title</MudText>
@@ -23,7 +23,7 @@
                         Length: <span style="color: white">@Content.Runtime</span>
                     </MudText>
                     <MudPaper Class="red white-text" Style="width: 28px; height: 28px;position: absolute;right: 0px; bottom: 0px; margin:5px">
-                        <MudText Align="Align.Center" Typo="Typo.body1">@Content.ImdbRating</MudText>
+                        <MudText Align="Align.Center" Typo="Typo.body1">@Content.Ratings.SingleOrDefault(r => r.Source == "Imdb")?.Value</MudText>
                     </MudPaper>
                 </div>
             </div>
