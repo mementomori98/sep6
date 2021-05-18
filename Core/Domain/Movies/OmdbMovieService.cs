@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -16,9 +17,29 @@ namespace Core.Domain.Movies
             var response = await client.GetAsync($"http://www.omdbapi.com/?apikey={ApiKey}&i={ImdbId}");
             var content = await response.Content.ReadAsStringAsync();
 
-            //to add the discussion items
+            // todo add the discussion items
 
-            return new MovieModel(JsonSerializer.Deserialize<MovieApiModel>(content));
+            var model = JsonSerializer.Deserialize<MovieApiModel>(content);
+            return new MovieModel
+            {
+                ImdbId = model.imdbID,
+                Actors = model.Actors.Split(",").Select(s => s.Trim()),
+                Director = model.Director,
+                Genres = model.Genre.Split(",").Select(s => s.Trim()),
+                Plot = model.Plot,
+                ImageUrl = model.Poster,
+                Runtime = model.Runtime,
+                Title = model.Title,
+                Type = model.Type,
+                Year = int.Parse(model.Year),
+                DiscusionItems = new List<DiscussionItem>(),
+                Ratings = model.Ratings.Append(new Rating
+                {
+                    Source = "Imdb",
+                    Value = model.imdbRating,
+                    Votes = long.Parse(model.imdbVotes.Replace(",", ""))
+                })
+            };
         }
 
         public async Task<IEnumerable<MovieListModel>> SearchList(string text)
