@@ -2,6 +2,7 @@
 @using Core.Domain.Movies.Models
 @inject IMovieService MovieService
 
+
 @code {
 
     private IEnumerable<MovieListModel> _results;
@@ -38,14 +39,14 @@
         Class="mud-theme-primary lighten"
         @onfocusin="CheckResults"
         Style="z-index: 101"/>
-    <MudPopover Open="@(PopoverOpen)" Direction="Direction.Bottom" OffsetY="true" Class="pa-2" Style="max-width: 45%">
+    <MudPopover Open="@(PopoverOpen)" Direction="Direction.Bottom" OffsetY="true" Style="max-width: 45%">
         @for (var i = 0; i < _results?.Count(); i++)
         {
             var movie = _results.ToList()[i];
             <MovieListItemView Content="@movie"/>
             if (i != _results.Count() - 1)
             {
-                <MudDivider Class="my-2"/>
+                <MudDivider/>
             }
                 
         }
