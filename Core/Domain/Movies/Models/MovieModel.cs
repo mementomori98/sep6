@@ -11,7 +11,7 @@ namespace Core.Domain.Movies.Models
         public string Type { get; set; }
         public string Title { get; set; }
         public string Director { get; set; }
-        public int Year { get; set; }
+        public string Year { get; set; }
         public string Plot { get; set; }
         public string ImageUrl { get; set; }
         public string Runtime { get; set; }

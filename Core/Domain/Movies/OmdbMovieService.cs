@@ -72,7 +72,7 @@ namespace Core.Domain.Movies
                 Runtime = model.Runtime,
                 Title = model.Title,
                 Type = model.Type,
-                Year = int.Parse(model.Year),
+                Year = model.Year,
                 DiscusionItems = new List<DiscussionItem>(),
                 Ratings = model.Ratings.Append(new Rating
                 {

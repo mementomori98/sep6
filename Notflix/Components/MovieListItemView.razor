@@ -1,15 +1,18 @@
 ﻿@using Core.Domain.Movies.Models
+@inject NavigationManager navigationManager
 @code {
 
     [Parameter]
     public MovieListModel Content { get; set; }
+    
+    [Parameter]
+    public EventCallback HideSearchBar { get; set; }
 
 }
-
-<div class="d-flex">
+<a class="movieListItem d-flex" href="/Main/@Content.ImdbId" onclick="@HideSearchBar">
     <img src="@(Content.ImageUrl)" Class="mr-4 ml-0" style="max-height: 60px"/>
     <div class="d-flex flex-column">
         <MudText Typo="Typo.body1">@Content.Title</MudText>
         <MudText Typo="Typo.body2">@Content.Year</MudText>
     </div>
-</div>
+</a>

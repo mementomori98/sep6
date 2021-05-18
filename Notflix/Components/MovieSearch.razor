@@ -2,12 +2,14 @@
 @using Core.Domain.Movies.Models
 @inject IMovieService MovieService
 
+
 @code {
 
     private IEnumerable<MovieListModel> _results;
     private bool PopoverOpen => _isOpen;
 
     private bool _isOpen;
+    private string _defaultTextState;
 
     private async Task Search(string text)
     {
@@ -19,8 +21,14 @@
 
     private void CheckResults()
     {
-        if (_results?.Any() ?? false)
             _isOpen = true;
+            _results = null;
+    }
+    
+    private void HideSearchBar()
+    {
+        _isOpen = false;
+        _defaultTextState = "";
     }
 
 }
@@ -30,6 +38,7 @@
     <MudTextField
         Margin="Margin.Dense"
         T="string"
+        Value="@_defaultTextState"
         ValueChanged="@(o => Search(o.ToString()))"
         DebounceInterval="1000"
         Immediate="true"
@@ -38,14 +47,14 @@
         Class="mud-theme-primary lighten"
         @onfocusin="CheckResults"
         Style="z-index: 101"/>
-    <MudPopover Open="@(PopoverOpen)" Direction="Direction.Bottom" OffsetY="true" Class="pa-2" Style="max-width: 45%">
+    <MudPopover Open="@(PopoverOpen)" Direction="Direction.Bottom" OffsetY="true" Style="max-width: 45%">
         @for (var i = 0; i < _results?.Count(); i++)
         {
             var movie = _results.ToList()[i];
-            <MovieListItemView Content="@movie"/>
+            <MovieListItemView HideSearchBar="@HideSearchBar" Content="@movie"/>
             if (i != _results.Count() - 1)
             {
-                <MudDivider Class="my-2"/>
+                <MudDivider/>
             }
                 
         }
