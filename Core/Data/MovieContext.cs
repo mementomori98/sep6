@@ -2,6 +2,7 @@
 using Core.Data.Models;
 using Microsoft.EntityFrameworkCore;
 using MySql.Data.MySqlClient;
+using Ubiety.Dns.Core.Records;
 
 namespace Core.Data
 {
@@ -12,6 +13,7 @@ namespace Core.Data
             optionsBuilder.UseMySQL(new MySqlConnection("server=mysql35.unoeuro.com;database=arongk_dk_db_sep6_1;user=arongk_dk;password=5Lx3xT9M9Hb3;persistsecurityinfo=True;SslMode=None;"));
             optionsBuilder.EnableSensitiveDataLogging();
             optionsBuilder.EnableDetailedErrors();
+            optionsBuilder.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
         }
 
         protected override void OnModelCreating(ModelBuilder b)

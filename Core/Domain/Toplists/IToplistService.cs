@@ -7,9 +7,9 @@ namespace Core.Domain.Toplists
     public interface IToplistService
     {
         Task<ToplistModel> Create(CreateToplistRequest request);
-        Task<ToplistMovie> AddMovie(AddMovieRequest request);
-        Task<ToplistMovie> RemoveMovie(RemoveMovieRequest request);
-        Task<ToplistMovie> ChangePosition(ChangePositionRequest request);
+        Task<ToplistModel> AddMovie(AddMovieRequest request);
+        Task<ToplistModel> RemoveMovie(RemoveMovieRequest request);
+        Task<ToplistModel> ChangePosition(ChangePositionRequest request);
         Task<ToplistModel> Delete(DeleteToplistRequest request);
     }
 }

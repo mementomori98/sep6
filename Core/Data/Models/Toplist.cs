@@ -8,6 +8,6 @@ namespace Core.Data.Models
         public string Name { get; set; }
         public long UserId { get; set; }
         
-        public List<ToplistMovie> ToplistMovies { get; set; }
+        public ICollection<ToplistMovie> ToplistMovies { get; set; }
     }
 }
