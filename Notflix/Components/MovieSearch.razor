@@ -51,7 +51,7 @@
         @for (var i = 0; i < _results?.Count(); i++)
         {
             var movie = _results.ToList()[i];
-            <MovieListItemView HideSearchBar="@HideSearchBar" Content="@movie"/>
+            <MovieSearchItem HideSearchBar="@HideSearchBar" Content="@movie"/>
             if (i != _results.Count() - 1)
             {
                 <MudDivider/>
