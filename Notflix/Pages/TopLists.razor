@@ -1,0 +1,41 @@
+﻿@page "/TopLists"
+@using Core.Domain.Toplists.Models
+@using Core.Domain.Toplists
+@inherits AuthBase
+@inject IToplistService ToplistService
+
+@code {
+
+    private IEnumerable<ToplistModel> Toplists { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Toplists = await ToplistService.GetToplists(new GetToplistsRequest
+        {
+            Token = await GetAuthToken()
+        });
+    }
+
+    private async Task OnCreate()
+    {
+        
+    }
+
+}
+
+<MudGrid>
+    <MudItem xs="12" Class="d-flex flex-row-reverse mr-4 mt-4">
+        <MudButton OnClick="OnCreate">Create</MudButton>
+    </MudItem>
+</MudGrid>
+
+<MudGrid>
+    @foreach (var toplist in Toplists ?? new ToplistModel[0])
+    {
+        <MudItem sm="4" md="3" xs="6">
+            <Card>
+                <ToplistOverviewItem Toplist="toplist"/>
+            </Card>
+        </MudItem>
+    }
+</MudGrid>

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Core.Data;
@@ -24,6 +25,19 @@ namespace Core.Domain.Toplists
         {
             _authenticationService = authenticationService;
             _movieService = movieService;
+        }
+
+        public async Task<IEnumerable<ToplistModel>> GetToplists(GetToplistsRequest request)
+        {
+            var user = _authenticationService.GetCurrentUser(request.Token);
+            if (user == null)
+                throw new Exception("Unauthorized user");
+            await using var context = new MovieContext();
+            var toplists = await context.Set<Toplist>()
+                .Include(tl => tl.ToplistMovies).ThenInclude(tlm => tlm.Movie)
+                .Where(tl => tl.UserId == user.Id)
+                .ToListAsync();
+            return toplists.Select(Map);
         }
 
         public async Task<ToplistModel> Create(CreateToplistRequest request)

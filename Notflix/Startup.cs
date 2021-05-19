@@ -4,6 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Core.Domain.Authentication;
 using Core.Domain.Movies;
+using Core.Domain.Toplists;
+using Core.Domain.Toplists.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components;
@@ -42,9 +44,10 @@ namespace Notflix
                 c.SnackbarConfiguration.HideTransitionDuration = 200;
                 c.SnackbarConfiguration.SnackbarVariant = Variant.Filled;
             });
-            services.AddTransient<IMovieService, OmdbMovieService>();
             services.AddTransient<LocalStorage>();
+            services.AddTransient<IMovieService, OmdbMovieService>();
             services.AddTransient<IAuthenticationService, AuthenticationService>();
+            services.AddTransient<IToplistService, ToplistService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

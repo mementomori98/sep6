@@ -1,0 +1,15 @@
+﻿@using Core.Domain.Toplists.Models
+@inherits Notflix.Pages.AuthBase
+
+@code {
+
+    [Parameter]
+    public ToplistModel Toplist { get; set; }
+
+}
+
+<MudGrid>
+    <MudItem xs="12">
+        <MudText>@Toplist.Name [@Toplist.Items.Count() Movies]</MudText>
+    </MudItem>
+</MudGrid>
