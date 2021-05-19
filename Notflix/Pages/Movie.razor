@@ -1,6 +1,8 @@
 ﻿@page "/Main/{id}"
 @using Core.Domain.Movies
 @using Core.Domain.Movies.Models
+@using Microsoft.JSInterop
+@inject IJSRuntime JS
 @inject IMovieService MovieService
 
 @if (_movieModel != null)
@@ -19,17 +21,20 @@
             </MudItem>
         </MudGrid>
 
-      <!--  <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
-            <MudTabPanel Text="Comments">
-                <MudText>List of comments and subcomments</MudText>
-            </MudTabPanel>
-            <MudTabPanel Text="Reviews">
-                <MudText>List of reviews and subreviews</MudText>
-            </MudTabPanel>
-            <MudTabPanel Text="Fun facts">
-                <MudText>List of un facts and subfacts</MudText>
-            </MudTabPanel>
-        </MudTabs> POTENTIAL ERROR!!!!!!!!!!!!!!--> 
+        @if (_rendered)
+        {
+            <MudTabs Elevation="1" Rounded="true" PanelClass="pa-6">
+                <MudTabPanel Text="Comments" ToolTip="ToolTip One">
+                    <MudText>Comments Section</MudText>
+                </MudTabPanel>
+                <MudTabPanel Text="Reviews" ToolTip="ToolTip Two">
+                    <MudText>Reviews section</MudText>
+                </MudTabPanel>
+                <MudTabPanel Text="Fun Facts" ToolTip="ToolTip Three">
+                    <MudText>Fun facts section</MudText>
+                </MudTabPanel>
+            </MudTabs>
+        }
     </Card>
     }
 
@@ -50,6 +55,14 @@
             var value = movieModel.Ratings.First().Value;
             var rating = value.Substring(0, value.IndexOf("/", StringComparison.Ordinal)).Trim();
             return (int) Math.Round (float.Parse(rating) / 2);
+        }
+
+        private bool _rendered;
+
+        protected override async Task OnAfterRenderAsync(bool firstRender)
+        {
+            Console.WriteLine("OnRenderAsync");
+          _rendered = true;
         }
 
     }
