@@ -5,9 +5,8 @@
 
 @code {
 
-    private AuthToken _authToken;
 
     protected async Task<AuthToken> GetAuthToken() =>
-        _authToken ??= await LocalStorage.Get<AuthToken>("authToken");
+        await LocalStorage.Get<AuthToken>("authToken");
 
 }

@@ -3,6 +3,7 @@
 @using Core.Domain.Toplists
 @inherits AuthBase
 @inject IToplistService ToplistService
+@inject IDialogService DialogService
 
 @code {
 
@@ -10,6 +11,13 @@
 
     protected override async Task OnInitializedAsync()
     {
+        await FetchList();
+    }
+
+    private async Task FetchList()
+    {
+        if ((await GetAuthToken())?.HasExpired() ?? true)
+            return;
         Toplists = await ToplistService.GetToplists(new GetToplistsRequest
         {
             Token = await GetAuthToken()
@@ -18,7 +26,17 @@
 
     private async Task OnCreate()
     {
-        
+        var parameters = new DialogParameters
+        {
+            {"SuccessCallback", new Action(async () => await ToplistCreatedCallback())}
+        };
+        DialogService.Show<CreateToplistDialog>("Create Toplist", parameters);
+    }
+
+    private async Task ToplistCreatedCallback()
+    {
+        await FetchList();
+        StateHasChanged();
     }
 
 }
@@ -33,9 +51,12 @@
     @foreach (var toplist in Toplists ?? new ToplistModel[0])
     {
         <MudItem sm="4" md="3" xs="6">
-            <Card>
-                <ToplistOverviewItem Toplist="toplist"/>
-            </Card>
+            <MudLink Href="@($"/Toplists/{toplist.Id}")">
+                <Card>
+                    <ToplistOverviewItem Toplist="toplist"/>
+                </Card>
+            </MudLink>
+
         </MudItem>
     }
 </MudGrid>

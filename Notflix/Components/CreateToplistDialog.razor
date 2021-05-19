@@ -1,5 +1,44 @@
-﻿<h3>CreateToplistDialog</h3>
+﻿@using Core.Domain.Toplists
+@using Core.Domain.Toplists.Models
+@inherits AuthBase
+@inject IToplistService ToplistService
 
 @code {
-    
+
+    [CascadingParameter]
+    public MudDialogInstance MudDialog { get; set; }
+
+    [Parameter]
+    public Action SuccessCallback { get; set; }
+
+    private string Name { get; set; }
+    private string Error { get; set; }
+
+    private async Task OnCreate()
+    {
+        if (string.IsNullOrWhiteSpace(Name))
+        {
+            Error = "Name must be specified";
+            return;
+        }
+        await ToplistService.Create(new CreateToplistRequest
+        {
+            Token = await GetAuthToken(),
+            Name = Name
+        });
+        SuccessCallback?.Invoke();
+        MudDialog.Close();
+    }
+
 }
+
+<MudDialog>
+    <DialogContent>
+        <MudTextField @bind-Value="Name" Label="Name" Placeholder="Toplist name..."/>
+        <MudText Color="Color.Error" Typo="Typo.body2">@Error</MudText>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="MudDialog.Close" Variant="Variant.Filled" Color="Color.Secondary">Cancel</MudButton>
+        <MudButton OnClick="OnCreate" Variant="Variant.Filled" Color="Color.Primary">Create</MudButton>
+    </DialogActions>
+</MudDialog>

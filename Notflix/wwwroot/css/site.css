@@ -56,3 +56,7 @@
     margin-bottom: -100%;
     margin-top: -20%;
 }
+
+.normal {
+    font-weight: normal !important;
+}

@@ -29,7 +29,7 @@ namespace Core.Domain.Toplists
 
         public async Task<IEnumerable<ToplistModel>> GetToplists(GetToplistsRequest request)
         {
-            var user = _authenticationService.GetCurrentUser(request.Token);
+            var user = await _authenticationService.GetCurrentUser(request.Token);
             if (user == null)
                 throw new Exception("Unauthorized user");
             await using var context = new MovieContext();
@@ -42,7 +42,7 @@ namespace Core.Domain.Toplists
 
         public async Task<ToplistModel> Create(CreateToplistRequest request)
         {
-            var user = _authenticationService.GetCurrentUser(request.Token);
+            var user = await _authenticationService.GetCurrentUser(request.Token);
             if (user == null)
                 throw new Exception("Unauthorized user");
             if (string.IsNullOrWhiteSpace(request.Name))

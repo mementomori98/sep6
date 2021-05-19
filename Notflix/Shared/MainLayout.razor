@@ -41,13 +41,14 @@
             await AuthenticationService.Logout(Token);
             await LocalStorage.Remove("authToken");
             StateHasChanged();
+            NavigationManager.NavigateTo("/");
         }
     }
 
     private async Task Login()
     {
         var parameters = new DialogParameters();
-        parameters.Add("SuccessCallback", new Action(StateHasChanged));
+        parameters.Add("SuccessCallback", new Action(() => NavigationManager.NavigateTo(NavigationManager.Uri, true)));
         DialogService.Show<LoginDialog>("Sign in", parameters);
     }
 
@@ -80,8 +81,8 @@
         }
         else
         {
-            <MudButton OnClick="Login" Variant="Variant.Outlined">Sign in</MudButton>
-            <MudButton OnClick="Signup" Variant="Variant.Outlined" Class="mr-4">Sign up</MudButton>
+            <MudButton OnClick="Login" Variant="Variant.Outlined" Class="mr-4 mud-theme-primary lighten normal">Sign in</MudButton>
+            <MudButton OnClick="Signup" Variant="Variant.Outlined" Class="mud-theme-primary lighten normal">Sign up</MudButton>
         }
 
     </MudAppBar>
@@ -89,8 +90,7 @@
         <MudNavMenu>
             <MudText Typo="Typo.h6" Class="pa-3">Notflix</MudText>
             <MudDivider Class="mb-3"/>
-            <MudNavLink Href="/" Icon="@(Icons.Outlined.Home)">Home</MudNavLink>
-            <MudNavLink Href="/Questions" Icon="@(Icons.Outlined.Brush)">Questions</MudNavLink>
+            <MudNavLink Href="/" Icon="@(Icons.Outlined.Home)" Match="NavLinkMatch.All">Home</MudNavLink>
             <MudNavLink Href="/Mate" Icon="@(Icons.Outlined.Brush)">Mate Test Page</MudNavLink>
             <MudNavLink Href="/TopLists" Icon="@(Icons.Outlined.Brush)">My TopLists</MudNavLink>
             <MudNavLink Href="/Main" Icon="@(Icons.Outlined.Brush)">Main</MudNavLink>
