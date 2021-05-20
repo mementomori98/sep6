@@ -17,7 +17,19 @@ namespace Core.Data
 
         protected override void OnModelCreating(ModelBuilder b)
         {
+            b.Configure<DiscussableDao>(x =>
+                x.HasKey(d => d.Id));
             b.Entity<DiscussableDao>().ToTable("DiscussableDao");
+
+            b.Configure<Movie>(x =>
+               x.HasIndex(m => m.ImdbId).IsUnique(), x =>
+               x.Property(m => m.ImdbId).IsRequired());
+
+            b.Entity<Movie>().ToTable("Movie");
+
+            b.Entity<Toplist>().ToTable("Toplist");
+
+            b.Entity<Actor>().ToTable("Actor");
 
             b.Configure<User>(x =>
                 x.HasKey(u => u.Id), x =>
@@ -32,14 +44,6 @@ namespace Core.Data
                     .HasForeignKey(ls => ls.UserId)
                     .IsRequired()
                     .OnDelete(DeleteBehavior.Cascade));
-
-            b.Configure<Movie>( x =>
-                x.HasIndex(m => m.ImdbId).IsUnique(), x =>
-                x.Property(m => m.ImdbId).IsRequired());
-
-            b.Entity<Movie>().ToTable("Movie");
-
-            b.Entity<Toplist>().ToTable("Toplist");
 
             b.Configure<ToplistMovie>(x =>
                 x.HasKey(tlm => new { tlm.MovieId, tlm.ToplistId }), x =>
@@ -93,7 +97,6 @@ namespace Core.Data
                       .IsRequired()
                       .OnDelete(DeleteBehavior.Cascade));
 
-            b.Entity<Actor>().ToTable("Actor");
         }
     }
 }
