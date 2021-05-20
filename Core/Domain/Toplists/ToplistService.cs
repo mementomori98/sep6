@@ -196,6 +196,7 @@ namespace Core.Domain.Toplists
             {
                 Id = toplist.Id,
                 Name = toplist.Name,
+                UserId = toplist.UserId,
                 Items = toplist.ToplistMovies.Select(tlm => new ToplistItem
                 {
                     MovieId = tlm.MovieId,

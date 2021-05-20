@@ -28,11 +28,11 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender || Editable)
+        if (Editable)
             return;
 
         var user = await AuthenticationService.GetCurrentUser(await GetAuthToken());
-        Editable = user.Id == Toplist.Id;
+        Editable = user.Id == Toplist.UserId;
         if (Editable)
             StateHasChanged();
     }
@@ -53,9 +53,9 @@
         });
     }
 
-    private async Task Search()
+    private async Task OnClicked(string imdbId)
     {
-        
+        Console.WriteLine(imdbId);
     }
 
 }
@@ -91,8 +91,7 @@
         }
         @if (Editable)
         {
-            <MudTextField Label="Search" @bind-Value="@SearchText"/>
-            <MudButton OnClick="Search" Variant="Variant.Filled">Add Movie</MudButton>
+            <MovieSearch OnItemClicked="@(async s => await OnClicked(s))"/>
         }
     </MudGrid>
 </Card>

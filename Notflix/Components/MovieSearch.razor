@@ -4,12 +4,14 @@
 
 
 @code {
-    
+
     [Parameter]
-    public EventCallback<string> OnItemClicked { get; set; }
-    
+    public Action<string> OnItemClicked { get; set; }
+
     [Parameter]
     public Func<MovieListModel, string> Href { get; set; }
+    
+    private Func<MovieListModel, string> NullsafeHref() => Href ?? (m => null);
 
     private IEnumerable<MovieListModel> _results;
     private bool PopoverOpen => _isOpen;
@@ -30,15 +32,12 @@
         _isOpen = true;
         _results = null;
     }
-    
+
     private void OnItemSelected(string imdbId)
     {
         _isOpen = false;
         _defaultTextState = "";
-        if (OnItemClicked.HasDelegate)
-        {
-            OnItemClicked.InvokeAsync(imdbId);
-        }
+        OnItemClicked?.Invoke(imdbId);
     }
 
 }
@@ -61,12 +60,11 @@
         @for (var i = 0; i < _results?.Count(); i++)
         {
             var movie = _results.ToList()[i];
-            <MovieSearchItem OnItemSelected="@OnItemSelected" Href="@Href" Content="@movie"/>
+            <MovieSearchItem OnItemSelected="@OnItemSelected" Href="@NullsafeHref()" Content="@movie"/>
             if (i != _results.Count() - 1)
             {
                 <MudDivider/>
             }
-                
         }
 
     </MudPopover>

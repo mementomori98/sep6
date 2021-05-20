@@ -8,7 +8,9 @@
 @if (_movieModel != null)
 {
     <Card>
-        <figure class="movieFigure"><img class="movieFigure__clip" src="@(_movieModel.ImageUrl)" /></figure>
+        <figure class="movieFigure">
+            <img class="movieFigure__clip" src="@(_movieModel.ImageUrl)"/>
+        </figure>
         <MudGrid>
             <MudItem sm="8" lg="8">
                 <MudText Typo="Typo.body2">@_movieModel.Plot</MudText>
@@ -16,8 +18,8 @@
             <MudItem sm="4" lg="4" Class="white">
                 <MudRating ReadOnly="true" Size="Size.Medium" SelectedValue="GetRating(_movieModel)"/>
                 <MudText Typo="Typo.body2">Genre: @_movieModel.Genres.First()</MudText>
-                <MudText Typo="Typo.body2">Actors: @string.Join( ",", _movieModel.Actors)</MudText>
-                
+                <MudText Typo="Typo.body2">Actors: @string.Join(",", _movieModel.Actors)</MudText>
+
             </MudItem>
         </MudGrid>
 
@@ -36,33 +38,33 @@
             </MudTabs>
         }
     </Card>
+}
+
+@code {
+
+    [Parameter]
+    public string Id { get; set; }
+
+    private MovieModel _movieModel;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        _movieModel = await MovieService.GetMovieDetails(Id);
     }
 
-    @code {
-        [Parameter]
-        public string Id { get; set; }
-        private MovieModel _movieModel;
 
-        protected override async Task OnParametersSetAsync()
-        {
-            _movieModel = await MovieService.GetMovieDetails(Id);
-        }
-
-
-        private int GetRating(MovieModel movieModel)
-        {
-            
-            var value = movieModel.Ratings.First().Value;
-            var rating = value.Substring(0, value.IndexOf("/", StringComparison.Ordinal)).Trim();
-            return (int) Math.Round (float.Parse(rating) / 2);
-        }
-
-        private bool _rendered;
-
-        protected override async Task OnAfterRenderAsync(bool firstRender)
-        {
-            Console.WriteLine("OnRenderAsync");
-          _rendered = true;
-        }
-
+    private int GetRating(MovieModel movieModel)
+    {
+        var value = movieModel.Ratings.First().Value;
+        var rating = value.Substring(0, value.IndexOf("/", StringComparison.Ordinal)).Trim();
+        return (int) Math.Round(float.Parse(rating) / 2);
     }
+
+    private bool _rendered;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        _rendered = true;
+    }
+
+}
