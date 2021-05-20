@@ -5,6 +5,7 @@
 @inherits AuthBase
 @inject IAuthenticationService AuthenticationService
 @inject IToplistService ToplistService
+@inject ISnackbar Snackbar
 
 
 @code {
@@ -15,9 +16,9 @@
     private ToplistModel Toplist { get; set; }
 
     private bool Editable { get; set; }
-    
+
     private string SearchText { get; set; }
-    
+
     private IEnumerable<MovieSearchItem> Results { get; set; }
 
 
@@ -54,8 +55,24 @@
         StateHasChanged();
     }
 
+    private async Task Remove(long id)
+    {
+        Toplist = await ToplistService.RemoveMovie(new RemoveMovieRequest
+        {
+            ToplistId = ToplistId,
+            MovieId = id,
+            Token = await GetAuthToken()
+        });
+        StateHasChanged();
+    }
+
     private async Task OnClicked(string imdbId)
     {
+        if (Toplist.Items.Any(m => m.ImdbId == imdbId))
+        {
+            Snackbar.Add("This movie is already on the toplist", Severity.Error);
+            return;
+        }
         Toplist = await ToplistService.AddMovie(new AddMovieRequest
         {
             Position = Toplist.Items.Count(),
@@ -72,34 +89,44 @@
     <MudGrid>
         <MudItem xs="12">
             <MudText Typo="Typo.h5">@Toplist.Name</MudText>
+            @if (Editable)
+            {
+                <MovieSearch OnItemClicked="@(async s => await OnClicked(s))"/>
+            }
         </MudItem>
         @foreach (var item in Toplist.Items.OrderBy(i => i.Position))
         {
             <MudItem xs="12">
+                <MudDivider Class="mb-4 mt-n3"/>
                 <MudGrid>
-                    <MudItem xs="6">
-                        <MudText>@(item.Position)) @item.Title</MudText>
+                    <MudItem xs="2">
+                        <Avatar Href="@item.ImageUrl"/>
+                    </MudItem>
+                    <MudItem xs="9" Class="d-flex flex-column justify-space-around">
+                        <div>
+                            <MudText Typo="Typo.h5">@item.Title</MudText>
+                            <MudText Typo="Typo.body1">@item.Year</MudText>
+                        </div>
                     </MudItem>
                     @if (Editable)
                     {
-                        <MudItem xs="6">
-                            @if (item.Position < Toplist.Items.Count() - 1)
-                            {
-                                <MudButton OnClick="() => OnChangePosition(item.MovieId, item.Position + 1)">Move Down</MudButton>
-                            }
-                            @if (item.Position > 0)
-                            {
-                                <MudButton OnClick="() => OnChangePosition(item.MovieId, item.Position - 1)">Move Up</MudButton>
-                            }
+                        <MudItem xs="1">
+                            <MudGrid>
+                                <MudItem xs="12">
+                                    <MudIconButton Icon="@(Icons.Filled.KeyboardArrowUp)" Disabled="@(item.Position == 0)" OnClick="() => OnChangePosition(item.MovieId, item.Position - 1)"/>
+                                </MudItem>
+                                <MudItem xs="12">
+                                        <MudIconButton Icon="@(Icons.Filled.KeyboardArrowDown)" Disabled="@(item.Position == Toplist.Items.Count() - 1)" OnClick="() => OnChangePosition(item.MovieId, item.Position + 1)"/>
+                                </MudItem>
+                                <MudItem xs="12">
+                                    <MudIconButton Icon="@(Icons.Filled.Close)" OnClick="() => Remove(item.MovieId)"/>
+                                </MudItem>
+                            </MudGrid>
+
                         </MudItem>
                     }
-
                 </MudGrid>
             </MudItem>
-        }
-        @if (Editable)
-        {
-            <MovieSearch OnItemClicked="@(async s => await OnClicked(s))"/>
         }
     </MudGrid>
 </Card>

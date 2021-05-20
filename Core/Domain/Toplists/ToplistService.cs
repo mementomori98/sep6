@@ -201,7 +201,10 @@ namespace Core.Domain.Toplists
                 {
                     MovieId = tlm.MovieId,
                     Title = tlm.Movie.Title,
-                    Position = tlm.Position
+                    Position = tlm.Position,
+                    Year = tlm.Movie.Year,
+                    ImageUrl = tlm.Movie.ImageUrl,
+                    ImdbId = tlm.Movie.ImdbId
                 }).OrderBy(i => i.Position)
             };
         }

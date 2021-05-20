@@ -47,6 +47,12 @@
             Error = e.Message;
         }
     }
+    
+    private async Task OnKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+            await Create();
+    }
 
 }
 
@@ -54,7 +60,7 @@
     <DialogContent>
         <MudTextField @bind-Value="Username" Label="Username" Placeholder="username..."/>
         <MudTextField @bind-Value="Password" Label="Password" Placeholder="password..." InputType="InputType.Password"/>
-        <MudTextField @bind-Value="PasswordConfirm" Label="Confirm Password" Placeholder="password..." InputType="InputType.Password"/>
+        <MudTextField @bind-Value="PasswordConfirm" Label="Confirm Password" Placeholder="password..." InputType="InputType.Password" Immediate="true" OnKeyDown="OnKeyDown"/>
         <MudText Color="Color.Error" Typo="Typo.body2">@Error</MudText>
     </DialogContent>
     <DialogActions>
