@@ -11,6 +11,9 @@
     [Parameter]
     public Func<MovieListModel, string> Href { get; set; }
     
+    [Parameter]
+    public string Class { get; set; }
+    
     private Func<MovieListModel, string> NullsafeHref() => Href ?? (m => null);
 
     private IEnumerable<MovieListModel> _results;
@@ -37,6 +40,7 @@
     {
         _isOpen = false;
         _defaultTextState = "";
+        StateHasChanged();
         OnItemClicked?.Invoke(imdbId);
     }
 
@@ -53,7 +57,7 @@
         Immediate="true"
         Placeholder="Search movies..."
         Variant="Variant.Outlined"
-        Class="mud-theme-primary lighten"
+        Class="@Class"
         @onfocusin="CheckResults"
         Style="z-index: 101"/>
     <MudPopover Open="@(PopoverOpen)" Direction="Direction.Bottom" OffsetY="true" Style="max-width: 45%">

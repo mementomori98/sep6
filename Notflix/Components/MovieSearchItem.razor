@@ -17,7 +17,7 @@
     }
 
 }
-<a class="movieListItem d-flex" href="@(Href.Invoke(Content))" @onclick="@OnClick">
+<a class="movieListItem d-flex" href="@(Href.Invoke(Content))" @onclick="OnClick">
     <img src="@(Content.ImageUrl)" Class="mr-4 ml-0" style="max-height: 60px"/>
     <div class="d-flex flex-column">
         <MudText Typo="Typo.body1">@Content.Title</MudText>

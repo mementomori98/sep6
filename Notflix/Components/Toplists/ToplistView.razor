@@ -51,11 +51,19 @@
             Position = position,
             ToplistId = ToplistId
         });
+        StateHasChanged();
     }
 
     private async Task OnClicked(string imdbId)
     {
-        Console.WriteLine(imdbId);
+        Toplist = await ToplistService.AddMovie(new AddMovieRequest
+        {
+            Position = Toplist.Items.Count(),
+            Token = await GetAuthToken(),
+            ToplistId = ToplistId,
+            MovieImdbId = imdbId
+        });
+        StateHasChanged();
     }
 
 }
