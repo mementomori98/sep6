@@ -2,9 +2,8 @@
 
 namespace Core.Data.Models
 {
-    public class Movie
+    public class MovieDao : DiscussableDao
     {
-        public long Id { get; set; }
         public string ImdbId { get; set; }
         public string Title { get; set; }
     }

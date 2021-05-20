@@ -1,0 +1,12 @@
+﻿@using Core.Domain.Authentication
+@using Core.Domain.Authentication.Models
+@using Notflix.Utils
+@inject LocalStorage LocalStorage
+
+@code {
+
+
+    protected async Task<AuthToken> GetAuthToken() =>
+        await LocalStorage.Get<AuthToken>("authToken");
+
+}

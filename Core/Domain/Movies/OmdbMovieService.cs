@@ -5,6 +5,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Core.Data;
 using Core.Data.Models;
+using Core.Domain.DiscussionItems.Models;
 using Core.Domain.Movies.Models;
 
 namespace Core.Domain.Movies
@@ -48,11 +49,11 @@ namespace Core.Domain.Movies
         private async Task<MovieModel> Sync(MovieApiModel model)
         {
             await using var context = new MovieContext();
-            var movie = context.Set<Movie>()
+            var movie = context.Set<MovieDao>()
                 .SingleOrDefault(m => m.ImdbId == model.imdbID);
             if (movie == null)
             {
-                var entry = await context.Set<Movie>().AddAsync(new Movie
+                var entry = await context.Set<MovieDao>().AddAsync(new MovieDao
                 {
                     ImdbId = model.imdbID,
                     Title = model.Title

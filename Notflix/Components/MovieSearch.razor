@@ -5,6 +5,17 @@
 
 @code {
 
+    [Parameter]
+    public Action<string> OnItemClicked { get; set; }
+
+    [Parameter]
+    public Func<MovieListModel, string> Href { get; set; }
+    
+    [Parameter]
+    public string Class { get; set; }
+    
+    private Func<MovieListModel, string> NullsafeHref() => Href ?? (m => null);
+
     private IEnumerable<MovieListModel> _results;
     private bool PopoverOpen => _isOpen;
 
@@ -15,7 +26,7 @@
     {
         if (text.Length > 3)
             _results = await MovieService.SearchList(text);
-        if (_results.Any())
+        if (_results?.Any() ?? false)
             _isOpen = true;
     }
 
@@ -24,11 +35,13 @@
         _isOpen = true;
         _results = null;
     }
-    
-    private void HideSearchBar()
+
+    private void OnItemSelected(string imdbId)
     {
         _isOpen = false;
         _defaultTextState = "";
+        StateHasChanged();
+        OnItemClicked?.Invoke(imdbId);
     }
 
 }
@@ -44,19 +57,18 @@
         Immediate="true"
         Placeholder="Search movies..."
         Variant="Variant.Outlined"
-        Class="mud-theme-primary lighten"
+        Class="@Class"
         @onfocusin="CheckResults"
         Style="z-index: 101"/>
     <MudPopover Open="@(PopoverOpen)" Direction="Direction.Bottom" OffsetY="true" Style="max-width: 45%">
         @for (var i = 0; i < _results?.Count(); i++)
         {
             var movie = _results.ToList()[i];
-            <MovieSearchItem HideSearchBar="@HideSearchBar" Content="@movie"/>
+            <MovieSearchItem OnItemSelected="@OnItemSelected" Href="@NullsafeHref()" Content="@movie"/>
             if (i != _results.Count() - 1)
             {
                 <MudDivider/>
             }
-                
         }
 
     </MudPopover>

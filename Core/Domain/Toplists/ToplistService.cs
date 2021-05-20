@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Core.Data;
@@ -9,7 +10,6 @@ using Core.Domain.Toplists.Models;
 using Core.Utils;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query.Internal;
-using Ubiety.Dns.Core.Records.NotUsed;
 
 namespace Core.Domain.Toplists
 {
@@ -26,16 +26,38 @@ namespace Core.Domain.Toplists
             _movieService = movieService;
         }
 
+        public async Task<IEnumerable<ToplistModel>> GetToplists(GetToplistsRequest request)
+        {
+            var user = await _authenticationService.GetCurrentUser(request.Token);
+            if (user == null)
+                throw new Exception("Unauthorized user");
+            await using var context = new MovieContext();
+            var toplists = await context.Set<ToplistDao>()
+                .Include(tl => tl.ToplistMovies).ThenInclude(tlm => tlm.Movie)
+                .Where(tl => tl.UserId == user.Id)
+                .ToListAsync();
+            return toplists.Select(Map);
+        }
+
+        public async Task<ToplistModel> GetToplist(GetToplistRequest request)
+        {
+            await using var context = new MovieContext();
+            var toplist = await Fetch(request.ToplistId);
+            if (toplist == null)
+                throw new ArgumentException("Toplist not found");
+            return Map(toplist);
+        }
+
         public async Task<ToplistModel> Create(CreateToplistRequest request)
         {
-            var user = _authenticationService.GetCurrentUser(request.Token);
+            var user = await _authenticationService.GetCurrentUser(request.Token);
             if (user == null)
                 throw new Exception("Unauthorized user");
             if (string.IsNullOrWhiteSpace(request.Name))
                 throw new ArgumentException("Name must be specified");
 
             await using var context = new MovieContext();
-            var entry = await context.Set<Toplist>().AddAsync(new Toplist
+            var entry = await context.Set<ToplistDao>().AddAsync(new ToplistDao
             {
                 Name = request.Name,
                 UserId = user.Id
@@ -52,7 +74,7 @@ namespace Core.Domain.Toplists
                 throw new Exception("Unauthorized");
 
             await using var context = new MovieContext();
-            var toplist = await context.Set<Toplist>()
+            var toplist = await context.Set<ToplistDao>()
                 .Include(tl => tl.ToplistMovies)
                 .SingleOrDefaultAsync(tl => tl.Id == request.ToplistId);
 
@@ -74,7 +96,7 @@ namespace Core.Domain.Toplists
                 tlm.Position += 1;
             }
 
-            toplist.ToplistMovies.Add(new ToplistMovie
+            toplist.ToplistMovies.Add(new ToplistMovieDao
             {
                 ToplistId = toplist.Id,
                 MovieId = movie.Id,
@@ -92,7 +114,7 @@ namespace Core.Domain.Toplists
                 throw new Exception("Unauthorized");
 
             await using var context = new MovieContext();
-            var toplist = await context.Set<Toplist>()
+            var toplist = await context.Set<ToplistDao>()
                 .Include(tl => tl.ToplistMovies)
                 .SingleOrDefaultAsync(tl => tl.Id == request.ToplistId);
 
@@ -126,14 +148,20 @@ namespace Core.Domain.Toplists
                 throw new Exception("User does not own toplist");
 
             var tlm = toplist.ToplistMovies.Single(x => x.MovieId == request.MovieId);
-            foreach (var item in toplist.ToplistMovies.Where(x => x.Position > tlm.Position))
-                item.Position -= 1;
-
-            toplist.ToplistMovies.Remove(tlm);
+            var tlm2 = toplist.ToplistMovies.Single(x => x.Position == request.Position);
+            var pos = tlm.Position;
             context.Update(toplist);
+            
+            tlm.Position = -1;
+            await context.SaveChangesAsync();
+            
+            tlm2.Position = pos;
             await context.SaveChangesAsync();
 
-            return Map(await Fetch(toplist.Id));
+            tlm.Position = request.Position;
+            await context.SaveChangesAsync();
+
+            return Map(toplist);
         }
 
         public async Task Delete(DeleteToplistRequest request)
@@ -149,25 +177,26 @@ namespace Core.Domain.Toplists
                 throw new Exception("Used does not own this toplist");
 
             await using var context = new MovieContext();
-            context.Set<Toplist>().Remove(toplist);
+            context.Set<ToplistDao>().Remove(toplist);
             await context.SaveChangesAsync();
         }
 
-        private async Task<Toplist> Fetch(long toplistId)
+        private async Task<ToplistDao> Fetch(long toplistId)
         {
             await using var context = new MovieContext();
-            return await context.Set<Toplist>()
+            return await context.Set<ToplistDao>()
                 .Include(tl => tl.ToplistMovies)
                 .ThenInclude(tlm => tlm.Movie)
                 .SingleOrDefaultAsync(tl => tl.Id == toplistId);
         }
 
-        private ToplistModel Map(Toplist toplist)
+        private ToplistModel Map(ToplistDao toplist)
         {
             return new ToplistModel
             {
                 Id = toplist.Id,
                 Name = toplist.Name,
+                UserId = toplist.UserId,
                 Items = toplist.ToplistMovies.Select(tlm => new ToplistItem
                 {
                     MovieId = tlm.MovieId,

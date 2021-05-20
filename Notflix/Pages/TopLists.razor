@@ -1,0 +1,63 @@
+﻿@page "/TopLists"
+@using Core.Domain.Toplists.Models
+@using Core.Domain.Toplists
+@using Components.Shared
+@inherits AuthBase
+@inject IToplistService ToplistService
+@inject IDialogService DialogService
+@inject NavigationManager NavigationManager
+
+@code {
+
+    private IEnumerable<ToplistModel> Toplists { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await FetchList();
+    }
+
+    private async Task FetchList()
+    {
+        if ((await GetAuthToken())?.HasExpired() ?? true)
+            return;
+        Toplists = await ToplistService.GetToplists(new GetToplistsRequest
+        {
+            Token = await GetAuthToken()
+        });
+    }
+
+    private async Task OnCreate()
+    {
+        var parameters = new DialogParameters
+        {
+            {"SuccessCallback", new Action<long>(async id => await ToplistCreatedCallback(id))}
+        };
+        DialogService.Show<CreateToplistDialog>("Create Toplist", parameters);
+    }
+
+    private async Task ToplistCreatedCallback(long id)
+    {
+        NavigationManager.NavigateTo($"/Toplists/{id}");
+    }
+
+}
+
+<MudGrid>
+    <MudItem xs="12" Class="d-flex flex-row-reverse mr-4 mt-4">
+        <MudButton OnClick="OnCreate" Variant="Variant.Filled">Create</MudButton>
+    </MudItem>
+</MudGrid>
+
+<MudGrid>
+    @foreach (var toplist in Toplists ?? new ToplistModel[0])
+    {
+        <MudItem sm="4" md="3" xs="6">
+            <MudLink Href="@($"/Toplists/{toplist.Id}")">
+                <Card>
+                    <ToplistOverviewItem Toplist="toplist"/>
+                </Card>
+            </MudLink>
+
+        </MudItem>
+    }
+</MudGrid>

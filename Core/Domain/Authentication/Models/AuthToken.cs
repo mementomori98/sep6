@@ -6,5 +6,10 @@ namespace Core.Domain.Authentication.Models
     {
         public string Value { get; set; }
         public DateTime Expiry { get; set; }
+
+        public bool HasExpired()
+        {
+            return Expiry < DateTime.UtcNow;
+        }
     }
 }

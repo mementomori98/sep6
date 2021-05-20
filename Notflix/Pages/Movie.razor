@@ -41,12 +41,9 @@
             </MudTabs>
         }
     </Card>
-    }
+}
 
-    @code {
-        [Parameter]
-        public string Id { get; set; }
-        private MovieModel _movieModel;
+@code {
 
         protected override async Task OnParametersSetAsync()
         {
@@ -59,21 +56,26 @@
             Console.WriteLine("paramSet");
         }
 
+    private MovieModel _movieModel;
 
-        private int GetRating(MovieModel movieModel)
-        {
-            
-            var value = movieModel.Ratings.First().Value;
-            var rating = value.Substring(0, value.IndexOf("/", StringComparison.Ordinal)).Trim();
-            return (int) Math.Round (float.Parse(rating) / 2);
-        }
-
-        private bool _rendered;
-
-        protected override async Task OnAfterRenderAsync(bool firstRender)
-        {
-            Console.WriteLine("OnRenderAsync");
-          _rendered = true;
-        }
-
+    protected override async Task OnParametersSetAsync()
+    {
+        _movieModel = await MovieService.GetMovieDetails(Id);
     }
+
+
+    private int GetRating(MovieModel movieModel)
+    {
+        var value = movieModel.Ratings.First().Value;
+        var rating = value.Substring(0, value.IndexOf("/", StringComparison.Ordinal)).Trim();
+        return (int) Math.Round(float.Parse(rating) / 2);
+    }
+
+    private bool _rendered;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        _rendered = true;
+    }
+
+}

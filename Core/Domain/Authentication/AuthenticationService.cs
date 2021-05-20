@@ -13,7 +13,7 @@ namespace Core.Domain.Authentication
         {
             // TODO hash password
             await using var context = new MovieContext();
-            var user = await context.Set<User>().SingleOrDefaultAsync(u =>
+            var user = await context.Set<UserDao>().SingleOrDefaultAsync(u =>
                 u.Username == request.Username &&
                 u.PasswordHash == request.Password);
 
@@ -22,8 +22,8 @@ namespace Core.Domain.Authentication
 
             var token = Guid.NewGuid().ToString();
             var session = (await context
-                .Set<LoginSession>()
-                .AddAsync(new LoginSession
+                .Set<LoginSessionDao>()
+                .AddAsync(new LoginSessionDao
                 {
                     UserId = user.Id,
                     Token = token,
@@ -44,7 +44,7 @@ namespace Core.Domain.Authentication
             await using var context = new MovieContext();
             var value = token?.Value;
             return await context
-                .Set<LoginSession>()
+                .Set<LoginSessionDao>()
                 .AnyAsync(ls => ls.Token == value && ls.ExpiresAt > DateTime.UtcNow);
         }
 
@@ -53,7 +53,7 @@ namespace Core.Domain.Authentication
             await using var context = new MovieContext();
             var value = token?.Value;
             var session = await context
-                .Set<LoginSession>()
+                .Set<LoginSessionDao>()
                 .SingleOrDefaultAsync(ls => ls.Token == value);
             if (session?.ExpiresAt > DateTime.UtcNow)
             {
@@ -63,12 +63,12 @@ namespace Core.Domain.Authentication
             }
         }
 
-        public async Task<User> GetCurrentUser(AuthToken token)
+        public async Task<UserDao> GetCurrentUser(AuthToken token)
         {
             await using var context = new MovieContext();
             var s = token?.Value;
             var session = (await context
-                .Set<LoginSession>()
+                .Set<LoginSessionDao>()
                 .Include(ls => ls.User)
                 .SingleOrDefaultAsync(ls =>
                     ls.Token == s &&
@@ -79,12 +79,12 @@ namespace Core.Domain.Authentication
         public async Task<AuthToken> CreateUser(CreateUserRequest request)
         {
             await using var context = new MovieContext();
-            var user = await context.Set<User>().SingleOrDefaultAsync(u => u.Username == request.Username);
+            var user = await context.Set<UserDao>().SingleOrDefaultAsync(u => u.Username == request.Username);
             if (user != null)
                 throw new Exception("Username already exists");
             
-            await context.Set<User>()
-                .AddAsync(new User
+            await context.Set<UserDao>()
+                .AddAsync(new UserDao
                 {
                     Username = request.Username,
                     PasswordHash = request.Password

@@ -57,6 +57,9 @@
     margin-top: -20%;
 }
 
+.normal {
+    font-weight: normal !important;
+    }
 .relationBox{
     width: auto;
     height: auto;
