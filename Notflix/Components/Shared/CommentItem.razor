@@ -1,28 +1,31 @@
-﻿@code {
+﻿@using Notflix.Components.Movie
+
+@code {
     string _margin;
+
     [Parameter]
-    public bool Content { get; set; }
+    public CommentDiscussion.Comment Content { get; set; }
 
 }
 
-<div class="comment-item" >
+<div class="comment-item">
     <div class="content d-flex">
         <img src="/Images/avatar.png" style="max-height: 60px" alt="user avatar"/>
         <div class="pa-2">
-            <MudText>Raluca Petrovici</MudText>
-            <MudText>This is a long comment... see? This one... see? This one... see? This one... see? This one... see? This one... see? This one... see? This one... see? This one... see? This one... see? This one... see? This one... see? This one... see? This one... This one... see? This one... see? This one... see? This one... see? This one... see? This one... see? This one... This one... see? This one... see? This one... see? This one... see? This one... see? This one... see? This one... This one... see? This one... see? This one... see? This one... see? This one... see? This one... see? This one...</MudText>
+            <MudText>@Content.Name</MudText>
+            <MudText>@Content.Contents</MudText>
         </div>
     </div>
-    @if (@Content)
+
+    @if (Content.Children != null  && Content.Children.Any())
     {
         <div class="children">
-            <CommentItem/>
-         </div>  
-        <div class="children">
-            <CommentItem/>
+            @foreach (var child in Content.Children)
+            {
+                <CommentItem Content="@child"></CommentItem>
+            }
         </div>
-        
     }
+
+
 </div>
-
-
