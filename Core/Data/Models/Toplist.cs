@@ -2,9 +2,8 @@
 
 namespace Core.Data.Models
 {
-    public class Toplist
+    public class Toplist : DiscussableDao
     {
-        public long Id { get; set; }
         public string Name { get; set; }
         public long UserId { get; set; }
         

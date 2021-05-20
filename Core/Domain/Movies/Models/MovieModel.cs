@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Core.Domain.DiscussionItems.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace Core.Domain.Movies.Models

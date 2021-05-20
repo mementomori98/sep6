@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Core.Domain.Authentication;
+using Core.Domain.DiscussionItems;
 using Core.Domain.Movies;
 using Core.Domain.Toplists;
 using Core.Domain.Toplists.Models;
@@ -45,6 +46,8 @@ namespace Notflix
                 c.SnackbarConfiguration.HideTransitionDuration = 200;
                 c.SnackbarConfiguration.SnackbarVariant = Variant.Filled;
             });
+            services.AddTransient<IMovieService, OmdbMovieService>();
+            services.AddTransient<IDiscussionItemService, DiscussionItemService>();
             services.AddTransient<LocalStorage>();
             services.AddTransient<IMovieService, OmdbMovieService>();
             services.AddTransient<IAuthenticationService, AuthenticationService>();
