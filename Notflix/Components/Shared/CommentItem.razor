@@ -2,46 +2,27 @@
     string _margin;
     [Parameter]
     public bool Content { get; set; }
-    
-    [Parameter]
-    public int Level { get; set; }    
-
-    protected override void OnInitialized()
-    {
-        _margin = "margin-left: " + Level*20 +"px; display: flex";
-    }
 
 }
-
-<style>
-    .comment-item {
-        position: relative;
-    }
-    .children > .comment-item {
-        padding-left: 30px;
-        border-left: 5px solid #e8e8e8;
-    }  
-    
-    
-</style>
 
 <div class="comment-item" >
     <div class="content d-flex">
         <img src="/Images/avatar.png" style="max-height: 60px" alt="user avatar"/>
-    <div class="pa-2">
-        <MudText>Raluca Petrovici</MudText>
-        <MudText>This is a long comment... see? This one... see? This one... see? This one... see? This one... see? This one... see? This one... see? This one... see? This one... see? This one... see? This one... see? This one... see? This one... see? This one... This one... see? This one... see? This one... see? This one... see? This one... see? This one... see? This one... This one... see? This one... see? This one... see? This one... see? This one... see? This one... see? This one... This one... see? This one... see? This one... see? This one... see? This one... see? This one... see? This one...</MudText>
+        <div class="pa-2">
+            <MudText>Raluca Petrovici</MudText>
+            <MudText>This is a long comment... see? This one... see? This one... see? This one... see? This one... see? This one... see? This one... see? This one... see? This one... see? This one... see? This one... see? This one... see? This one... see? This one... This one... see? This one... see? This one... see? This one... see? This one... see? This one... see? This one... This one... see? This one... see? This one... see? This one... see? This one... see? This one... see? This one... This one... see? This one... see? This one... see? This one... see? This one... see? This one... see? This one...</MudText>
+        </div>
     </div>
-</div>
     @if (@Content)
     {
         <div class="children">
             <CommentItem/>
+         </div>  
+        <div class="children">
             <CommentItem/>
         </div>
         
     }
-
-        </div>
+</div>
 
 

@@ -13,7 +13,24 @@
     }
     .children > .comment-item {
         padding-left: 30px;
+        border-left: 5px solid black;
+        
     }
+        
+    .children:last-child > .comment-item{
+        border: none;
+            
+    }
+      .children:last-child:before{
+         content: '';
+         display: block;
+          position: absolute;
+          left: 0px;
+          height: 60px;
+          border-left: 5px solid #3333ff;
+        }
+    
+  
     
 </style>
 <div class="comment-item comment-item-root">
@@ -31,7 +48,12 @@
     @if (@Content)
     {
         <div class="children">
+            <div class="kuki"></div>
             <CommentItem Content="@true"/>
         </div>
+        <div class="children">
+            <CommentItem Content="@true"/> 
+            </div>
+      
     }
 </div>
