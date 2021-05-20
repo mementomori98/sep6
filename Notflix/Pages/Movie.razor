@@ -44,7 +44,9 @@
 }
 
 @code {
-
+    [Parameter] 
+    public string Id { get; set; }
+    
         protected override async Task OnParametersSetAsync()
         {
             Console.WriteLine("paramSet");
@@ -57,11 +59,6 @@
         }
 
     private MovieModel _movieModel;
-
-    protected override async Task OnParametersSetAsync()
-    {
-        _movieModel = await MovieService.GetMovieDetails(Id);
-    }
 
 
     private int GetRating(MovieModel movieModel)
