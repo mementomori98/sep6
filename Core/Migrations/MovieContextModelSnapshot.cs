@@ -23,6 +23,9 @@ namespace Core.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
 
+                    b.Property<string>("Dummy")
+                        .HasColumnType("text");
+
                     b.HasKey("Id");
 
                     b.ToTable("DiscussableDao");

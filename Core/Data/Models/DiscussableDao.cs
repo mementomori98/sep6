@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace Core.Data.Models
 {
-    public abstract class DiscussableDao
+    public class DiscussableDao
     {
         public long Id { get; set; }
+        public string Dummy { get; set; }
     }
 }
