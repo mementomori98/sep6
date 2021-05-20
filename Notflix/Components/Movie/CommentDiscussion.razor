@@ -1,0 +1,26 @@
+﻿@using Notflix.Components.Shared
+@code {
+    [Parameter]
+    public bool Content { get; set; }
+}
+
+<div style="display: flex">
+    <div class="pa-2">
+        <img src="/Images/avatar.png" style="max-height: 60px"/>
+    </div>
+    
+    <div class="pa-2">
+        <MudText>Raluca Petrovici</MudText>
+        <MudText>This is a long comment... see? This one... see? This one... see? This one... see? This one... see? This one... see? This one... see? This one... see? This one... see? This one... see? This one... see? This one... see? This one... see? This one...</MudText>
+    </div>
+</div>
+@if (@Content)
+{
+    <CommentItem Level="0"/>
+    <CommentItem Level="1"/>
+    <CommentItem Level="1"/>
+    <CommentItem Level="0"/>
+    
+}
+
+

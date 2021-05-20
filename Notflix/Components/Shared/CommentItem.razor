@@ -1,0 +1,34 @@
+﻿@code {
+    string _margin;
+    [Parameter]
+    public bool Content { get; set; }
+    
+    [Parameter]
+    public int Level { get; set; }    
+
+    protected override void OnInitialized()
+    {
+        _margin = "margin-left: " + Level*20 +"px; display: flex";
+    }
+
+}
+
+<div style=@_margin >
+    <div  class="pa-2" style="display: flex; justify-content: center; align-items: center;">
+        <div style="width: 20px;">
+            <div id="relation"/>
+        </div>
+        <img src="/Images/avatar.png" style="max-height: 60px"/>
+    </div>
+    <div class="pa-2">
+        <MudText>Raluca Petrovici</MudText>
+        <MudText>This is a long comment... see? This one... see? This one... see? This one... see? This one... see? This one... see? This one... see? This one... see? This one... see? This one... see? This one... see? This one... see? This one... see? This one...</MudText>
+    </div>
+</div>
+@if (@Content)
+{
+    <CommentItem Level="@(Level+1)"/>
+    
+}
+
+

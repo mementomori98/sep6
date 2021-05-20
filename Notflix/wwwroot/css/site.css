@@ -56,3 +56,24 @@
     margin-bottom: -100%;
     margin-top: -20%;
 }
+
+.relationBox{
+    width: auto;
+    height: auto;
+}
+
+#relation {
+    background: #e8e8e8;
+    height: 25px;
+    position: relative;
+    width: 5px;
+    top: -10px;
+}
+#relation:after {
+    background: #e8e8e8;
+    content: "";
+    height: 5px;
+    position: absolute;
+    top: 20px;
+    width: 20px;
+}
