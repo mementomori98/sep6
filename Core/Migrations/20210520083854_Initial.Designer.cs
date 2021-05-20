@@ -9,8 +9,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Core.Migrations
 {
     [DbContext(typeof(MovieContext))]
-    [Migration("20210520080949_DiscussionItems")]
-    partial class DiscussionItems
+    [Migration("20210520083854_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -195,6 +195,23 @@ namespace Core.Migrations
                     b.HasIndex("DiscussionItemId");
 
                     b.HasDiscriminator().HasValue("CommentDao");
+                });
+
+            modelBuilder.Entity("Core.Data.Models.FunFactDao", b =>
+                {
+                    b.HasBaseType("Core.Data.Models.DiscussionItemDao");
+
+                    b.HasDiscriminator().HasValue("FunFactDao");
+                });
+
+            modelBuilder.Entity("Core.Data.Models.ReviewDao", b =>
+                {
+                    b.HasBaseType("Core.Data.Models.DiscussionItemDao");
+
+                    b.Property<int>("NumberOfStars")
+                        .HasColumnType("int");
+
+                    b.HasDiscriminator().HasValue("ReviewDao");
                 });
 
             modelBuilder.Entity("Core.Data.Models.DiscussionItemDao", b =>

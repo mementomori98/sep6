@@ -11,6 +11,7 @@ namespace Core.Data
         public static void Configure<TModel>(this ModelBuilder builder, params Action<EntityTypeBuilder<TModel>>[] actions)
             where TModel : class
         {
+            builder.Entity<TModel>();
             foreach (var action in actions)
                 action(builder.Entity<TModel>());
             var dateProperties = typeof(TModel).GetProperties()

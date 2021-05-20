@@ -195,6 +195,23 @@ namespace Core.Migrations
                     b.HasDiscriminator().HasValue("CommentDao");
                 });
 
+            modelBuilder.Entity("Core.Data.Models.FunFactDao", b =>
+                {
+                    b.HasBaseType("Core.Data.Models.DiscussionItemDao");
+
+                    b.HasDiscriminator().HasValue("FunFactDao");
+                });
+
+            modelBuilder.Entity("Core.Data.Models.ReviewDao", b =>
+                {
+                    b.HasBaseType("Core.Data.Models.DiscussionItemDao");
+
+                    b.Property<int>("NumberOfStars")
+                        .HasColumnType("int");
+
+                    b.HasDiscriminator().HasValue("ReviewDao");
+                });
+
             modelBuilder.Entity("Core.Data.Models.DiscussionItemDao", b =>
                 {
                     b.HasOne("Core.Data.Models.User", "Author")
