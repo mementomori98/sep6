@@ -23,6 +23,7 @@ namespace Core.Data.Models
             copy.Id = Id;
             copy.Text = Text;
             copy.AuthorUsername = Author.Username;
+            copy.AuthorId = Author.Id;
             copy.DiscussableId = DiscussableId;
             copy.NumberOfLikes = numberOfLikes;
             copy.NumberOfDislikes = numberOfDislikes;

@@ -7,8 +7,46 @@
     int count;
     private async void GetDiscussionItem()
     {
-        IEnumerable<Comment> comments = await DiscussionItemService.GetCommentsOnDiscussable(2);
-        count = comments.Count();
+        Comment comment = new Comment()
+        {
+            Text = "Hello world",
+            AuthorId = 1,
+            DiscussableId = 1
+        };
+
+        Review review = new Review()
+        {
+            Text = "Hello review",
+            AuthorId = 1,
+            DiscussableId = 1,
+            NumberOfStars = 5
+        };
+
+        FunFact funFact = new FunFact()
+        {
+            Text = "Hello fun fact",
+            AuthorId = 1,
+            DiscussableId = 1
+        };
+
+        Comment subcomment = new Comment()
+        {
+            Text = "Subcomment",
+            AuthorId = 1,
+            DiscussionItemId = 1
+        };
+
+        long c = await DiscussionItemService.AddComment(comment);
+        long r = await DiscussionItemService.AddReview(review);
+        long f = await DiscussionItemService.AddFunFact(funFact);
+        long s = await DiscussionItemService.AddSubcomment(subcomment);
+        var i = await DiscussionItemService.DislikeDiscussionItem(14, 1);
+        IEnumerable<Comment> comments = await DiscussionItemService.GetCommentsOnDiscussable(1);
+        IEnumerable<Review> reviews = await DiscussionItemService.GetReviewsOnDiscussable(1);
+        IEnumerable<FunFact> funFacts = await DiscussionItemService.GetFunFactsOnDiscussable(1);
+        IEnumerable<Comment> subcomments = await DiscussionItemService.GetCommentsOnDiscussionItem(1);
+        //count = comments.Count();
+
     }
 }
 

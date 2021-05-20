@@ -1,4 +1,5 @@
-﻿using Core.Domain.DiscussionItems.Models;
+﻿using Core.Data.Models.DiscussionItems;
+using Core.Domain.DiscussionItems.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,9 +14,11 @@ namespace Core.Domain.DiscussionItems
         Task<IEnumerable<Review>> GetReviewsOnDiscussable(long discussableId);
         Task<IEnumerable<FunFact>> GetFunFactsOnDiscussable(long discussableId);
         Task<IEnumerable<Comment>> GetCommentsOnDiscussionItem(long discussionItemId);
-        Task AddComment(Comment comment);
-        Task AddFunFact(FunFact funFact);
-        Task AddReview(Review review);
-        Task AddSubcomment(Comment comment);
+        Task<long> AddComment(Comment comment);
+        Task<long> AddFunFact(FunFact funFact);
+        Task<long> AddReview(Review review);
+        Task<long> AddSubcomment(Comment comment);
+        Task<UserDiscussionItemInteraction> LikeDiscussionItem(long discussionItemId, long userId);
+        Task<UserDiscussionItemInteraction> DislikeDiscussionItem(long discussionItemId, long userId);
     }
 }
