@@ -8,6 +8,7 @@ namespace Core.Domain.Toplists
     public interface IToplistService
     {
         Task<IEnumerable<ToplistModel>> GetToplists(GetToplistsRequest request);
+        Task<ToplistModel> GetToplist(GetToplistRequest request);
         Task<ToplistModel> Create(CreateToplistRequest request);
         Task<ToplistModel> AddMovie(AddMovieRequest request);
         Task<ToplistModel> RemoveMovie(RemoveMovieRequest request);

@@ -4,6 +4,12 @@
 
 
 @code {
+    
+    [Parameter]
+    public EventCallback<string> OnItemClicked { get; set; }
+    
+    [Parameter]
+    public Func<MovieListModel, string> Href { get; set; }
 
     private IEnumerable<MovieListModel> _results;
     private bool PopoverOpen => _isOpen;
@@ -15,7 +21,7 @@
     {
         if (text.Length > 3)
             _results = await MovieService.SearchList(text);
-        if (_results.Any())
+        if (_results?.Any() ?? false)
             _isOpen = true;
     }
 
@@ -25,10 +31,14 @@
         _results = null;
     }
     
-    private void HideSearchBar()
+    private void OnItemSelected(string imdbId)
     {
         _isOpen = false;
         _defaultTextState = "";
+        if (OnItemClicked.HasDelegate)
+        {
+            OnItemClicked.InvokeAsync(imdbId);
+        }
     }
 
 }
@@ -51,7 +61,7 @@
         @for (var i = 0; i < _results?.Count(); i++)
         {
             var movie = _results.ToList()[i];
-            <MovieSearchItem HideSearchBar="@HideSearchBar" Content="@movie"/>
+            <MovieSearchItem OnItemSelected="@OnItemSelected" Href="@Href" Content="@movie"/>
             if (i != _results.Count() - 1)
             {
                 <MudDivider/>

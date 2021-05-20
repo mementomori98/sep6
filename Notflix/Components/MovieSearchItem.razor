@@ -4,12 +4,21 @@
 
     [Parameter]
     public MovieListModel Content { get; set; }
-    
+
     [Parameter]
-    public EventCallback HideSearchBar { get; set; }
+    public EventCallback<string> OnItemSelected { get; set; }
+
+    [Parameter]
+    public Func<MovieListModel, string> Href { get; set; } = _ => null;
+
+    private void OnClick()
+    {
+        if (OnItemSelected.HasDelegate)
+            OnItemSelected.InvokeAsync(Content.ImdbId);
+    }
 
 }
-<a class="movieListItem d-flex" href="/Main/@Content.ImdbId" onclick="@HideSearchBar">
+<a class="movieListItem d-flex" href="@(Href.Invoke(Content))" onclick="OnClick">
     <img src="@(Content.ImageUrl)" Class="mr-4 ml-0" style="max-height: 60px"/>
     <div class="d-flex flex-column">
         <MudText Typo="Typo.body1">@Content.Title</MudText>

@@ -1,0 +1,98 @@
+﻿@using Core.Domain.Movies.Models
+@using Core.Domain.Toplists.Models
+@using Core.Domain.Authentication
+@using Core.Domain.Toplists
+@inherits AuthBase
+@inject IAuthenticationService AuthenticationService
+@inject IToplistService ToplistService
+
+
+@code {
+
+    [Parameter]
+    public long ToplistId { get; set; }
+
+    private ToplistModel Toplist { get; set; }
+
+    private bool Editable { get; set; }
+    
+    private string SearchText { get; set; }
+    
+    private IEnumerable<MovieSearchItem> Results { get; set; }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Fetch();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender || Editable)
+            return;
+
+        var user = await AuthenticationService.GetCurrentUser(await GetAuthToken());
+        Editable = user.Id == Toplist.Id;
+        if (Editable)
+            StateHasChanged();
+    }
+
+    private async Task Fetch()
+    {
+        Toplist = await ToplistService.GetToplist(new GetToplistRequest {ToplistId = ToplistId});
+    }
+
+    private async Task OnChangePosition(long id, int position)
+    {
+        Toplist = await ToplistService.ChangePosition(new ChangePositionRequest
+        {
+            Token = await GetAuthToken(),
+            MovieId = id,
+            Position = position,
+            ToplistId = ToplistId
+        });
+    }
+
+    private async Task Search()
+    {
+        
+    }
+
+}
+
+<Card>
+    <MudGrid>
+        <MudItem xs="12">
+            <MudText Typo="Typo.h5">@Toplist.Name</MudText>
+        </MudItem>
+        @foreach (var item in Toplist.Items.OrderBy(i => i.Position))
+        {
+            <MudItem xs="12">
+                <MudGrid>
+                    <MudItem xs="6">
+                        <MudText>@(item.Position)) @item.Title</MudText>
+                    </MudItem>
+                    @if (Editable)
+                    {
+                        <MudItem xs="6">
+                            @if (item.Position < Toplist.Items.Count() - 1)
+                            {
+                                <MudButton OnClick="() => OnChangePosition(item.MovieId, item.Position + 1)">Move Down</MudButton>
+                            }
+                            @if (item.Position > 0)
+                            {
+                                <MudButton OnClick="() => OnChangePosition(item.MovieId, item.Position - 1)">Move Up</MudButton>
+                            }
+                        </MudItem>
+                    }
+
+                </MudGrid>
+            </MudItem>
+        }
+        @if (Editable)
+        {
+            <MudTextField Label="Search" @bind-Value="@SearchText"/>
+            <MudButton OnClick="Search" Variant="Variant.Filled">Add Movie</MudButton>
+        }
+    </MudGrid>
+</Card>

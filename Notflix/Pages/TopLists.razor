@@ -5,6 +5,7 @@
 @inherits AuthBase
 @inject IToplistService ToplistService
 @inject IDialogService DialogService
+@inject NavigationManager NavigationManager
 
 @code {
 
@@ -29,22 +30,21 @@
     {
         var parameters = new DialogParameters
         {
-            {"SuccessCallback", new Action(async () => await ToplistCreatedCallback())}
+            {"SuccessCallback", new Action<long>(async id => await ToplistCreatedCallback(id))}
         };
         DialogService.Show<CreateToplistDialog>("Create Toplist", parameters);
     }
 
-    private async Task ToplistCreatedCallback()
+    private async Task ToplistCreatedCallback(long id)
     {
-        await FetchList();
-        StateHasChanged();
+        NavigationManager.NavigateTo($"/Toplists/{id}");
     }
 
 }
 
 <MudGrid>
     <MudItem xs="12" Class="d-flex flex-row-reverse mr-4 mt-4">
-        <MudButton OnClick="OnCreate">Create</MudButton>
+        <MudButton OnClick="OnCreate" Variant="Variant.Filled">Create</MudButton>
     </MudItem>
 </MudGrid>
 

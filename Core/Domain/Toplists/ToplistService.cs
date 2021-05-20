@@ -10,7 +10,6 @@ using Core.Domain.Toplists.Models;
 using Core.Utils;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query.Internal;
-using Ubiety.Dns.Core.Records.NotUsed;
 
 namespace Core.Domain.Toplists
 {
@@ -38,6 +37,15 @@ namespace Core.Domain.Toplists
                 .Where(tl => tl.UserId == user.Id)
                 .ToListAsync();
             return toplists.Select(Map);
+        }
+
+        public async Task<ToplistModel> GetToplist(GetToplistRequest request)
+        {
+            await using var context = new MovieContext();
+            var toplist = await Fetch(request.ToplistId);
+            if (toplist == null)
+                throw new ArgumentException("Toplist not found");
+            return Map(toplist);
         }
 
         public async Task<ToplistModel> Create(CreateToplistRequest request)
@@ -140,14 +148,20 @@ namespace Core.Domain.Toplists
                 throw new Exception("User does not own toplist");
 
             var tlm = toplist.ToplistMovies.Single(x => x.MovieId == request.MovieId);
-            foreach (var item in toplist.ToplistMovies.Where(x => x.Position > tlm.Position))
-                item.Position -= 1;
-
-            toplist.ToplistMovies.Remove(tlm);
+            var tlm2 = toplist.ToplistMovies.Single(x => x.Position == request.Position);
+            var pos = tlm.Position;
             context.Update(toplist);
+            
+            tlm.Position = -1;
+            await context.SaveChangesAsync();
+            
+            tlm2.Position = pos;
             await context.SaveChangesAsync();
 
-            return Map(await Fetch(toplist.Id));
+            tlm.Position = request.Position;
+            await context.SaveChangesAsync();
+
+            return Map(toplist);
         }
 
         public async Task Delete(DeleteToplistRequest request)

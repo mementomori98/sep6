@@ -1,0 +1,14 @@
+﻿@page "/Toplists/{ToplistId:long}"
+@using Core.Domain.Toplists.Models
+@using Core.Domain.Toplists
+@inject IToplistService ToplistService
+
+@code {
+
+    [Parameter]
+    public long ToplistId { get; set; }
+
+}
+
+<ToplistView ToplistId="@ToplistId"/>
+

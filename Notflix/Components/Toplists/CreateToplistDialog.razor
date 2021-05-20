@@ -9,7 +9,7 @@
     public MudDialogInstance MudDialog { get; set; }
 
     [Parameter]
-    public Action SuccessCallback { get; set; }
+    public Action<long> SuccessCallback { get; set; }
 
     private string Name { get; set; }
     private string Error { get; set; }
@@ -21,12 +21,12 @@
             Error = "Name must be specified";
             return;
         }
-        await ToplistService.Create(new CreateToplistRequest
+        var toplist = await ToplistService.Create(new CreateToplistRequest
         {
             Token = await GetAuthToken(),
             Name = Name
         });
-        SuccessCallback?.Invoke();
+        SuccessCallback?.Invoke(toplist.Id);
         MudDialog.Close();
     }
 
