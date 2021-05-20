@@ -19,7 +19,7 @@
 
     @if (Content.Children != null  && Content.Children.Any())
     {
-        <div class="children">
+        <div class="comment-item-children">
             @foreach (var child in Content.Children)
             {
                 <CommentItem Content="@child"></CommentItem>

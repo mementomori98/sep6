@@ -21,7 +21,21 @@
             Children = new List<Comment>
             {
                 new() {Name = "Mate", Contents = "Stop repeating yourself, curva!"},
-                new() {Name = "Aron", Contents = "play nice, you goys!"},
+                new()
+                {
+                    Name = "Aron", 
+                    Contents = "play nice, you goys!",
+                    Children = new List<Comment>
+                    {
+                        new() {Name = "Mate", Contents = "Stop repeating yourself, curva!"},
+                        new()
+                        {
+                            Name = "Aron", 
+                            Contents = "play nice, you goys!"
+                        },
+                        new() {Name = "Zolly", Contents = "Proin nullam mus mauris et urna nec consectetur phasellus magnis sociis sit a pharetra taciti lorem in id est in magna condimentum euismod adipiscing mus blandit adipiscing.Odio a a suspendisse mi tortor parturient eu cubilia suspendisse a scelerisque scelerisque volutpat suspendisse magnis condimentum primis molestie laoreet mi lacus eu posuere condimentum a.Parturient nullam senectus imperdiet scelerisque libero."},
+                    }
+                },
                 new() {Name = "Zolly", Contents = "Proin nullam mus mauris et urna nec consectetur phasellus magnis sociis sit a pharetra taciti lorem in id est in magna condimentum euismod adipiscing mus blandit adipiscing.Odio a a suspendisse mi tortor parturient eu cubilia suspendisse a scelerisque scelerisque volutpat suspendisse magnis condimentum primis molestie laoreet mi lacus eu posuere condimentum a.Parturient nullam senectus imperdiet scelerisque libero."},
             }
         },
@@ -32,37 +46,9 @@
 
 }
 
-<style>
-    .comment-item {
-        position: relative;
-    }
-    
-    .comment-item-children {
-        position: relative;
-    }
-    .children > .comment-item {
-        padding-left: 30px;
-        border-left: 5px solid black;
-        
-    }
-        
-    .children:last-child > .comment-item{
-        border: none;
-            
-    }
-  .children>.comment-item:last-child:before{
-     content: '';
-     display: block;
-      position: absolute;
-      left: 0;
-      height: 60px;
-      border-left: 5px solid #3333ff;
-    }
-</style>
-
 @foreach (var comment in _comments)
 {
-    <CommentItem Content="@comment"/>
+   <CommentItem Content="@comment"/>
 }
 
 @* *@
