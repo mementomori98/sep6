@@ -15,7 +15,7 @@ namespace Core.Data.Models
         public long AuthorId { get; set; }
         //movie/toplist/actor id
         public long? DiscussableId { get; set; }
-        public User Author { get; set; }
+        public UserDao Author { get; set; }
 
 
         public DiscussionItem MapToDiscussionItem(DiscussionItem copy, long numberOfLikes, long numberOfDislikes, UserDiscussionItemInteractionType? interaction)

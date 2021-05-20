@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Core.Migrations
 {
     [DbContext(typeof(MovieContext))]
-    [Migration("20210520100359_Initial")]
+    [Migration("20210520112110_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -30,7 +30,7 @@ namespace Core.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("DiscussableDao");
+                    b.ToTable("Discussable");
                 });
 
             modelBuilder.Entity("Core.Data.Models.DiscussionItemDao", b =>
@@ -59,7 +59,7 @@ namespace Core.Migrations
 
                     b.HasIndex("DiscussableId");
 
-                    b.ToTable("DiscussionItemDao");
+                    b.ToTable("DiscussionItem");
 
                     b.HasDiscriminator<string>("Discriminator").HasValue("DiscussionItemDao");
                 });
@@ -82,7 +82,7 @@ namespace Core.Migrations
                     b.ToTable("UserDiscussionItemInteraction");
                 });
 
-            modelBuilder.Entity("Core.Data.Models.LoginSession", b =>
+            modelBuilder.Entity("Core.Data.Models.LoginSessionDao", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -108,7 +108,7 @@ namespace Core.Migrations
                     b.ToTable("LoginSession");
                 });
 
-            modelBuilder.Entity("Core.Data.Models.ToplistMovie", b =>
+            modelBuilder.Entity("Core.Data.Models.ToplistMovieDao", b =>
                 {
                     b.Property<long>("MovieId")
                         .HasColumnType("bigint");
@@ -127,7 +127,7 @@ namespace Core.Migrations
                     b.ToTable("ToplistMovie");
                 });
 
-            modelBuilder.Entity("Core.Data.Models.User", b =>
+            modelBuilder.Entity("Core.Data.Models.UserDao", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -148,7 +148,7 @@ namespace Core.Migrations
                     b.ToTable("User");
                 });
 
-            modelBuilder.Entity("Core.Data.Models.Actor", b =>
+            modelBuilder.Entity("Core.Data.Models.ActorDao", b =>
                 {
                     b.HasBaseType("Core.Data.Models.DiscussableDao");
 
@@ -158,7 +158,7 @@ namespace Core.Migrations
                     b.ToTable("Actor");
                 });
 
-            modelBuilder.Entity("Core.Data.Models.Movie", b =>
+            modelBuilder.Entity("Core.Data.Models.MovieDao", b =>
                 {
                     b.HasBaseType("Core.Data.Models.DiscussableDao");
 
@@ -175,7 +175,7 @@ namespace Core.Migrations
                     b.ToTable("Movie");
                 });
 
-            modelBuilder.Entity("Core.Data.Models.Toplist", b =>
+            modelBuilder.Entity("Core.Data.Models.ToplistDao", b =>
                 {
                     b.HasBaseType("Core.Data.Models.DiscussableDao");
 
@@ -219,7 +219,7 @@ namespace Core.Migrations
 
             modelBuilder.Entity("Core.Data.Models.DiscussionItemDao", b =>
                 {
-                    b.HasOne("Core.Data.Models.User", "Author")
+                    b.HasOne("Core.Data.Models.UserDao", "Author")
                         .WithMany()
                         .HasForeignKey("AuthorId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -241,16 +241,16 @@ namespace Core.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Core.Data.Models.User", null)
+                    b.HasOne("Core.Data.Models.UserDao", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Core.Data.Models.LoginSession", b =>
+            modelBuilder.Entity("Core.Data.Models.LoginSessionDao", b =>
                 {
-                    b.HasOne("Core.Data.Models.User", "User")
+                    b.HasOne("Core.Data.Models.UserDao", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -259,15 +259,15 @@ namespace Core.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Core.Data.Models.ToplistMovie", b =>
+            modelBuilder.Entity("Core.Data.Models.ToplistMovieDao", b =>
                 {
-                    b.HasOne("Core.Data.Models.Movie", "Movie")
+                    b.HasOne("Core.Data.Models.MovieDao", "Movie")
                         .WithMany()
                         .HasForeignKey("MovieId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Core.Data.Models.Toplist", null)
+                    b.HasOne("Core.Data.Models.ToplistDao", null)
                         .WithMany("ToplistMovies")
                         .HasForeignKey("ToplistId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -276,29 +276,29 @@ namespace Core.Migrations
                     b.Navigation("Movie");
                 });
 
-            modelBuilder.Entity("Core.Data.Models.Actor", b =>
+            modelBuilder.Entity("Core.Data.Models.ActorDao", b =>
                 {
                     b.HasOne("Core.Data.Models.DiscussableDao", null)
                         .WithOne()
-                        .HasForeignKey("Core.Data.Models.Actor", "Id")
+                        .HasForeignKey("Core.Data.Models.ActorDao", "Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Core.Data.Models.Movie", b =>
+            modelBuilder.Entity("Core.Data.Models.MovieDao", b =>
                 {
                     b.HasOne("Core.Data.Models.DiscussableDao", null)
                         .WithOne()
-                        .HasForeignKey("Core.Data.Models.Movie", "Id")
+                        .HasForeignKey("Core.Data.Models.MovieDao", "Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Core.Data.Models.Toplist", b =>
+            modelBuilder.Entity("Core.Data.Models.ToplistDao", b =>
                 {
                     b.HasOne("Core.Data.Models.DiscussableDao", null)
                         .WithOne()
-                        .HasForeignKey("Core.Data.Models.Toplist", "Id")
+                        .HasForeignKey("Core.Data.Models.ToplistDao", "Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -311,7 +311,7 @@ namespace Core.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("Core.Data.Models.Toplist", b =>
+            modelBuilder.Entity("Core.Data.Models.ToplistDao", b =>
                 {
                     b.Navigation("ToplistMovies");
                 });

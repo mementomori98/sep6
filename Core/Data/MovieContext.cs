@@ -18,26 +18,29 @@ namespace Core.Data
         protected override void OnModelCreating(ModelBuilder b)
         {
             b.Configure<DiscussableDao>(x =>
-                x.HasKey(d => d.Id));
-            b.Entity<DiscussableDao>().ToTable("DiscussableDao");
+                x.HasKey(d => d.Id), x =>
+                x.ToTable("Discussable"));
 
-            b.Configure<Movie>(x =>
-               x.HasIndex(m => m.ImdbId).IsUnique(), x =>
-               x.Property(m => m.ImdbId).IsRequired());
+            b.Configure<MovieDao>(x =>
+                x.HasIndex(m => m.ImdbId).IsUnique(), x =>
+                x.Property(m => m.ImdbId).IsRequired(), x =>
+                x.ToTable("Movie"));
 
-            b.Entity<Movie>().ToTable("Movie");
+            b.Configure<ToplistDao>(x =>
+                x.ToTable("Toplist"));
 
-            b.Entity<Toplist>().ToTable("Toplist");
+            b.Configure<ActorDao>(x =>
+                x.ToTable("Actor"));
 
-            b.Entity<Actor>().ToTable("Actor");
-
-            b.Configure<User>(x =>
+            b.Configure<UserDao>(x =>
                 x.HasKey(u => u.Id), x =>
+                x.ToTable("User"), x =>
                 x.HasIndex(u => u.Username).IsUnique(), x =>
                 x.Property(u => u.Username).IsRequired());
 
-            b.Configure<LoginSession>(x =>
+            b.Configure<LoginSessionDao>(x =>
                 x.HasKey(ls => ls.Id), x =>
+                x.ToTable("LoginSession"), x =>
                 x.HasIndex(ls => ls.Token).IsUnique(), x =>
                 x.HasOne(ls => ls.User)
                     .WithMany()
@@ -45,23 +48,25 @@ namespace Core.Data
                     .IsRequired()
                     .OnDelete(DeleteBehavior.Cascade));
 
-            b.Configure<ToplistMovie>(x =>
-                x.HasKey(tlm => new { tlm.MovieId, tlm.ToplistId }), x =>
-                  x.HasOne<Toplist>()
-                      .WithMany(tl => tl.ToplistMovies)
-                      .HasForeignKey(tlm => tlm.ToplistId)
-                      .IsRequired()
-                      .OnDelete(DeleteBehavior.Cascade), x =>
-                  x.HasOne(tlm => tlm.Movie)
-                      .WithMany()
-                      .HasForeignKey(tlm => tlm.MovieId)
-                      .IsRequired()
-                      .OnDelete(DeleteBehavior.Cascade), x =>
-                  x.HasIndex(tlm => new { tlm.ToplistId, tlm.Position }).IsUnique());
+            b.Configure<ToplistMovieDao>(x =>
+                x.HasKey(tlm => new {tlm.MovieId, tlm.ToplistId}), x =>
+                x.ToTable("ToplistMovie"), x =>
+                x.HasOne<ToplistDao>()
+                    .WithMany(tl => tl.ToplistMovies)
+                    .HasForeignKey(tlm => tlm.ToplistId)
+                    .IsRequired()
+                    .OnDelete(DeleteBehavior.Cascade), x =>
+                x.HasOne(tlm => tlm.Movie)
+                    .WithMany()
+                    .HasForeignKey(tlm => tlm.MovieId)
+                    .IsRequired()
+                    .OnDelete(DeleteBehavior.Cascade), x =>
+                x.HasIndex(tlm => new {tlm.ToplistId, tlm.Position}).IsUnique());
 
             b.Configure<DiscussionItemDao>(x =>
                 x.HasKey(di => di.Id), x =>
                 x.Property(di => di.Text).IsRequired(), x =>
+                x.ToTable("DiscussionItem"), x =>
                 x.HasOne(di => di.Author)
                     .WithMany()
                     .HasForeignKey(di => di.AuthorId)
@@ -85,18 +90,18 @@ namespace Core.Data
             b.Configure<FunFactDao>();
 
             b.Configure<UserDiscussionItemInteraction>(x =>
-                x.HasKey(i => new { i.DiscussionItemId, i.UserId }), x =>
-                  x.HasOne<User>()
-                      .WithMany()
-                      .HasForeignKey(i => i.UserId)
-                      .IsRequired()
-                      .OnDelete(DeleteBehavior.Cascade), x =>
-                  x.HasOne<DiscussionItemDao>()
-                      .WithMany()
-                      .HasForeignKey(i => i.DiscussionItemId)
-                      .IsRequired()
-                      .OnDelete(DeleteBehavior.Cascade));
-
+                x.HasKey(i => new {i.DiscussionItemId, i.UserId}), x =>
+                x.ToTable("UserDiscussionItemInteraction"), x =>
+                x.HasOne<UserDao>()
+                    .WithMany()
+                    .HasForeignKey(i => i.UserId)
+                    .IsRequired()
+                    .OnDelete(DeleteBehavior.Cascade), x =>
+                x.HasOne<DiscussionItemDao>()
+                    .WithMany()
+                    .HasForeignKey(i => i.DiscussionItemId)
+                    .IsRequired()
+                    .OnDelete(DeleteBehavior.Cascade));
         }
     }
 }

@@ -9,7 +9,7 @@ namespace Core.Domain.Authentication
         Task<AuthToken> Login(LoginRequest request);
         Task<bool> IsLoggedIn(AuthToken token);
         Task Logout(AuthToken token);
-        Task<User> GetCurrentUser(AuthToken token);
+        Task<UserDao> GetCurrentUser(AuthToken token);
         Task<AuthToken> CreateUser(CreateUserRequest request);
     }
 }

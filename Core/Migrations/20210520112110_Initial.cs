@@ -9,7 +9,7 @@ namespace Core.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "DiscussableDao",
+                name: "Discussable",
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
@@ -18,7 +18,7 @@ namespace Core.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_DiscussableDao", x => x.Id);
+                    table.PrimaryKey("PK_Discussable", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -47,9 +47,9 @@ namespace Core.Migrations
                 {
                     table.PrimaryKey("PK_Actor", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Actor_DiscussableDao_Id",
+                        name: "FK_Actor_Discussable_Id",
                         column: x => x.Id,
-                        principalTable: "DiscussableDao",
+                        principalTable: "Discussable",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -67,9 +67,9 @@ namespace Core.Migrations
                 {
                     table.PrimaryKey("PK_Movie", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Movie_DiscussableDao_Id",
+                        name: "FK_Movie_Discussable_Id",
                         column: x => x.Id,
-                        principalTable: "DiscussableDao",
+                        principalTable: "Discussable",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -87,15 +87,15 @@ namespace Core.Migrations
                 {
                     table.PrimaryKey("PK_Toplist", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Toplist_DiscussableDao_Id",
+                        name: "FK_Toplist_Discussable_Id",
                         column: x => x.Id,
-                        principalTable: "DiscussableDao",
+                        principalTable: "Discussable",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "DiscussionItemDao",
+                name: "DiscussionItem",
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
@@ -109,21 +109,21 @@ namespace Core.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_DiscussionItemDao", x => x.Id);
+                    table.PrimaryKey("PK_DiscussionItem", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_DiscussionItemDao_DiscussableDao_DiscussableId",
+                        name: "FK_DiscussionItem_Discussable_DiscussableId",
                         column: x => x.DiscussableId,
-                        principalTable: "DiscussableDao",
+                        principalTable: "Discussable",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_DiscussionItemDao_DiscussionItemDao_DiscussionItemId",
+                        name: "FK_DiscussionItem_DiscussionItem_DiscussionItemId",
                         column: x => x.DiscussionItemId,
-                        principalTable: "DiscussionItemDao",
+                        principalTable: "DiscussionItem",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_DiscussionItemDao_User_AuthorId",
+                        name: "FK_DiscussionItem_User_AuthorId",
                         column: x => x.AuthorId,
                         principalTable: "User",
                         principalColumn: "Id",
@@ -188,9 +188,9 @@ namespace Core.Migrations
                 {
                     table.PrimaryKey("PK_UserDiscussionItemInteraction", x => new { x.DiscussionItemId, x.UserId });
                     table.ForeignKey(
-                        name: "FK_UserDiscussionItemInteraction_DiscussionItemDao_DiscussionIt~",
+                        name: "FK_UserDiscussionItemInteraction_DiscussionItem_DiscussionItemId",
                         column: x => x.DiscussionItemId,
-                        principalTable: "DiscussionItemDao",
+                        principalTable: "DiscussionItem",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
@@ -202,18 +202,18 @@ namespace Core.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_DiscussionItemDao_AuthorId",
-                table: "DiscussionItemDao",
+                name: "IX_DiscussionItem_AuthorId",
+                table: "DiscussionItem",
                 column: "AuthorId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_DiscussionItemDao_DiscussableId",
-                table: "DiscussionItemDao",
+                name: "IX_DiscussionItem_DiscussableId",
+                table: "DiscussionItem",
                 column: "DiscussableId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_DiscussionItemDao_DiscussionItemId",
-                table: "DiscussionItemDao",
+                name: "IX_DiscussionItem_DiscussionItemId",
+                table: "DiscussionItem",
                 column: "DiscussionItemId");
 
             migrationBuilder.CreateIndex(
@@ -272,10 +272,10 @@ namespace Core.Migrations
                 name: "Toplist");
 
             migrationBuilder.DropTable(
-                name: "DiscussionItemDao");
+                name: "DiscussionItem");
 
             migrationBuilder.DropTable(
-                name: "DiscussableDao");
+                name: "Discussable");
 
             migrationBuilder.DropTable(
                 name: "User");

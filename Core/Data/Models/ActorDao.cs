@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Core.Data.Models
 {
-    public class Actor : DiscussableDao
+    public class ActorDao : DiscussableDao
     {
         public string Name { get; set; }
     }
