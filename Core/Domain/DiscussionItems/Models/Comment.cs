@@ -9,6 +9,6 @@ namespace Core.Domain.DiscussionItems.Models
 {
     public class Comment : DiscussionItem
     {
-        public long DiscussionItemId { get; set; }
+        public long? DiscussionItemId { get; set; }
     }
 }

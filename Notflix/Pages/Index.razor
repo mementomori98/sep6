@@ -1,7 +1,22 @@
 ﻿@page "/"
+@using Core.Domain.DiscussionItems
+@using Core.Domain.DiscussionItems.Models
+@inject IDiscussionItemService DiscussionItemService
+
+@code {
+    int count;
+    private async void GetDiscussionItem()
+    {
+        IEnumerable<Comment> comments = await DiscussionItemService.GetCommentsOnDiscussable(2);
+        count = comments.Count();
+    }
+}
 
 <h1>Hello, world!</h1>
 
 Welcome to your new app.
 
-<SurveyPrompt Title="How is Blazor working for you?"/>
+@count
+<button @onclick="GetDiscussionItem">
+    GetDiscussionItem</button>
+    <!--<SurveyPrompt Title="How is Blazor working for you?" />-->

@@ -4,9 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Core.Data.Models
+namespace Core.Domain.DiscussionItems.Models
 {
-    public class FunFactDao : DiscussionItemDao
+    public enum UserDiscussionItemInteractionType
     {
+        Like,
+        Dislike
     }
 }

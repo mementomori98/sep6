@@ -12,11 +12,11 @@ namespace Core.Domain.DiscussionItems.Models
         public long Id { get; set; }
         public string Text { get; set; }
         public string AuthorUsername { get; set; }
+        public long AuthorId { get; set; }
         //movie/toplist/actor id
-        public long DiscussableId { get; set; }
-        public string NumberOfLikes { get; set; }
-        public string NumberOfDislikes { get; set; }
-        public bool LikedByUser { get; set; }
-        public bool DislikedByUser { get; set; }
+        public long? DiscussableId { get; set; }
+        public long NumberOfLikes { get; set; }
+        public long NumberOfDislikes { get; set; }
+        public UserDiscussionItemInteractionType? userInteractionType { get; set; }
     }
 }

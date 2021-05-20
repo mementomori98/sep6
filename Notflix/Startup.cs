@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Core.Domain.Authentication;
+using Core.Domain.DiscussionItems;
 using Core.Domain.Movies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -43,6 +44,7 @@ namespace Notflix
                 c.SnackbarConfiguration.SnackbarVariant = Variant.Filled;
             });
             services.AddTransient<IMovieService, OmdbMovieService>();
+            services.AddTransient<IDiscussionItemService, DiscussionItemService>();
             services.AddTransient<LocalStorage>();
             services.AddTransient<IAuthenticationService, AuthenticationService>();
         }

@@ -5,6 +5,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Core.Data;
 using Core.Data.Models;
+using Core.Domain.DiscussionItems.Models;
 using Core.Domain.Movies.Models;
 
 namespace Core.Domain.Movies

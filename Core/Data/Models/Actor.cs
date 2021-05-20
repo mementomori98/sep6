@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Core.Domain.DiscussionItems.Models
+namespace Core.Data.Models
 {
-    public class FunFact : DiscussionItem
+    public class Actor : DiscussableDao
     {
+        public string Name { get; set; }
     }
 }
