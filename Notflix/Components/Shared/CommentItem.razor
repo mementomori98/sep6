@@ -1,8 +1,6 @@
 ﻿@using Notflix.Components.Movie
 
 @code {
-    string _margin;
-
     [Parameter]
     public CommentDiscussion.Comment Content { get; set; }
 
@@ -10,10 +8,10 @@
 
 <div class="comment-item">
     <div class="content d-flex">
-        <img src="/Images/avatar.png" style="max-height: 60px" alt="user avatar"/>
-        <div class="pa-2">
-            <MudText>@Content.Name</MudText>
-            <MudText>@Content.Contents</MudText>
+        <img src="/Images/avatar.png" class="discussionAvatar" alt="user avatar"/>
+        <div style="padding-left: 10px">
+            <MudText Typo="Typo.body1">@Content.Name</MudText>
+            <MudText Typo="Typo.body2">@Content.Contents</MudText>
         </div>
     </div>
 

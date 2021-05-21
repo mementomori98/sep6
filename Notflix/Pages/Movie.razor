@@ -1,7 +1,5 @@
 ﻿@page "/Main/{id}"
-@using Core.Domain.Movies
-@using Core.Domain.Movies.Models
-@using Notflix.Components.Shared
+@using Notflix.Components.Movie
 @inject IJSRuntime JS
 @inject IMovieService MovieService
 
@@ -30,7 +28,7 @@
         {
             <MudTabs Elevation="1" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
                 <MudTabPanel Text="Comments" ToolTip="ToolTip One" Class="mud-tabs-panels pa-2">
-                    <CommentItem Content="@null" Level="0"/>
+                    <CommentDiscussion Content="@true"/>
                 </MudTabPanel>
                 <MudTabPanel Text="Reviews" ToolTip="ToolTip Two">
                     <MudText>Reviews..........................</MudText>
@@ -47,17 +45,11 @@
     [Parameter] 
     public string Id { get; set; }
     
-        protected override async Task OnParametersSetAsync()
-        {
-            Console.WriteLine("paramSet");
-            _movieModel = await MovieService.GetMovieDetails(Id);
-        }
-        
-        protected override void OnInitialized()
-        {
-            Console.WriteLine("paramSet");
-        }
-
+    protected override async Task OnParametersSetAsync()
+    {
+        Console.WriteLine("paramSet");
+        _movieModel = await MovieService.GetMovieDetails(Id);
+    }
     private MovieModel _movieModel;
 
 
@@ -70,9 +62,11 @@
 
     private bool _rendered;
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    protected override void OnAfterRender(bool firstRender)
     {
         _rendered = true;
+        
+        
     }
 
 }

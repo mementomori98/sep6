@@ -50,7 +50,31 @@
             }
         },
         new() {Name = "Zolly", Contents = "Proin nullam mus mauris et urna nec consectetur phasellus magnis sociis sit a pharetra taciti lorem in id est in magna condimentum euismod adipiscing mus blandit adipiscing.Odio a a suspendisse mi tortor parturient eu cubilia suspendisse a scelerisque scelerisque volutpat suspendisse magnis condimentum primis molestie laoreet mi lacus eu posuere condimentum a.Parturient nullam senectus imperdiet scelerisque libero."},
-        new() {Name = "Zolly", Contents = "Proin nullam mus mauris et urna nec consectetur phasellus magnis sociis sit a pharetra taciti lorem in id est in magna condimentum euismod adipiscing mus blandit adipiscing.Odio a a suspendisse mi tortor parturient eu cubilia suspendisse a scelerisque scelerisque volutpat suspendisse magnis condimentum primis molestie laoreet mi lacus eu posuere condimentum a.Parturient nullam senectus imperdiet scelerisque libero."},
+        new()
+        {
+            Name = "Zolly", 
+            Contents = "Proin nullam mus mauris et urna nec consectetur phasellus magnis sociis sit a pharetra taciti lorem in id est in magna condimentum euismod adipiscing mus blandit adipiscing.Odio a a suspendisse mi tortor parturient eu cubilia suspendisse a scelerisque scelerisque volutpat suspendisse magnis condimentum primis molestie laoreet mi lacus eu posuere condimentum a.Parturient nullam senectus imperdiet scelerisque libero.",
+            Children = new List<Comment>
+            {
+                new() {Name = "Mate", Contents = "Stop repeating yourself, curva!"},
+                new()
+                {
+                    Name = "Aron", 
+                    Contents = "play nice, you goys!",
+                    Children = new List<Comment>
+                    {
+                        new() {Name = "Mate", Contents = "Stop repeating yourself, curva!"},
+                        new()
+                        {
+                            Name = "Aron", 
+                            Contents = "play nice, you goys!"
+                        },
+                        new() {Name = "Zolly", Contents = "Proin nullam mus mauris et urna nec consectetur phasellus magnis sociis sit a pharetra taciti lorem in id est in magna condimentum euismod adipiscing mus blandit adipiscing.Odio a a suspendisse mi tortor parturient eu cubilia suspendisse a scelerisque scelerisque volutpat suspendisse magnis condimentum primis molestie laoreet mi lacus eu posuere condimentum a.Parturient nullam senectus imperdiet scelerisque libero."},
+                    }
+                },
+                new() {Name = "Zolly", Contents = "Proin nullam mus mauris et urna nec consectetur phasellus magnis sociis sit a pharetra taciti lorem in id est in magna condimentum euismod adipiscing mus blandit adipiscing.Odio a a suspendisse mi tortor parturient eu cubilia suspendisse a scelerisque scelerisque volutpat suspendisse magnis condimentum primis molestie laoreet mi lacus eu posuere condimentum a.Parturient nullam senectus imperdiet scelerisque libero."},
+            }
+        },
         new() {Name = "Zolly", Contents = "Proin nullam mus mauris et urna nec consectetur phasellus magnis sociis sit a pharetra taciti lorem in id est in magna condimentum euismod adipiscing mus blandit adipiscing.Odio a a suspendisse mi tortor parturient eu cubilia suspendisse a scelerisque scelerisque volutpat suspendisse magnis condimentum primis molestie laoreet mi lacus eu posuere condimentum a.Parturient nullam senectus imperdiet scelerisque libero."},
     };
 
@@ -60,7 +84,3 @@
 {
    <CommentItem Content="@comment"/>
 }
-
-@* *@
-@* foreach comment in comments *@
-@* <comment-item children="comment.children"></comment-item> *@
