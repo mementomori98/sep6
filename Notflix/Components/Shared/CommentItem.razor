@@ -21,6 +21,13 @@
             contentStyle = "";
         }
     }
+    
+    private async Task Reply()
+    {
+        commentOpen = false;
+        contentStyle = "";
+        //Execute reply procedure
+    }
 
 }
 
@@ -47,7 +54,7 @@
             {
                 <div class="discussion__commentSection d-flex">
                     <MudTextField Class="discussion__comment" @bind-Value="Comment" Label="Comment as **name**" Placeholder="Comment..."/>
-                    <MudButton Style="height: fit-content; margin-top: auto">Reply</MudButton>
+                    <MudButton Style="height: fit-content; margin-top: auto" OnClick="Reply">Reply</MudButton>
                 </div>
             }
         </div>
