@@ -161,6 +161,35 @@
     color: orangered;
 }
 
-#discussion__comment:hover{
+#discussion__commentIcon:hover{
     color: dodgerblue;
+}
+
+.content__main:before{
+    content: '';
+    display: block;
+    position: absolute;
+    left: 18px;
+    top: 40px;
+    bottom:50px;
+    height: auto;
+    border-left: 5px solid #8dd093;
+}
+
+.discussionComment:before{
+    content: '';
+    display: block;
+    position: absolute;
+    top: 3px;
+    left: -40px;
+    width: 30px;
+    border-top: 5px solid #8dd093;
+}
+
+.commentSection{
+    position: relative;
+    background-color: #f3f3f3;
+    padding: 5px 10px 5px 10px;    
+    border-radius: 10px;
+    margin-bottom: 5px;
 }
