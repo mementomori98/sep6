@@ -1,18 +1,18 @@
 ﻿@using Notflix.Components.Movie
 
 @code {
+
     [Parameter]
     public CommentDiscussion.Comment Content { get; set; }
-    
+
     private string Comment { get; set; }
     private bool commentOpen { get; set; }
     private string contentStyle = "";
-    
+
     protected void OnCommentPressed(MouseEventArgs mouseEvent)
     {
-        Console.WriteLine("heyy");
         commentOpen = !commentOpen;
-        if(commentOpen)
+        if (commentOpen)
         {
             contentStyle = "content__main";
         }
@@ -27,14 +27,14 @@
 <div class="comment-item">
     <div class="content d-flex">
         <img src="/Images/avatar.png" class="discussionAvatar" alt="user avatar"/>
-        <div class="@contentStyle" style="padding-left: 10px">
+        <div class="@contentStyle" style="padding-left: 10px; width: 100%">
             <MudText Typo="Typo.body1">@Content.Name</MudText>
             <MudText Typo="Typo.body2">@Content.Contents</MudText>
             <div class="d-flex" style="font-size: 18px;">
                 <div class="discussionIcon" id="discussion__voteUp">
                     <p>&#129145;</p>
                 </div>
-                <p class="discussionIcon__text">12k</p>
+                <p class="discussionIcon__text" style="margin-left: 5px">12k</p>
                 <div class="discussionIcon" id="discussion__voteDown" style="margin-left: 5px">
                     <p>&#129147;</p>
                 </div>
@@ -45,14 +45,15 @@
             </div>
             @if (commentOpen)
             {
-                 <div class="commentSection">
-                     <MudTextField class="discussionComment" @bind-Value="Comment" Label="Comment as **name**" Placeholder="Comment..."/>
-                 </div>
+                <div class="commentSection d-flex">
+                    <MudTextField class="discussionComment" @bind-Value="Comment" Label="Comment as **name**" Placeholder="Comment..."/>
+                    <MudButton Style="height: fit-content; margin-top: auto">Reply</MudButton>
+                </div>
             }
         </div>
     </div>
 
-    @if (Content.Children != null  && Content.Children.Any())
+    @if (Content.Children != null && Content.Children.Any())
     {
         <div class="comment-item-children">
             @foreach (var child in Content.Children)
