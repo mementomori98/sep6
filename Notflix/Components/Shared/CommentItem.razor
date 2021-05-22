@@ -14,7 +14,7 @@
         commentOpen = !commentOpen;
         if (commentOpen)
         {
-            contentStyle = "content__main";
+            contentStyle = "discussion__main";
         }
         else
         {
@@ -25,28 +25,28 @@
 }
 
 <div class="comment-item">
-    <div class="content d-flex">
-        <img src="/Images/avatar.png" class="discussionAvatar" alt="user avatar"/>
+    <div class="discussion d-flex">
+        <img src="/Images/avatar.png" class="discussion__avatar" alt="user avatar"/>
         <div class="@contentStyle" style="padding-left: 10px; width: 100%">
             <MudText Typo="Typo.body1">@Content.Name</MudText>
             <MudText Typo="Typo.body2">@Content.Contents</MudText>
             <div class="d-flex" style="font-size: 18px;">
-                <div class="discussionIcon" id="discussion__voteUp">
+                <div class="discussion__icon" id="discussion__voteUp">
                     <p>&#129145;</p>
                 </div>
-                <p class="discussionIcon__text" style="margin-left: 5px">12k</p>
-                <div class="discussionIcon" id="discussion__voteDown" style="margin-left: 5px">
+                <p class="discussion__iconText" style="margin-left: 5px">12k</p>
+                <div class="discussion__icon" id="discussion__voteDown" style="margin-left: 5px">
                     <p>&#129147;</p>
                 </div>
-                <div @onmouseup="@OnCommentPressed" class="discussionIcon" id="discussion__commentIcon" style="margin-left: 5px">
+                <div @onmouseup="@OnCommentPressed" class="discussion__icon" id="discussion__commentAct" style="margin-left: 5px">
                     <p>&#128490; </p>
-                    <p class="discussionIcon__text" style="padding-left: 3px">Reply</p>
+                    <p class="discussion__iconText" style="padding-left: 3px">Reply</p>
                 </div>
             </div>
             @if (commentOpen)
             {
-                <div class="commentSection d-flex">
-                    <MudTextField class="discussionComment" @bind-Value="Comment" Label="Comment as **name**" Placeholder="Comment..."/>
+                <div class="discussion__commentSection d-flex">
+                    <MudTextField Class="discussion__comment" @bind-Value="Comment" Label="Comment as **name**" Placeholder="Comment..."/>
                     <MudButton Style="height: fit-content; margin-top: auto">Reply</MudButton>
                 </div>
             }
