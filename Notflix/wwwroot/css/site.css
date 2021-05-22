@@ -59,7 +59,7 @@
 
 .normal {
     font-weight: normal !important;
-    }
+}
 .relationBox{
     width: auto;
     height: auto;
@@ -129,4 +129,38 @@
     left: 0;
     height: 40px;
     border-left: 5px solid #E6E6E6;
+}
+
+.discussionIcon{
+    font-size: 15px;
+    border-radius: 5px;
+    padding: 2px 4px 2px 4px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+.discussionIcon__text{
+    font-size: 12px;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.discussionIcon:hover{
+    background-color: #f1f1f1;
+}
+
+#discussion__voteUp:hover{
+    color: seagreen;
+}
+
+#discussion__voteDown:hover{
+    color: orangered;
+}
+
+#discussion__comment:hover{
+    color: dodgerblue;
 }
