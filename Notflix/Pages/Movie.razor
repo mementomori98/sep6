@@ -48,7 +48,6 @@
     
     protected override async Task OnParametersSetAsync()
     {
-        Console.WriteLine("paramSet");
         _movieModel = await MovieService.GetMovieDetails(Id);
     }
     private MovieModel _movieModel;

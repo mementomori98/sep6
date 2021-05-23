@@ -6,27 +6,17 @@
     public CommentDiscussion.Comment Content { get; set; }
 
     private string Comment { get; set; }
-    private bool commentOpen { get; set; }
-    private string contentStyle = "";
+    private string _commentOpen = "";
 
-    protected void OnCommentPressed(MouseEventArgs mouseEvent)
+    private void OnCommentPressed(MouseEventArgs mouseEvent)
     {
-        commentOpen = !commentOpen;
-        if (commentOpen)
-        {
-            contentStyle = "discussion__main";
-        }
-        else
-        {
-            contentStyle = "";
-        }
+        _commentOpen = _commentOpen.Equals("") ? "discussion__main" : "";
     }
     
     private async Task Reply()
-    {
-        commentOpen = false;
-        contentStyle = "";
+    { 
         //Execute reply procedure
+        _commentOpen = "";
     }
 
 }
@@ -34,7 +24,7 @@
 <div class="comment-item">
     <div class="discussion d-flex">
         <img src="/Images/avatar.png" class="discussion__avatar" alt="user avatar"/>
-        <div class="@contentStyle" style="padding-left: 10px; width: 100%">
+        <div class="@_commentOpen" style="padding-left: 10px; width: 100%">
             <MudText Typo="Typo.body1">@Content.Name</MudText>
             <MudText Typo="Typo.body2">@Content.Contents</MudText>
             <div class="d-flex" style="font-size: 18px;">
@@ -50,11 +40,11 @@
                     <p class="discussion__iconText" style="padding-left: 3px">Reply</p>
                 </div>
             </div>
-            @if (commentOpen)
+            @if (_commentOpen.Equals("discussion__main"))
             {
                 <div class="discussion__commentSection d-flex">
                     <MudTextField Class="discussion__comment" @bind-Value="Comment" Label="Comment as **name**" Placeholder="Comment..."/>
-                    <MudButton Style="height: fit-content; margin-top: auto" OnClick="Reply">Reply</MudButton>
+                    <MudButton Style="height: fit-content; margin-top: auto; border:1px solid #594ae2" OnClick="Reply">Reply</MudButton>
                 </div>
             }
         </div>
