@@ -67,6 +67,30 @@ namespace Core.Domain.Toplists
             return Map(await Fetch(entry.Entity.Id));
         }
 
+        public async Task<ToplistModel> Rename(RenameToplistRequest request)
+        {
+            var user = await _authenticationService.GetCurrentUser(request.Token);
+            if (user == null)
+                throw new Exception("Unauthorized user");
+            if (string.IsNullOrWhiteSpace(request.Name))
+                throw new ArgumentException("Name must be specified");
+            
+            await using var context = new MovieContext();
+            var toplist = await context.Set<ToplistDao>()
+                .SingleOrDefaultAsync(tl => tl.Id == request.ToplistId);
+
+            if (toplist == null)
+                throw new ArgumentException("Toplist does not exist");
+            if (toplist.UserId != user.Id)
+                throw new Exception("User does not own toplist");
+
+            toplist.Name = request.Name;
+            context.Update(toplist);
+            await context.SaveChangesAsync();
+            
+            return Map(await Fetch(toplist.Id));
+        }
+
         public async Task<ToplistModel> AddMovie(AddMovieRequest request)
         {
             var user = await _authenticationService.GetCurrentUser(request.Token);

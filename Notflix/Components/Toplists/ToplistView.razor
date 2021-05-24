@@ -21,6 +21,10 @@
 
     private IEnumerable<MovieSearchItem> Results { get; set; }
 
+    private bool Renaming { get; set; }
+
+    private string Name { get; set; }
+
 
     protected override async Task OnInitializedAsync()
     {
@@ -41,6 +45,7 @@
     private async Task Fetch()
     {
         Toplist = await ToplistService.GetToplist(new GetToplistRequest {ToplistId = ToplistId});
+        Name = Toplist.Name;
     }
 
     private async Task OnChangePosition(long id, int position)
@@ -83,17 +88,61 @@
         StateHasChanged();
     }
 
+    private void RenameClick()
+    {
+        if (Editable)
+            Renaming = true;
+        StateHasChanged();
+    }
+
+    private async Task OnRename()
+    {
+        Toplist = await ToplistService.Rename(new RenameToplistRequest
+        {
+            Token = await GetAuthToken(),
+            ToplistId = ToplistId,
+            Name = Name
+        });
+        Renaming = false;
+        StateHasChanged();
+    }
+
+    private async Task OnCancelRename()
+    {
+        Renaming = false;
+        Name = Toplist.Name;
+        StateHasChanged();
+    }
+
 }
 
 <Card Style="">
     <MudGrid>
-        <MudItem xs="12">
-            <MudText Typo="Typo.h5">@Toplist.Name</MudText>
-            @if (Editable)
-            {
+
+        @if (!Renaming)
+        {
+            <MudItem xs="12" Class="d-flex">
+                <MudText Typo="Typo.h5">@Toplist.Name</MudText>
+                <MudIconButton Icon="@(Icons.Filled.Edit)" Class="ml-4 mt-n2" OnClick="RenameClick"/>
+            </MudItem>
+        }
+        else
+        {
+            <MudItem xs="8">
+                <MudTextField @bind-Value="@Name" OnKeyPress="@Events.OnEnter(async () => await OnRename())" AutoFocus="true" Variant="Variant.Outlined" Immediate="true"/>
+            </MudItem>
+            <MudItem xs="4">
+                <MudButton OnClick="OnRename" Variant="Variant.Filled" Color="Color.Primary" Class="mt-4">Rename</MudButton>
+                <MudButton OnClick="OnCancelRename" Variant="Variant.Filled" Color="Color.Secondary" Class="mt-4 ml-2">Cancel</MudButton>
+            </MudItem>
+        }
+
+        @if (Editable)
+        {
+            <MudItem xs="12">
                 <MovieSearch OnItemClicked="@(async s => await OnClicked(s))"/>
-            }
-        </MudItem>
+            </MudItem>
+        }
         @foreach (var item in Toplist.Items.OrderBy(i => i.Position))
         {
             <MudItem xs="12">
@@ -116,7 +165,7 @@
                                     <MudIconButton Icon="@(Icons.Filled.KeyboardArrowUp)" Disabled="@(item.Position == 0)" OnClick="() => OnChangePosition(item.MovieId, item.Position - 1)"/>
                                 </MudItem>
                                 <MudItem xs="12">
-                                        <MudIconButton Icon="@(Icons.Filled.KeyboardArrowDown)" Disabled="@(item.Position == Toplist.Items.Count() - 1)" OnClick="() => OnChangePosition(item.MovieId, item.Position + 1)"/>
+                                    <MudIconButton Icon="@(Icons.Filled.KeyboardArrowDown)" Disabled="@(item.Position == Toplist.Items.Count() - 1)" OnClick="() => OnChangePosition(item.MovieId, item.Position + 1)"/>
                                 </MudItem>
                                 <MudItem xs="12">
                                     <MudIconButton Icon="@(Icons.Filled.Close)" OnClick="() => Remove(item.MovieId)"/>
