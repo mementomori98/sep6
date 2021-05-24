@@ -23,7 +23,7 @@
     private string _commentOpen = "";
     private int _page = 0;
     private UserDao _user;
-    IEnumerable<Comment> _subcomments = new List<Comment>();
+    PageResult<Comment> _subcomments = new();
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -71,19 +71,27 @@
     private async Task Reply()
     { 
         //Execute reply procedure
-
         Comment reply = new Comment() {AuthorUsername = _user.Username,AuthorId = _user.Id, Text = NewComment, DiscussionItemId = Content.Id};
         reply.Id = await DiscussionItemService.AddSubcomment(reply);
-        _subcomments = _subcomments.Prepend(reply);
+        if (_subcomments.Items == null) _subcomments.Items = new List<Comment>();
+        _subcomments.Items = _subcomments.Items.Prepend(reply);
+        _subcomments.HasMore = _subcomments.HasMore;
         _commentOpen = "";
     }
     
     private async Task OnGetComments()
     {
-        Console.WriteLine(("HEYY"));
         _page++;
-        IEnumerable<Comment> newList = await DiscussionItemService.GetSubcommentsOnDiscussionItem(Content.Id, _page, 1);
-        _subcomments = _subcomments.Concat(newList);
+        PageResult<Comment> newList = await DiscussionItemService.GetSubcommentsOnDiscussionItem(Content.Id, _page, 1);
+        if (_subcomments.Items != null)
+        {
+            _subcomments.Items = _subcomments.Items.Concat(newList.Items);
+            _subcomments.HasMore = newList.HasMore;
+        }
+        else
+        {
+            _subcomments = newList;
+        }
     }
 }
 
@@ -120,14 +128,19 @@
         </div>
     </div>
 
-    @if (_subcomments != null && _subcomments.Any())
+    @if (_subcomments.Items != null && _subcomments.Items.Any())
     {
         <div class="comment-item-children">
-            @foreach (var child in _subcomments)
+            @foreach (var child in _subcomments.Items)
             {
                 <CommentItem Content="@child"></CommentItem>
             }
-            <MudButton OnClick="OnGetComments">Pikachu</MudButton>
+            @if (_subcomments.HasMore)
+            {
+               <p class="moreComments" @onmouseup="OnGetComments">View more comments</p>
+                <MudButton OnClick="OnGetComments">Pikachu</MudButton>
+            }
+            
         </div>
     }
     

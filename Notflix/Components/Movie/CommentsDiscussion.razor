@@ -13,30 +13,33 @@
     
     
     private UserDao _user;
-
-    private IEnumerable<Comment> _comments;
+    private string NewComment { get; set; }
+    private PageResult<Comment> _comments;
 
     protected override async Task OnInitializedAsync()
     {
         _comments = await DiscussionItemService.GetCommentsOnDiscussable(MovieId, 1, 1);
-    }
-    
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
         _user = await AuthenticationService.GetCurrentUser(await GetAuthToken());
     }
     
     private async Task MakeComment()
     {
-        Comment reply = new Comment() {AuthorUsername = _user.Username, AuthorId = _user.Id, Text = "What a movie!", DiscussableId = MovieId};
+        Comment reply = new Comment() {AuthorUsername = _user.Username, AuthorId = _user.Id, Text = NewComment, DiscussableId = MovieId};
         reply.Id = await DiscussionItemService.AddSubcomment(reply);
-        _comments = _comments.Prepend(reply);
+        _comments.Items = _comments.Items.Prepend(reply);
     }
 
 }
-<MudButton OnClick="MakeComment">Make a comment</MudButton>
-
-@foreach (var comment in _comments)
+@if (_user != null)
 {
-   <CommentItem Content="@comment"/>
+    <div class="discussion__commentSection d-flex" style="margin-bottom: 10px">
+         <MudTextField  @bind-Value="NewComment" Label="@_user.Username" Placeholder="Post a new comment..."/>
+         <MudButton Style="height: fit-content; margin-top: auto; border:1px solid #594ae2" OnClick="MakeComment">Post</MudButton>
+    </div>
+}
+
+@foreach (var comment in _comments.Items)
+{
+    
+    <CommentItem Content="@comment"/>
 }

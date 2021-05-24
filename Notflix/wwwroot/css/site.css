@@ -203,3 +203,37 @@
     border-top: 2px solid #b4eeb8;
 }
 
+.moreComments{
+    padding-left: 30px;
+    position: relative;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: bold;
+    color: #808080;
+    
+}
+.moreComments:hover{
+    text-decoration: underline;
+}
+.moreComments:before{
+    content: '';
+    display: block;
+    position: absolute;
+    top: 9px;
+    left: 0;
+    width: 22px;
+    border-top: 2px solid #E6E6E6;
+}
+
+.moreComments:after{
+    content: '';
+    display: block;
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 10px;
+    border-left: 2px solid #E6E6E6;
+}
+
+
+
