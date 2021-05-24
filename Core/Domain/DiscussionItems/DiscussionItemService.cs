@@ -14,6 +14,7 @@ namespace Core.Domain.DiscussionItems
     public class DiscussionItemService : IDiscussionItemService
     {
         MovieContext context = new MovieContext();
+        private const int PageSize = 10;
 
         public async Task<long> AddComment(Comment comment)
         {
@@ -44,30 +45,42 @@ namespace Core.Domain.DiscussionItems
             return await AddComment(comment);
         }
 
-        public async Task<IEnumerable<Comment>> GetCommentsOnDiscussable(long discussableId, int page, long userId)
+        public async Task<PageResult<Comment>> GetCommentsOnDiscussable(long discussableId, int page, long userId)
         {
-            var commentsDao = await context.Set<CommentDao>()
+            var query = context.Set<CommentDao>()
                 .Include(c => c.Author)
                 .Where(c => c.DiscussableId == discussableId)
                 .OrderByDescending(c => c.Id)
-                .Skip((page - 1) * 10)
-                .Take(10)
+                .Skip((page - 1) * PageSize);
+            
+            var commentsDao = await query
+                .Take(PageSize)
                 .ToListAsync();
 
-            return await GetComments(commentsDao, page, userId);
+            return new PageResult<Comment>
+            {
+                Items = await GetComments(commentsDao, page, userId),
+                HasMore = await query.CountAsync() > PageSize
+            };
         }
 
-        public async Task<IEnumerable<Comment>> GetSubcommentsOnDiscussionItem(long discussionItemId, int page, long userId)
+        public async Task<PageResult<Comment>> GetSubcommentsOnDiscussionItem(long discussionItemId, int page, long userId)
         {
-            var commentsDao = await context.Set<CommentDao>()
+            var query = context.Set<CommentDao>()
                 .Include(c => c.Author)
                 .Where(c => c.DiscussionItemId == discussionItemId)
                 .OrderByDescending(f => f.Id)
-                .Skip((page - 1) * 10)
-                .Take(10)
+                .Skip((page - 1) * PageSize);
+            
+            var commentsDao = await query
+                .Take(PageSize)
                 .ToListAsync();
 
-            return await GetComments(commentsDao, page, userId);
+            return new PageResult<Comment>
+            {
+                Items = await GetComments(commentsDao, page, userId),
+                HasMore = await query.CountAsync() > PageSize
+            };
         }
 
         private async Task<IEnumerable<Comment>> GetComments(List<CommentDao> commentsDao, int page, long userId)
@@ -87,20 +100,25 @@ namespace Core.Domain.DiscussionItems
             );
         }
 
-        public async Task<IEnumerable<Review>> GetReviewsOnDiscussable(long discussableId, int page, long userId)
+        public async Task<PageResult<Review>> GetReviewsOnDiscussable(long discussableId, int page, long userId)
         {
-            var reviewsDao = await context.Set<ReviewDao>()
+            var query = context.Set<ReviewDao>()
                 .Include(r => r.Author)
                 .Where(r => r.DiscussableId == discussableId)
                 .OrderByDescending(r => r.Id)
-                .Skip((page - 1) * 10)
-                .Take(10)
+                .Skip((page - 1) * PageSize);
+            var reviewsDao = await query
+                .Take(PageSize)
                 .ToListAsync();
 
             var reviews = reviewsDao.Select(async r => await ToReview(r, userId)).ToList();
 
             await Task.WhenAll(reviews);
-            return reviews.Select(c => c.Result);
+            return new PageResult<Review>
+            {
+                Items = reviews.Select(c => c.Result),
+                HasMore = await query.CountAsync() > PageSize
+            };
         }
 
         private async Task<Review> ToReview(ReviewDao dao, long userId)
@@ -112,20 +130,26 @@ namespace Core.Domain.DiscussionItems
             );
         }
 
-        public async Task<IEnumerable<FunFact>> GetFunFactsOnDiscussable(long discussableId, int page, long userId)
+        public async Task<PageResult<FunFact>> GetFunFactsOnDiscussable(long discussableId, int page, long userId)
         {
-            var funFactsDao = await context.Set<FunFactDao>()
+            var query = context.Set<FunFactDao>()
                 .Include(f => f.Author)
                 .Where(f => f.DiscussableId == discussableId)
                 .OrderByDescending(f => f.Id)
-                .Skip((page - 1) * 10)
-                .Take(10)
+                .Skip((page - 1) * PageSize);
+            
+            var funFactsDao = await query
+                .Take(PageSize)
                 .ToListAsync();
 
             var funFacts = funFactsDao.Select(async f => await ToFunFact(f, userId)).ToList();
 
             await Task.WhenAll(funFacts);
-            return funFacts.Select(c => c.Result);
+            return new PageResult<FunFact>
+            {
+                Items = funFacts.Select(c => c.Result),
+                HasMore = await query.CountAsync() > PageSize
+            };
         }
 
         private async Task<FunFact> ToFunFact(FunFactDao dao, long userId)
