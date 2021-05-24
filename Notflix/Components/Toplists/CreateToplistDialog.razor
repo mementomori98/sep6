@@ -12,6 +12,7 @@
     public Action<long> SuccessCallback { get; set; }
 
     private string Name { get; set; }
+    private bool Public { get; set; } = true;
     private string Error { get; set; }
 
     private async Task OnCreate()
@@ -24,7 +25,8 @@
         var toplist = await ToplistService.Create(new CreateToplistRequest
         {
             Token = await GetAuthToken(),
-            Name = Name
+            Name = Name,
+            Public = Public
         });
         SuccessCallback?.Invoke(toplist.Id);
         MudDialog.Close();
@@ -40,7 +42,12 @@
 
 <MudDialog>
     <DialogContent>
-        <MudTextField @bind-Value="Name" Label="Name" Placeholder="Toplist name..." Immediate="true" OnKeyDown="OnKeyDown"/>
+        <div class="d-flex">
+            <MudTextField @bind-Value="Name" Label="Name" Placeholder="Toplist name..." Immediate="true" OnKeyDown="OnKeyDown" Variant="Variant.Outlined"/>
+            <MudTooltip Text="Public Toplists can be viewed by anyone" >
+                <MudSwitch @bind-Checked="@Public" Label="Public" Class="mt-4 ml-2" Color="Color.Primary"/>
+            </MudTooltip>
+        </div>
         <MudText Color="Color.Error" Typo="Typo.body2">@Error</MudText>
     </DialogContent>
     <DialogActions>

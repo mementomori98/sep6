@@ -9,7 +9,7 @@
 @inject IDialogService DialogService
 @inject NavigationManager NavigationManager
 
-
+    
 @code {
 
     [Parameter]
@@ -26,6 +26,8 @@
     private bool Renaming { get; set; }
 
     private string Name { get; set; }
+    
+    private bool Public { get; set; }
 
 
     protected override async Task OnInitializedAsync()
@@ -48,6 +50,7 @@
     {
         Toplist = await ToplistService.GetToplist(new GetToplistRequest {ToplistId = ToplistId});
         Name = Toplist.Name;
+        Public = Toplist.Public;
     }
 
     private async Task OnChangePosition(long id, int position)
@@ -128,11 +131,24 @@
 
     private async Task OnInitiateDelete()
     {
-        var parameters = new DialogParameters();
-        parameters.Add("Content", "Are you sure you want to delete this toplist forever?");
-        parameters.Add("ConfirmCallback", new Action(async () => await OnDelete()));
-        parameters.Add("ConfirmColor", Color.Error);
-        DialogService.Show<ConfirmDialog>("Delete Toplist", parameters);
+        DialogService.Show<ConfirmDialog>("Delete Toplist", new DialogParameters
+        {
+            {"Content", "Are you sure you want to delete this toplist forever?"},
+            {"ConfirmCallback", new Action(async () => await OnDelete())},
+            {"ConfirmColor", Color.Error}
+        });
+    }
+
+    private async Task OnPublicChanged(bool p)
+    {
+        Toplist = await ToplistService.ChangePublic(new ChangePublicRequest
+        {
+            Token = await GetAuthToken(),
+            ToplistId = ToplistId,
+            Public = p
+        });
+        Public = Toplist.Public;
+        StateHasChanged();
     }
 
 }
@@ -141,14 +157,17 @@
     <MudGrid>
         @if (!Renaming)
         {
-            <MudItem xs="10" Class="d-flex">
+            <MudItem xs="8" Class="d-flex">
                 <MudText Typo="Typo.h5" Class="mt-2">@Toplist.Name</MudText>
                 <div class="ml-2">
                     <MudIconButton Icon="@(Icons.Filled.Edit)" OnClick="RenameClick"/>
                 </div>
             </MudItem>
-            <MudItem xs="2" Class="d-flex flex-row-reverse">
+            <MudItem xs="4" Class="d-flex flex-row-reverse">
                 <MudIconButton Icon="@(Icons.Filled.Delete)" OnClick="OnInitiateDelete"/>
+                <MudTooltip Text="Public Toplists can be viewed by anyone">
+                    <MudSwitch T="bool" Checked="@Public" CheckedChanged="OnPublicChanged" Label="Public" Color="Color.Primary" Class="mt-2"></MudSwitch>
+                </MudTooltip>
             </MudItem>
         }
         else

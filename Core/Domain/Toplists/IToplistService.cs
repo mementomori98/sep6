@@ -14,6 +14,7 @@ namespace Core.Domain.Toplists
         Task<ToplistModel> AddMovie(AddMovieRequest request);
         Task<ToplistModel> RemoveMovie(RemoveMovieRequest request);
         Task<ToplistModel> ChangePosition(ChangePositionRequest request);
+        Task<ToplistModel> ChangePublic(ChangePublicRequest request);
         Task Delete(DeleteToplistRequest request);
     }
 }
