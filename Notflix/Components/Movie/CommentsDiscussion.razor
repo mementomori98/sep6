@@ -1,0 +1,45 @@
+﻿@using Core.Domain.DiscussionItems
+@using Core.Domain.DiscussionItems.Models
+@using Core.Domain.Authentication
+@using Core.Data.Models
+@inject IDiscussionItemService DiscussionItemService
+@inject IAuthenticationService AuthenticationService
+@inherits AuthBase
+
+@code {
+
+    [Parameter]
+    public long MovieId { get; set; }
+    
+    
+    private UserDao _user;
+    private string NewComment { get; set; }
+    private PageResult<Comment> _comments;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _comments = await DiscussionItemService.GetCommentsOnDiscussable(MovieId, 1, 1);
+        _user = await AuthenticationService.GetCurrentUser(await GetAuthToken());
+    }
+    
+    private async Task MakeComment()
+    {
+        Comment reply = new Comment() {AuthorUsername = _user.Username, AuthorId = _user.Id, Text = NewComment, DiscussableId = MovieId};
+        reply.Id = await DiscussionItemService.AddSubcomment(reply);
+        _comments.Items = _comments.Items.Prepend(reply);
+    }
+
+}
+@if (_user != null)
+{
+    <div class="discussion__commentSection d-flex" style="margin-bottom: 10px">
+         <MudTextField  @bind-Value="NewComment" Label="@_user.Username" Placeholder="Post a new comment..."/>
+         <MudButton Style="height: fit-content; margin-top: auto; border:1px solid #594ae2" OnClick="MakeComment">Post</MudButton>
+    </div>
+}
+
+@foreach (var comment in _comments.Items)
+{
+    
+    <CommentItem Content="@comment"/>
+}

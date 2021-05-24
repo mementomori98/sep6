@@ -1,74 +1,167 @@
 ﻿@using Notflix.Components.Movie
+@using Core.Domain.Authentication
+@using Core.Data.Models
+@using Core.Domain.DiscussionItems
+@using Notflix.Components.Accounts
+@using Core.Domain.DiscussionItems.Models
+@using Microsoft.AspNetCore.Components
+@inherits AuthBase
+@inject IDialogService DialogService
+@inject IAuthenticationService AuthenticationService
+@inject IDiscussionItemService DiscussionItemService
 
 @code {
 
+    [Inject]
+    NavigationManager NavigationManager { get; set; }
+    
     [Parameter]
-    public CommentDiscussion.Comment Content { get; set; }
+    public Comment Content { get; set; }
+    
+    private string NewComment { get; set; }
+    
+    private string _replyOpen = "";
+    private bool _commentOpen = false;
+    private int _page = 0;
+    private UserDao _user;
+    PageResult<Comment> _subcomments = new();
 
-    private string Comment { get; set; }
-    private bool commentOpen { get; set; }
-    private string contentStyle = "";
-
-    protected void OnCommentPressed(MouseEventArgs mouseEvent)
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        commentOpen = !commentOpen;
-        if (commentOpen)
+        _user = await AuthenticationService.GetCurrentUser(await GetAuthToken());
+    }
+
+
+    private void OnVoteUp(MouseEventArgs mouseEvent)
+    {
+        if (_user == null)
         {
-            contentStyle = "discussion__main";
+            OpenLoginDialog();
+            return;
         }
-        else
+        Console.WriteLine("VoteUp"); //............
+    }
+    
+    private void OnVoteDown(MouseEventArgs mouseEvent)
+    {
+        if (_user == null)
         {
-            contentStyle = "";
+            OpenLoginDialog();
+            return;
         }
+        Console.WriteLine("VoteDown"); //............
+    }
+    
+    private void OnComment(MouseEventArgs mouseEvent)
+    {
+        if (_user == null)
+        {
+            OpenLoginDialog();
+            return;
+        }
+        _replyOpen = _replyOpen.Equals("") ? "discussion__main" : "";
+    }
+
+    private void OpenLoginDialog()
+    {
+        var parameters = new DialogParameters();
+        parameters.Add("SuccessCallback", new Action(() => NavigationManager.NavigateTo(NavigationManager.Uri, true)));
+        DialogService.Show<LoginDialog>("Sign in", parameters);
     }
     
     private async Task Reply()
-    {
-        commentOpen = false;
-        contentStyle = "";
+    { 
         //Execute reply procedure
+        Comment reply = new Comment() {AuthorUsername = _user.Username,AuthorId = _user.Id, Text = NewComment, DiscussionItemId = Content.Id};
+        reply.Id = await DiscussionItemService.AddSubcomment(reply);
+        if (_subcomments.Items == null) _subcomments.Items = new List<Comment>();
+        _subcomments.Items = _subcomments.Items.Prepend(reply);
+        _subcomments.HasMore = _subcomments.HasMore;
+        _replyOpen = "";
     }
-
+    
+    private async Task OnGetComments()
+    {
+        _page++;
+        PageResult<Comment> newList = await DiscussionItemService.GetSubcommentsOnDiscussionItem(Content.Id, _page, 1);
+        if (_subcomments.Items != null)
+        {
+            _subcomments.Items = _subcomments.Items.Concat(newList.Items);
+            _subcomments.HasMore = newList.HasMore;
+        }
+        else
+        {
+            _subcomments = newList;
+        }
+        _commentOpen = true;
+    }
+    
+    private async Task OnCloseComments()
+    {
+        _subcomments = new PageResult<Comment>();
+        _page = 0;
+        _commentOpen = false;
+    }
 }
 
 <div class="comment-item">
     <div class="discussion d-flex">
         <img src="/Images/avatar.png" class="discussion__avatar" alt="user avatar"/>
-        <div class="@contentStyle" style="padding-left: 10px; width: 100%">
-            <MudText Typo="Typo.body1">@Content.Name</MudText>
-            <MudText Typo="Typo.body2">@Content.Contents</MudText>
+        <div class="@_replyOpen" style="padding-left: 10px; width: 100%">
+            <MudText Typo="Typo.body1">@Content.AuthorUsername</MudText>
+            <MudText Typo="Typo.body2">@Content.Text</MudText>
             <div class="d-flex" style="font-size: 18px;">
-                <div class="discussion__icon" id="discussion__voteUp">
+                <div @onmouseup="@OnVoteUp"  class="discussion__icon" id="discussion__voteUp">
                     <p>&#129145;</p>
                 </div>
-                <p class="discussion__iconText" style="margin-left: 5px">12k</p>
-                <div class="discussion__icon" id="discussion__voteDown" style="margin-left: 5px">
+                <p class="discussion__iconText" style="margin-left: 3px; margin-right: 5px;">@Content.NumberOfLikes</p>
+                <div @onmouseup="@OnVoteDown"  class="discussion__icon" id="discussion__voteDown">
                     <p>&#129147;</p>
                 </div>
-                <div @onmouseup="@OnCommentPressed" class="discussion__icon" id="discussion__commentAct" style="margin-left: 5px">
+                <p class="discussion__iconText" style="margin-left: 3px; margin-right: 5px">@Content.NumberOfDislikes</p>
+                <div @onmouseup="@OnComment" class="discussion__icon" id="discussion__commentAct" style="margin-left: 5px">
                     <p>&#128490; </p>
                     <p class="discussion__iconText" style="padding-left: 3px">Reply</p>
                 </div>
+                @if (!_commentOpen)
+                {
+                    <div @onmouseup="@OnGetComments" class="discussion__icon" id="discussion__commentAct" style="margin-left: 5px">
+                        <p class="discussion__iconText" style="padding-left: 3px">Get comments</p>
+                    </div>
+                }
+                else
+                {
+                    <div @onmouseup="@OnCloseComments" class="discussion__icon" id="discussion__commentAct" style="margin-left: 5px">
+                        <p class="discussion__iconText" style="padding-left: 3px">Close comments</p>
+                    </div>
+                }
+                
             </div>
-            @if (commentOpen)
+            @if (_replyOpen.Equals("discussion__main"))
             {
                 <div class="discussion__commentSection d-flex">
-                    <MudTextField Class="discussion__comment" @bind-Value="Comment" Label="Comment as **name**" Placeholder="Comment..."/>
-                    <MudButton Style="height: fit-content; margin-top: auto" OnClick="Reply">Reply</MudButton>
+                    <MudTextField Class="discussion__comment" @bind-Value="NewComment" Label="@_user.Username" Placeholder="Comment..."/>
+                    <MudButton Style="height: fit-content; margin-top: auto; border:1px solid #594ae2" OnClick="Reply">Reply</MudButton>
                 </div>
             }
         </div>
     </div>
 
-    @if (Content.Children != null && Content.Children.Any())
+    @if (_subcomments.Items != null && _subcomments.Items.Any())
     {
         <div class="comment-item-children">
-            @foreach (var child in Content.Children)
+            @foreach (var child in _subcomments.Items)
             {
                 <CommentItem Content="@child"></CommentItem>
             }
+            @if (_subcomments.HasMore)
+            {
+               <p class="moreComments" @onmouseup="OnGetComments">View more comments</p>
+            }
+            
         </div>
     }
+    
 
 
 </div>
