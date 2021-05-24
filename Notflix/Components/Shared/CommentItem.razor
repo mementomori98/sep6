@@ -1,16 +1,64 @@
 ﻿@using Notflix.Components.Movie
+@using Core.Domain.Authentication
+@using Core.Data.Models
+@using Notflix.Components.Accounts
+@inherits AuthBase
+ @inject IDialogService DialogService
+@inject IAuthenticationService AuthenticationService
 
 @code {
 
+    [Inject]
+    NavigationManager NavigationManager { get; set; }
+    
     [Parameter]
     public CommentDiscussion.Comment Content { get; set; }
 
     private string Comment { get; set; }
     private string _commentOpen = "";
+    private UserDao _user;
 
-    private void OnCommentPressed(MouseEventArgs mouseEvent)
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        _user = await AuthenticationService.GetCurrentUser(await GetAuthToken());
+    }
+
+
+    private void OnVoteUp(MouseEventArgs mouseEvent)
+    {
+        if (_user == null)
+        {
+            OpenLoginDialog();
+            return;
+        }
+        Console.WriteLine("VoteUp"); //............
+    }
+    
+    private void OnVoteDown(MouseEventArgs mouseEvent)
+    {
+        if (_user == null)
+        {
+            OpenLoginDialog();
+            return;
+        }
+        Console.WriteLine("VoteDown"); //............
+    }
+    
+    private void OnComment(MouseEventArgs mouseEvent)
+    {
+        if (_user == null)
+        {
+            OpenLoginDialog();
+            return;
+        }
         _commentOpen = _commentOpen.Equals("") ? "discussion__main" : "";
+    }
+
+    private void OpenLoginDialog()
+    {
+        var parameters = new DialogParameters();
+        parameters.Add("SuccessCallback", new Action(() => NavigationManager.NavigateTo(NavigationManager.Uri, true)));
+        DialogService.Show<LoginDialog>("Sign in", parameters);
     }
     
     private async Task Reply()
@@ -25,17 +73,18 @@
     <div class="discussion d-flex">
         <img src="/Images/avatar.png" class="discussion__avatar" alt="user avatar"/>
         <div class="@_commentOpen" style="padding-left: 10px; width: 100%">
-            <MudText Typo="Typo.body1">@Content.Name</MudText>
-            <MudText Typo="Typo.body2">@Content.Contents</MudText>
+            <MudText Typo="Typo.body1">@Content.AuthorUsername</MudText>
+            <MudText Typo="Typo.body2">@Content.Text</MudText>
             <div class="d-flex" style="font-size: 18px;">
-                <div class="discussion__icon" id="discussion__voteUp">
+                <div @onmouseup="@OnVoteUp"  class="discussion__icon" id="discussion__voteUp">
                     <p>&#129145;</p>
                 </div>
-                <p class="discussion__iconText" style="margin-left: 5px">12k</p>
-                <div class="discussion__icon" id="discussion__voteDown" style="margin-left: 5px">
+                <p class="discussion__iconText" style="margin-left: 3px; margin-right: 5px;">@Content.NumberOfLikes</p>
+                <div @onmouseup="@OnVoteDown"  class="discussion__icon" id="discussion__voteDown">
                     <p>&#129147;</p>
                 </div>
-                <div @onmouseup="@OnCommentPressed" class="discussion__icon" id="discussion__commentAct" style="margin-left: 5px">
+                <p class="discussion__iconText" style="margin-left: 3px; margin-right: 5px">@Content.NumberOfDislikes</p>
+                <div @onmouseup="@OnComment" class="discussion__icon" id="discussion__commentAct" style="margin-left: 5px">
                     <p>&#128490; </p>
                     <p class="discussion__iconText" style="padding-left: 3px">Reply</p>
                 </div>
@@ -43,7 +92,7 @@
             @if (_commentOpen.Equals("discussion__main"))
             {
                 <div class="discussion__commentSection d-flex">
-                    <MudTextField Class="discussion__comment" @bind-Value="Comment" Label="Comment as **name**" Placeholder="Comment..."/>
+                    <MudTextField Class="discussion__comment" @bind-Value="Comment" Label="@_user.Username" Placeholder="Comment..."/>
                     <MudButton Style="height: fit-content; margin-top: auto; border:1px solid #594ae2" OnClick="Reply">Reply</MudButton>
                 </div>
             }

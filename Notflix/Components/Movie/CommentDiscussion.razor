@@ -7,75 +7,77 @@
 
     public class Comment
     {
-        public string Name { get; set; }
-        public string Contents { get; set; }
+        public string AuthorUsername { get; set; }
+        public string Text { get; set; }
         public List<Comment> Children { get; set; }
+        public long NumberOfLikes { get; set; }
+        public long NumberOfDislikes { get; set; }
     }
 
     private List<Comment> _comments = new List<Comment>
     {
-        new() {Name = "Zolly", Contents = "Proin nullam mus mauris et urna nec consectetur phasellus magnis sociis sit a pharetra taciti lorem in id est in magna condimentum euismod adipiscing mus blandit adipiscing.Odio a a suspendisse mi tortor parturient eu cubilia suspendisse a scelerisque scelerisque volutpat suspendisse magnis condimentum primis molestie laoreet mi lacus eu posuere condimentum a.Parturient nullam senectus imperdiet scelerisque libero."},
+        new() {AuthorUsername = "Zolly", Text = "Proin nullam mus mauris et urna nec consectetur phasellus magnis sociis sit a pharetra taciti lorem in id est in magna condimentum euismod adipiscing mus blandit adipiscing.Odio a a suspendisse mi tortor parturient eu cubilia suspendisse a scelerisque scelerisque volutpat suspendisse magnis condimentum primis molestie laoreet mi lacus eu posuere condimentum a.Parturient nullam senectus imperdiet scelerisque libero."},
         new()
         {
-            Name = "Zolly", Contents = "Proin nullam mus mauris et urna nec consectetur phasellus magnis sociis sit a pharetra taciti lorem in id est in magna condimentum euismod adipiscing mus blandit adipiscing.Odio a a suspendisse mi tortor parturient eu cubilia suspendisse a scelerisque scelerisque volutpat suspendisse magnis condimentum primis molestie laoreet mi lacus eu posuere condimentum a.Parturient nullam senectus imperdiet scelerisque libero.",
+            AuthorUsername = "Zolly", Text = "Proin nullam mus mauris et urna nec consectetur phasellus magnis sociis sit a pharetra taciti lorem in id est in magna condimentum euismod adipiscing mus blandit adipiscing.Odio a a suspendisse mi tortor parturient eu cubilia suspendisse a scelerisque scelerisque volutpat suspendisse magnis condimentum primis molestie laoreet mi lacus eu posuere condimentum a.Parturient nullam senectus imperdiet scelerisque libero.",
             Children = new List<Comment>
             {
-                new() {Name = "Mate", Contents = "Stop repeating yourself, curva!"},
+                new() {AuthorUsername = "Mate", Text = "Stop repeating yourself, curva!"},
                 new()
                 {
-                    Name = "Aron", 
-                    Contents = "play nice, you goys!",
+                    AuthorUsername = "Aron", 
+                    Text = "play nice, you goys!",
                     Children = new List<Comment>
                     {
-                        new() {Name = "Mate", Contents = "Stop repeating yourself, curva!"},
+                        new() {AuthorUsername = "Mate", Text = "Stop repeating yourself, curva!"},
                         new()
                         {
-                            Name = "Aron", 
-                            Contents = "play nice, you goys!",
+                            AuthorUsername = "Aron", 
+                            Text = "play nice, you goys!",
                             Children = new List<Comment>
                             {
-                                new() {Name = "Mate", Contents = "Stop repeating yourself, curva!"},
+                                new() {AuthorUsername = "Mate", Text = "Stop repeating yourself, curva!"},
                                 new()
                                 {
-                                    Name = "Aron", 
-                                    Contents = "play nice, you goys!"
+                                    AuthorUsername = "Aron", 
+                                    Text = "play nice, you goys!"
                                 },
-                                new() {Name = "Zolly", Contents = "Proin nullam mus mauris et urna nec consectetur phasellus magnis sociis sit a pharetra taciti lorem in id est in magna condimentum euismod adipiscing mus blandit adipiscing.Odio a a suspendisse mi tortor parturient eu cubilia suspendisse a scelerisque scelerisque volutpat suspendisse magnis condimentum primis molestie laoreet mi lacus eu posuere condimentum a.Parturient nullam senectus imperdiet scelerisque libero."},
+                                new() {AuthorUsername = "Zolly", Text = "Proin nullam mus mauris et urna nec consectetur phasellus magnis sociis sit a pharetra taciti lorem in id est in magna condimentum euismod adipiscing mus blandit adipiscing.Odio a a suspendisse mi tortor parturient eu cubilia suspendisse a scelerisque scelerisque volutpat suspendisse magnis condimentum primis molestie laoreet mi lacus eu posuere condimentum a.Parturient nullam senectus imperdiet scelerisque libero."},
                             }
                         },
-                        new() {Name = "Zolly", Contents = "Proin nullam mus mauris et urna nec consectetur phasellus magnis sociis sit a pharetra taciti lorem in id est in magna condimentum euismod adipiscing mus blandit adipiscing.Odio a a suspendisse mi tortor parturient eu cubilia suspendisse a scelerisque scelerisque volutpat suspendisse magnis condimentum primis molestie laoreet mi lacus eu posuere condimentum a.Parturient nullam senectus imperdiet scelerisque libero."},
+                        new() {AuthorUsername = "Zolly", Text = "Proin nullam mus mauris et urna nec consectetur phasellus magnis sociis sit a pharetra taciti lorem in id est in magna condimentum euismod adipiscing mus blandit adipiscing.Odio a a suspendisse mi tortor parturient eu cubilia suspendisse a scelerisque scelerisque volutpat suspendisse magnis condimentum primis molestie laoreet mi lacus eu posuere condimentum a.Parturient nullam senectus imperdiet scelerisque libero."},
                     }
                 },
-                new() {Name = "Zolly", Contents = "Proin nullam mus mauris et urna nec consectetur phasellus magnis sociis sit a pharetra taciti lorem in id est in magna condimentum euismod adipiscing mus blandit adipiscing.Odio a a suspendisse mi tortor parturient eu cubilia suspendisse a scelerisque scelerisque volutpat suspendisse magnis condimentum primis molestie laoreet mi lacus eu posuere condimentum a.Parturient nullam senectus imperdiet scelerisque libero."},
+                new() {AuthorUsername = "Zolly", Text = "Proin nullam mus mauris et urna nec consectetur phasellus magnis sociis sit a pharetra taciti lorem in id est in magna condimentum euismod adipiscing mus blandit adipiscing.Odio a a suspendisse mi tortor parturient eu cubilia suspendisse a scelerisque scelerisque volutpat suspendisse magnis condimentum primis molestie laoreet mi lacus eu posuere condimentum a.Parturient nullam senectus imperdiet scelerisque libero."},
             }
         },
-        new() {Name = "Zolly", Contents = "Proin nullam mus mauris et urna nec consectetur phasellus magnis sociis sit a pharetra taciti lorem in id est in magna condimentum euismod adipiscing mus blandit adipiscing.Odio a a suspendisse mi tortor parturient eu cubilia suspendisse a scelerisque scelerisque volutpat suspendisse magnis condimentum primis molestie laoreet mi lacus eu posuere condimentum a.Parturient nullam senectus imperdiet scelerisque libero."},
+        new() {AuthorUsername = "Zolly", Text = "Proin nullam mus mauris et urna nec consectetur phasellus magnis sociis sit a pharetra taciti lorem in id est in magna condimentum euismod adipiscing mus blandit adipiscing.Odio a a suspendisse mi tortor parturient eu cubilia suspendisse a scelerisque scelerisque volutpat suspendisse magnis condimentum primis molestie laoreet mi lacus eu posuere condimentum a.Parturient nullam senectus imperdiet scelerisque libero."},
         new()
         {
-            Name = "Zolly", 
-            Contents = "Proin nullam mus mauris et urna nec consectetur phasellus magnis sociis sit a pharetra taciti lorem in id est in magna condimentum euismod adipiscing mus blandit adipiscing.Odio a a suspendisse mi tortor parturient eu cubilia suspendisse a scelerisque scelerisque volutpat suspendisse magnis condimentum primis molestie laoreet mi lacus eu posuere condimentum a.Parturient nullam senectus imperdiet scelerisque libero.",
+            AuthorUsername = "Zolly", 
+            Text = "Proin nullam mus mauris et urna nec consectetur phasellus magnis sociis sit a pharetra taciti lorem in id est in magna condimentum euismod adipiscing mus blandit adipiscing.Odio a a suspendisse mi tortor parturient eu cubilia suspendisse a scelerisque scelerisque volutpat suspendisse magnis condimentum primis molestie laoreet mi lacus eu posuere condimentum a.Parturient nullam senectus imperdiet scelerisque libero.",
             Children = new List<Comment>
             {
-                new() {Name = "Mate", Contents = "Stop repeating yourself, curva!"},
+                new() {AuthorUsername = "Mate", Text = "Stop repeating yourself, curva!"},
                 new()
                 {
-                    Name = "Aron", 
-                    Contents = "play nice, you goys!",
+                    AuthorUsername = "Aron", 
+                    Text = "play nice, you goys!",
                     Children = new List<Comment>
                     {
-                        new() {Name = "Mate", Contents = "Stop repeating yourself, curva!"},
+                        new() {AuthorUsername = "Mate", Text = "Stop repeating yourself, curva!"},
                         new()
                         {
-                            Name = "Aron", 
-                            Contents = "play nice, you goys!"
+                            AuthorUsername = "Aron", 
+                            Text = "play nice, you goys!"
                         },
-                        new() {Name = "Zolly", Contents = "Proin nullam mus mauris et urna nec consectetur phasellus magnis sociis sit a pharetra taciti lorem in id est in magna condimentum euismod adipiscing mus blandit adipiscing.Odio a a suspendisse mi tortor parturient eu cubilia suspendisse a scelerisque scelerisque volutpat suspendisse magnis condimentum primis molestie laoreet mi lacus eu posuere condimentum a.Parturient nullam senectus imperdiet scelerisque libero."},
+                        new() {AuthorUsername = "Zolly", Text = "Proin nullam mus mauris et urna nec consectetur phasellus magnis sociis sit a pharetra taciti lorem in id est in magna condimentum euismod adipiscing mus blandit adipiscing.Odio a a suspendisse mi tortor parturient eu cubilia suspendisse a scelerisque scelerisque volutpat suspendisse magnis condimentum primis molestie laoreet mi lacus eu posuere condimentum a.Parturient nullam senectus imperdiet scelerisque libero."},
                     }
                 },
-                new() {Name = "Zolly", Contents = "Proin nullam mus mauris et urna nec consectetur phasellus magnis sociis sit a pharetra taciti lorem in id est in magna condimentum euismod adipiscing mus blandit adipiscing.Odio a a suspendisse mi tortor parturient eu cubilia suspendisse a scelerisque scelerisque volutpat suspendisse magnis condimentum primis molestie laoreet mi lacus eu posuere condimentum a.Parturient nullam senectus imperdiet scelerisque libero."},
+                new() {AuthorUsername = "Zolly", Text = "Proin nullam mus mauris et urna nec consectetur phasellus magnis sociis sit a pharetra taciti lorem in id est in magna condimentum euismod adipiscing mus blandit adipiscing.Odio a a suspendisse mi tortor parturient eu cubilia suspendisse a scelerisque scelerisque volutpat suspendisse magnis condimentum primis molestie laoreet mi lacus eu posuere condimentum a.Parturient nullam senectus imperdiet scelerisque libero."},
             }
         },
-        new() {Name = "Zolly", Contents = "Proin nullam mus mauris et urna nec consectetur phasellus magnis sociis sit a pharetra taciti lorem in id est in magna condimentum euismod adipiscing mus blandit adipiscing.Odio a a suspendisse mi tortor parturient eu cubilia suspendisse a scelerisque scelerisque volutpat suspendisse magnis condimentum primis molestie laoreet mi lacus eu posuere condimentum a.Parturient nullam senectus imperdiet scelerisque libero."},
+        new() {AuthorUsername = "Zolly", Text = "Proin nullam mus mauris et urna nec consectetur phasellus magnis sociis sit a pharetra taciti lorem in id est in magna condimentum euismod adipiscing mus blandit adipiscing.Odio a a suspendisse mi tortor parturient eu cubilia suspendisse a scelerisque scelerisque volutpat suspendisse magnis condimentum primis molestie laoreet mi lacus eu posuere condimentum a.Parturient nullam senectus imperdiet scelerisque libero."},
     };
 
 }
