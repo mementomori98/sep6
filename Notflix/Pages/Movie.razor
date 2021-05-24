@@ -57,13 +57,13 @@
             
             <MudTabs Elevation="1" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
                 <MudTabPanel Text="Comments" ToolTip="ToolTip One" Class="mud-tabs-panels pa-2">
-                    <CommentDiscussion Content="@true"/>
+                    <CommentsDiscussion MovieId="@_movieModel.Id"/>
                 </MudTabPanel>
                 <MudTabPanel Text="Reviews" ToolTip="ToolTip Two">
-                    <MudText>Reviews..........................</MudText>
+                    <ReviewsDiscussion/>
                 </MudTabPanel>
                 <MudTabPanel Text="Fun Facts" ToolTip="ToolTip Three">
-                    <MudText>Fun facts..........................</MudText>
+                    <FunFactsDiscussion/>
                 </MudTabPanel>
             </MudTabs>
         }
