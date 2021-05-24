@@ -1,0 +1,36 @@
+﻿@code {
+
+    [CascadingParameter]
+    public MudDialogInstance Dialog { get; set; }
+
+    [Parameter]
+    public string Content { get; set; }
+
+    [Parameter]
+    public Action ConfirmCallback { get; set; }
+
+    [Parameter]
+    public Color ConfirmColor { get; set; } = Color.Primary;
+
+    private void OnConfirm()
+    {
+        ConfirmCallback?.Invoke();
+        Dialog.Close();
+    }
+
+    private void OnDecline()
+    {
+        Dialog.Close();
+    }
+
+}
+
+<MudDialog>
+    <DialogContent>
+        <MudText>@Content</MudText>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="OnDecline" Variant="Variant.Outlined" Color="Color.Default">Cancel</MudButton>
+        <MudButton OnClick="OnConfirm" Variant="Variant.Filled" Color="@ConfirmColor">Yes</MudButton>
+    </DialogActions>
+</MudDialog>

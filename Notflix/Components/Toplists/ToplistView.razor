@@ -6,6 +6,8 @@
 @inject IAuthenticationService AuthenticationService
 @inject IToplistService ToplistService
 @inject ISnackbar Snackbar
+@inject IDialogService DialogService
+@inject NavigationManager NavigationManager
 
 
 @code {
@@ -114,16 +116,39 @@
         StateHasChanged();
     }
 
+    private async Task OnDelete()
+    {
+        await ToplistService.Delete(new DeleteToplistRequest
+        {
+            Token = await GetAuthToken(),
+            ToplistId = ToplistId
+        });
+        NavigationManager.NavigateTo("/Toplists");
+    }
+
+    private async Task OnInitiateDelete()
+    {
+        var parameters = new DialogParameters();
+        parameters.Add("Content", "Are you sure you want to delete this toplist forever?");
+        parameters.Add("ConfirmCallback", new Action(async () => await OnDelete()));
+        parameters.Add("ConfirmColor", Color.Error);
+        DialogService.Show<ConfirmDialog>("Delete Toplist", parameters);
+    }
+
 }
 
 <Card Style="">
     <MudGrid>
-
         @if (!Renaming)
         {
-            <MudItem xs="12" Class="d-flex">
-                <MudText Typo="Typo.h5">@Toplist.Name</MudText>
-                <MudIconButton Icon="@(Icons.Filled.Edit)" Class="ml-4 mt-n2" OnClick="RenameClick"/>
+            <MudItem xs="10" Class="d-flex">
+                <MudText Typo="Typo.h5" Class="mt-2">@Toplist.Name</MudText>
+                <div class="ml-2">
+                    <MudIconButton Icon="@(Icons.Filled.Edit)" OnClick="RenameClick"/>
+                </div>
+            </MudItem>
+            <MudItem xs="2" Class="d-flex flex-row-reverse">
+                <MudIconButton Icon="@(Icons.Filled.Delete)" OnClick="OnInitiateDelete"/>
             </MudItem>
         }
         else
