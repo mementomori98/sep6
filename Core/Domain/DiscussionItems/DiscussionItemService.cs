@@ -50,7 +50,8 @@ namespace Core.Domain.DiscussionItems
                 .Include(c => c.Author)
                 .Where(c => c.DiscussableId == discussableId)
                 .OrderByDescending(c => c.Id)
-                .Take(page * 10)
+                .Skip((page - 1) * 10)
+                .Take(10)
                 .ToListAsync();
 
             return await GetComments(commentsDao, page, userId);
@@ -62,7 +63,8 @@ namespace Core.Domain.DiscussionItems
                 .Include(c => c.Author)
                 .Where(c => c.DiscussionItemId == discussionItemId)
                 .OrderByDescending(f => f.Id)
-                .Take(page * 10)
+                .Skip((page - 1) * 10)
+                .Take(10)
                 .ToListAsync();
 
             return await GetComments(commentsDao, page, userId);
@@ -70,7 +72,7 @@ namespace Core.Domain.DiscussionItems
 
         private async Task<IEnumerable<Comment>> GetComments(List<CommentDao> commentsDao, int page, long userId)
         {
-            var comments = GetPage(commentsDao, page).Select(async c => await ToComment(c, userId)).ToList();
+            var comments = commentsDao.Select(async c => await ToComment(c, userId)).ToList();
 
             await Task.WhenAll(comments);
             return comments.Select(c => c.Result);
@@ -91,10 +93,11 @@ namespace Core.Domain.DiscussionItems
                 .Include(r => r.Author)
                 .Where(r => r.DiscussableId == discussableId)
                 .OrderByDescending(r => r.Id)
-                .Take(page * 10)
+                .Skip((page - 1) * 10)
+                .Take(10)
                 .ToListAsync();
 
-            var reviews = GetPage(reviewsDao, page).Select(async r => await ToReview(r, userId)).ToList();
+            var reviews = reviewsDao.Select(async r => await ToReview(r, userId)).ToList();
 
             await Task.WhenAll(reviews);
             return reviews.Select(c => c.Result);
@@ -115,10 +118,11 @@ namespace Core.Domain.DiscussionItems
                 .Include(f => f.Author)
                 .Where(f => f.DiscussableId == discussableId)
                 .OrderByDescending(f => f.Id)
-                .Take(page * 10)
+                .Skip((page - 1) * 10)
+                .Take(10)
                 .ToListAsync();
 
-            var funFacts = GetPage(funFactsDao, page).Select(async f => await ToFunFact(f, userId)).ToList();
+            var funFacts = funFactsDao.Select(async f => await ToFunFact(f, userId)).ToList();
 
             await Task.WhenAll(funFacts);
             return funFacts.Select(c => c.Result);
@@ -131,21 +135,6 @@ namespace Core.Domain.DiscussionItems
                 await GetNumberOfInteractions(UserDiscussionItemInteractionType.Dislike, dao.Id),
                 await GetUserInteraction(userId, dao.Id)
             );
-        }
-
-        private int GetNumberOfEntriesToReturn(int entriesFromTheDatabase, int page)
-        {
-            if (entriesFromTheDatabase == page * 10)
-                return 10;
-            else if (entriesFromTheDatabase > (page - 1) * 10)
-                return entriesFromTheDatabase % 10;
-            else return 0;
-        }
-
-        private IEnumerable<T> GetPage<T>(List<T> list, int page)
-        {
-            list.Reverse();
-            return list.Take(GetNumberOfEntriesToReturn(list.Count, page));
         }
 
         public async Task<UserDiscussionItemInteraction> LikeDiscussionItem(long discussionItemId, long userId)
