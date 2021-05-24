@@ -41,9 +41,9 @@ namespace Notflix
             {
                 c.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.TopRight;
                 c.SnackbarConfiguration.NewestOnTop = true;
-                c.SnackbarConfiguration.VisibleStateDuration = 1600;
-                c.SnackbarConfiguration.ShowTransitionDuration = 200;
-                c.SnackbarConfiguration.HideTransitionDuration = 200;
+                c.SnackbarConfiguration.VisibleStateDuration = 2000;
+                c.SnackbarConfiguration.ShowTransitionDuration = 500;
+                c.SnackbarConfiguration.HideTransitionDuration = 500;
                 c.SnackbarConfiguration.SnackbarVariant = Variant.Filled;
             });
             services.AddTransient<IMovieService, OmdbMovieService>();

@@ -1,0 +1,49 @@
+﻿@page "/BrowseToplists"
+@using Core.Domain.Toplists.Models
+@using Core.Domain.Toplists
+@inject IToplistService ToplistService
+
+@code {
+    
+    private string Text { get; set; }
+    private IEnumerable<ToplistModel> Toplists { get; set; }
+
+    private async Task OnSearch(string text)
+    {
+        Text = text;
+        var toplists = await ToplistService.BrowseToplists(new BrowseToplistsRequest
+        {
+            Text = Text
+        });
+        if (Text == text)
+        {
+            Toplists = toplists;
+            StateHasChanged();
+        }
+    }
+
+}
+
+<Card>
+    <div class="d-flex">
+        <MudTextField T="string" ValueChanged="OnSearch" Immediate="true" Placeholder="Search Toplists..." />
+    </div>
+</Card>
+
+@if (Toplists == null)
+{
+    return;
+}
+
+<Card Class="d-flex flex-column">
+    @foreach (var toplist in Toplists)
+    {
+        <MudLink Href="@($"/Toplists/{toplist.Id}")" Underline="Underline.None" Color="Color.Default">
+            <ToplistOverviewItem Toplist="@toplist" DisplayAuthor="true"/>
+        </MudLink>
+        if (toplist.Id != Toplists.Last().Id)
+        {
+            <MudDivider Class="my-4"/>
+        }
+    }
+</Card>

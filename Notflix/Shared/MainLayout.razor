@@ -2,6 +2,7 @@
 @using Core.Domain.Authentication
 @using Core.Domain.Authentication.Models
 @using Notflix.Components.Accounts
+@using Core.Data.Models
 @inherits LayoutComponentBase
 @inject IDialogService DialogService
 
@@ -20,11 +21,16 @@
 
     private AuthToken Token { get; set; }
     private bool IsLoggedIn { get; set; }
+    private UserDao User { get; set; }
 
     MudTheme Theme = new MudTheme
     {
         Palette = new Palette
         {
+        },
+        LayoutProperties = new LayoutProperties
+        {
+            DefaultBorderRadius = "0"
         }
     };
 
@@ -32,6 +38,7 @@
     {
         var initIsLoggedIn = IsLoggedIn;
         Token = await LocalStorage.Get<AuthToken>("authToken");
+        User = await AuthenticationService.GetCurrentUser(Token);
         IsLoggedIn = await AuthenticationService.IsLoggedIn(Token);
         if (initIsLoggedIn != IsLoggedIn)
             StateHasChanged();
@@ -64,7 +71,7 @@
 
 }
 
-<MudThemeProvider/>
+<MudThemeProvider Theme="Theme"/>
 <MudDialogProvider
     FullWidth="true"
     MaxWidth="MaxWidth.ExtraSmall"
@@ -79,6 +86,7 @@
         @if (IsLoggedIn)
         {
             <MudMenu Icon="@(Icons.Filled.Person)" Direction="Direction.Left" OffsetX="true">
+                <MudMenuItem Disabled="true">@User?.Username</MudMenuItem>
                 <MudMenuItem OnClick="Logout">Log out</MudMenuItem>
             </MudMenu>
         }
@@ -94,9 +102,12 @@
             <MudText Typo="Typo.h6" Class="pa-3">Notflix</MudText>
             <MudDivider Class="mb-3"/>
             <MudNavLink Href="/" Icon="@(Icons.Outlined.Home)" Match="NavLinkMatch.All">Home</MudNavLink>
-            <MudNavLink Href="/Mate" Icon="@(Icons.Outlined.Brush)">Mate Test Page</MudNavLink>
             <MudNavLink Href="/Zolly" Icon="@(Icons.Outlined.Brush)">Zolly Test Page</MudNavLink>
-            <MudNavLink Href="/TopLists" Icon="@(Icons.Outlined.Brush)">My TopLists</MudNavLink>
+            <MudNavLink Href="/BrowseToplists" Icon="@(Icons.Outlined.Brush)">Browse Toplists</MudNavLink>
+            @if (IsLoggedIn)
+            {
+                <MudNavLink Href="/TopLists" Icon="@(Icons.Outlined.Brush)">My TopLists</MudNavLink>
+            }
             <MudNavLink Href="/Main" Icon="@(Icons.Outlined.Brush)">Main</MudNavLink>
         </MudNavMenu>
     </MudDrawer>

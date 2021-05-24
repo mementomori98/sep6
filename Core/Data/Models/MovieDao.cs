@@ -6,5 +6,7 @@ namespace Core.Data.Models
     {
         public string ImdbId { get; set; }
         public string Title { get; set; }
+        public string ImageUrl { get; set; }
+        public string Year { get; set; }
     }
 }

@@ -60,6 +60,11 @@
 .normal {
     font-weight: normal !important;
 }
+
+.bold {
+    font-weight: bold !important;
+}
+
 .relationBox{
     width: auto;
     height: auto;

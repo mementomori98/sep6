@@ -27,7 +27,12 @@ namespace Core.Data
                 x.ToTable("Movie"));
 
             b.Configure<ToplistDao>(x =>
-                x.ToTable("Toplist"));
+                x.ToTable("Toplist"), x =>
+                x.HasOne(tl => tl.User)
+                    .WithMany()
+                    .HasForeignKey(tl => tl.UserId)
+                    .IsRequired()
+                    .OnDelete(DeleteBehavior.Cascade));
 
             b.Configure<ActorDao>(x =>
                 x.ToTable("Actor"));

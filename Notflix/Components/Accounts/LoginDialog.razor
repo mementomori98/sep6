@@ -39,12 +39,18 @@
             Error = "Incorrect username or password";
     }
 
+    private async Task OnKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+            await DoLogin();
+    }
+
 }
 
-<MudDialog Style="">
+<MudDialog>
     <DialogContent>
         <MudTextField @bind-Value="Username" Label="Username" Placeholder="admin..."/>
-        <MudTextField @bind-Value="Password" Label="Password" Placeholder="admin..." InputType="InputType.Password"/>
+        <MudTextField @bind-Value="Password" Label="Password" Placeholder="admin..." InputType="InputType.Password" Immediate="true" OnKeyDown="OnKeyDown"/>
         <MudText Color="Color.Error" Typo="Typo.body2">@Error</MudText>
     </DialogContent>
     <DialogActions>

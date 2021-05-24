@@ -1,0 +1,13 @@
+﻿@code {
+    
+    [Parameter]
+    public string Href { get; set; }
+
+    [Parameter]
+    public int NumberOfItems { get; set; } = 1;
+
+}
+
+<div class="px-1" style="@($"max-width: {100 / NumberOfItems}%")">
+    <img src="@Href" alt="" style="@($"max-height: 10rem; max-width: 100%;")"/>
+</div>

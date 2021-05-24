@@ -20,12 +20,12 @@
     private bool PopoverOpen => _isOpen;
 
     private bool _isOpen;
-    private string _defaultTextState;
+    private string Text { get; set; }
 
-    private async Task Search(string text)
+    private async Task Search()
     {
-        if (text.Length > 3)
-            _results = await MovieService.SearchList(text);
+        if (Text.Length > 3)
+            _results = await MovieService.SearchList(Text);
         if (_results?.Any() ?? false)
             _isOpen = true;
     }
@@ -33,13 +33,13 @@
     private void CheckResults()
     {
         _isOpen = true;
-        _results = null;
     }
 
     private void OnItemSelected(string imdbId)
     {
         _isOpen = false;
-        _defaultTextState = "";
+        _results = null;
+        Text = "";
         StateHasChanged();
         OnItemClicked?.Invoke(imdbId);
     }
@@ -51,8 +51,8 @@
     <MudTextField
         Margin="Margin.Dense"
         T="string"
-        Value="@_defaultTextState"
-        ValueChanged="@(o => Search(o.ToString()))"
+        @bind-Value="@Text"
+        OnDebounceIntervalElapsed="Search"
         DebounceInterval="1000"
         Immediate="true"
         Placeholder="Search movies..."
