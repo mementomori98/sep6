@@ -27,16 +27,39 @@ namespace Core.Domain.Toplists
             _movieService = movieService;
         }
 
-        public async Task<IEnumerable<ToplistModel>> GetToplists(GetToplistsRequest request)
+        public async Task<IEnumerable<ToplistModel>> BrowseToplists(BrowseToplistsRequest request)
         {
-            var user = await _authenticationService.GetCurrentUser(request.Token);
-            if (user == null)
-                throw new Exception("Unauthorized user");
+            if (request.Offset < 0)
+                request.Offset = 0;
+            if (request.Limit < 1)
+                request.Limit = 10;
+            
+            await using var context = new MovieContext();
+            var query = context.Set<ToplistDao>()
+                .Include(tl => tl.ToplistMovies)
+                .ThenInclude(tlm => tlm.Movie)
+                .Include(tl => tl.User)
+                .Where(tl => tl.Public);
+            var toplists = await query
+                .Where(tl => tl.Name.Contains(request.Text))
+                .Skip(request.Offset)
+                .Take(request.Limit)
+                .ToListAsync();
+
+            return toplists.Select(Map);
+        }
+
+        public async Task<IEnumerable<ToplistModel>> GetUserToplists(GetToplistsRequest request)
+        {
+            var (user, _) = await Validate(request, null);
+
             await using var context = new MovieContext();
             var toplists = await context.Set<ToplistDao>()
                 .Include(tl => tl.ToplistMovies).ThenInclude(tlm => tlm.Movie)
+                .Include(tl => tl.User)
                 .Where(tl => tl.UserId == user.Id)
                 .ToListAsync();
+
             return toplists.Select(Map);
         }
 
@@ -52,7 +75,7 @@ namespace Core.Domain.Toplists
         public async Task<ToplistModel> Create(CreateToplistRequest request)
         {
             var (user, _) = await Validate(request, null);
-            
+
             if (string.IsNullOrWhiteSpace(request.Name))
                 throw new ArgumentException("Name must be specified");
 
@@ -64,23 +87,23 @@ namespace Core.Domain.Toplists
                 Public = request.Public
             });
             await context.SaveChangesAsync();
-            
+
             return Map(await Fetch(entry.Entity.Id));
         }
 
         public async Task<ToplistModel> Rename(RenameToplistRequest request)
         {
             var (_, toplist) = await Validate(request, request.ToplistId);
-            
+
             if (string.IsNullOrWhiteSpace(request.Name))
                 throw new ArgumentException("Name must be specified");
-            
+
             toplist.Name = request.Name;
-            
+
             await using var context = new MovieContext();
             context.Update(toplist);
             await context.SaveChangesAsync();
-            
+
             return Map(await Fetch(toplist.Id));
         }
 
@@ -100,17 +123,18 @@ namespace Core.Domain.Toplists
             foreach (var tlm in toplist.ToplistMovies.Where(x => x.Position >= request.Position))
                 tlm.Position += 1;
 
+            await using var context = new MovieContext();
+            context.Update(toplist);
+            
             toplist.ToplistMovies.Add(new ToplistMovieDao
             {
                 ToplistId = toplist.Id,
                 MovieId = movie.Id,
                 Position = request.Position
             });
-            
-            await using var context = new MovieContext();
-            context.Update(toplist);
+
             await context.SaveChangesAsync();
-            
+
             return Map(await Fetch(toplist.Id));
         }
 
@@ -119,13 +143,16 @@ namespace Core.Domain.Toplists
             var (_, toplist) = await Validate(request, request.ToplistId);
 
             var tlm = toplist.ToplistMovies.Single(x => x.MovieId == request.MovieId);
-            foreach (var item in toplist.ToplistMovies.Where(x => x.Position > tlm.Position))
-                item.Position -= 1;
-
-            toplist.ToplistMovies.Remove(tlm);
             
             await using var context = new MovieContext();
             context.Update(toplist);
+            
+            toplist.ToplistMovies.Remove(tlm);
+            await context.SaveChangesAsync();
+            
+            foreach (var item in toplist.ToplistMovies.Where(x => x.Position > tlm.Position))
+                item.Position -= 1;
+            
             await context.SaveChangesAsync();
 
             return Map(await Fetch(toplist.Id));
@@ -134,17 +161,17 @@ namespace Core.Domain.Toplists
         public async Task<ToplistModel> ChangePosition(ChangePositionRequest request)
         {
             var (_, toplist) = await Validate(request, request.ToplistId);
-            
+
             var tlm = toplist.ToplistMovies.Single(x => x.MovieId == request.MovieId);
             var tlm2 = toplist.ToplistMovies.Single(x => x.Position == request.Position);
             var pos = tlm.Position;
-            
+
             await using var context = new MovieContext();
             context.Update(toplist);
-            
+
             tlm.Position = -1;
             await context.SaveChangesAsync();
-            
+
             tlm2.Position = pos;
             await context.SaveChangesAsync();
 
@@ -158,11 +185,11 @@ namespace Core.Domain.Toplists
         {
             var (_, toplist) = await Validate(request, request.ToplistId);
             toplist.Public = request.Public;
-            
+
             await using var context = new MovieContext();
             context.Update(toplist);
             await context.SaveChangesAsync();
-            
+
             return Map(await Fetch(toplist.Id));
         }
 
@@ -178,10 +205,13 @@ namespace Core.Domain.Toplists
         private async Task<ToplistDao> Fetch(long toplistId)
         {
             await using var context = new MovieContext();
-            return await context.Set<ToplistDao>()
+            var toplist = await context.Set<ToplistDao>()
                 .Include(tl => tl.ToplistMovies)
                 .ThenInclude(tlm => tlm.Movie)
+                .Include(tl => tl.User)
                 .SingleOrDefaultAsync(tl => tl.Id == toplistId);
+            await context.DisposeAsync();
+            return toplist;
         }
 
         private ToplistModel Map(ToplistDao toplist)
@@ -191,6 +221,7 @@ namespace Core.Domain.Toplists
                 Id = toplist.Id,
                 Name = toplist.Name,
                 UserId = toplist.UserId,
+                Username = toplist.User.Username,
                 Public = toplist.Public,
                 Items = toplist.ToplistMovies.Select(tlm => new ToplistItem
                 {
@@ -212,7 +243,7 @@ namespace Core.Domain.Toplists
 
             if (toplistId == null)
                 return (user, null);
-            
+
             var toplist = await Fetch(toplistId.Value);
             if (toplist == null)
                 throw new ArgumentException("Toplist does not exist");

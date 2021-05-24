@@ -7,7 +7,8 @@ namespace Core.Data.Models
         public string Name { get; set; }
         public long UserId { get; set; }
         public bool Public { get; set; }
-        
+
+        public UserDao User { get; set; }
         public ICollection<ToplistMovieDao> ToplistMovies { get; set; }
     }
 }

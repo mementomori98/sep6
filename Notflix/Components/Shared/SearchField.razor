@@ -1,0 +1,103 @@
+﻿@inject IMovieService MovieService
+@using MySqlX.XDevAPI.Common
+@typeparam TItem
+
+
+@code {
+
+    [Parameter]
+    public Action<TItem> OnItemClicked { get; set; }
+
+    [Parameter]
+    public Func<TItem, string> Href { get; set; }
+
+    [Parameter]
+    public string Class { get; set; }
+
+    [Parameter]
+    public Func<IEnumerable<TItem>> Search { get; set; }
+
+    [Parameter]
+    public RenderFragment<TItem> ResultItem { get; set; }
+
+    [Parameter]
+    public bool AutoClear { get; set; }
+
+    [Parameter]
+    public string PlaceHolder { get; set; }
+
+    private IEnumerable<TItem> _results;
+    private bool PopoverOpen => _isOpen;
+
+    private bool _isOpen;
+    private string Text { get; set; }
+
+    private async Task OnSearch()
+    {
+        _results = Search.Invoke();
+        if (_results?.Any() ?? false)
+            _isOpen = true;
+    }
+
+    private void CheckResults()
+    {
+        if (_results != null)
+            _isOpen = true;
+    }
+
+    private void OnItemSelected(TItem item)
+    {
+        _isOpen = false;
+        if (AutoClear)
+        {
+            Text = "";
+            _results = null;
+        }
+        StateHasChanged();
+        OnItemClicked?.Invoke(item);
+    }
+
+}
+
+<MudOverlay @bind-Visible="@_isOpen" DarkBackground="false" AutoClose="true" ZIndex="100"/>
+<MudTextField
+    Margin="Margin.Dense"
+    T="string"
+    @bind-Value="@Text"
+    OnDebounceIntervalElapsed="OnSearch"
+    Immediate="true"
+    DebounceInterval="100"
+    Placeholder="@PlaceHolder"
+    Variant="Variant.Outlined"
+    Class="@Class"
+    @onfocusin="CheckResults"
+    Style="z-index: 101"/>
+<MudPopover Open="@(PopoverOpen)" Direction="Direction.Bottom" OffsetY="true" Style="max-width: 45%">
+    <div class="pa-4">
+        @for (var i = 0; i < _results?.Count(); i++)
+        {
+            var item = _results.ToList()[i];
+            <div class="py-2">
+                @if (Href != null)
+                {
+                    <a href="@(Href.Invoke(item))">
+                        @ResultItem(item)
+                    </a>
+                }
+                else
+                {
+                    <div style="cursor: pointer" @onclick="() => OnItemSelected(item)">
+                        @ResultItem(item)
+                    </div>
+                }
+            </div>
+
+            if (i != _results.Count() - 1)
+            {
+                <MudDivider/>
+            }
+        }
+    </div>
+
+
+</MudPopover>

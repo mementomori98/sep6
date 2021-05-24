@@ -7,7 +7,8 @@ namespace Core.Domain.Toplists
 {
     public interface IToplistService
     {
-        Task<IEnumerable<ToplistModel>> GetToplists(GetToplistsRequest request);
+        Task<IEnumerable<ToplistModel>> BrowseToplists(BrowseToplistsRequest request);
+        Task<IEnumerable<ToplistModel>> GetUserToplists(GetToplistsRequest request);
         Task<ToplistModel> GetToplist(GetToplistRequest request);
         Task<ToplistModel> Create(CreateToplistRequest request);
         Task<ToplistModel> Rename(RenameToplistRequest request);

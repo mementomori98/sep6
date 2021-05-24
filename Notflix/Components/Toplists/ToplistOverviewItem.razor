@@ -5,21 +5,24 @@
 
     [Parameter]
     public ToplistModel Toplist { get; set; }
+    
+    [Parameter]
+    public bool DisplayAuthor { get; set; }
 
 }
 
-<MudGrid>
-    <MudItem xs="12">
-        <MudText>@Toplist.Name</MudText>
+<MudGrid Spacing="1">
+    <MudItem xs="12" Class="d-flex justify-space-between">
+        <MudText Typo="Typo.h5">@Toplist.Name</MudText>
+        @if (DisplayAuthor)
+        {
+            <MudText Typo="Typo.h6" Class="grey-text normal mr-2">By: @Toplist.Username</MudText>
+        }
     </MudItem>
-    <MudItem xs="12">
-        <MudGrid Spacing="1">
-            @foreach (var movie in Toplist.Items.Take(3))
-            {
-                <MudItem xs="4">
-                    <Avatar Href="@(movie.ImageUrl)"/>
-                </MudItem>
-            }
-        </MudGrid>
+    <MudItem xs="12" Class="d-flex">
+        @foreach (var movie in Toplist.Items.Take(5))
+        {
+            <Avatar Href="@(movie.ImageUrl)" NumberOfItems="@Toplist.Items.Take(5).Count()"/>
+        }
     </MudItem>
 </MudGrid>

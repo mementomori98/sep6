@@ -9,7 +9,7 @@
 @inject IDialogService DialogService
 @inject NavigationManager NavigationManager
 
-    
+
 @code {
 
     [Parameter]
@@ -26,7 +26,7 @@
     private bool Renaming { get; set; }
 
     private string Name { get; set; }
-    
+
     private bool Public { get; set; }
 
 
@@ -41,7 +41,7 @@
             return;
 
         var user = await AuthenticationService.GetCurrentUser(await GetAuthToken());
-        Editable = user.Id == Toplist.UserId;
+        Editable = user?.Id == Toplist.UserId;
         if (Editable)
             StateHasChanged();
     }
@@ -159,15 +159,21 @@
         {
             <MudItem xs="8" Class="d-flex">
                 <MudText Typo="Typo.h5" Class="mt-2">@Toplist.Name</MudText>
-                <div class="ml-2">
-                    <MudIconButton Icon="@(Icons.Filled.Edit)" OnClick="RenameClick"/>
-                </div>
+                @if (Editable)
+                {
+                    <div class="ml-2">
+                        <MudIconButton Icon="@(Icons.Filled.Edit)" OnClick="RenameClick"/>
+                    </div>
+                }
             </MudItem>
             <MudItem xs="4" Class="d-flex flex-row-reverse">
-                <MudIconButton Icon="@(Icons.Filled.Delete)" OnClick="OnInitiateDelete"/>
-                <MudTooltip Text="Public Toplists can be viewed by anyone">
-                    <MudSwitch T="bool" Checked="@Public" CheckedChanged="OnPublicChanged" Label="Public" Color="Color.Primary" Class="mt-2"></MudSwitch>
-                </MudTooltip>
+                @if (Editable)
+                {
+                    <MudIconButton Icon="@(Icons.Filled.Delete)" OnClick="OnInitiateDelete"/>
+                    <MudTooltip Text="Public Toplists can be viewed by anyone">
+                        <MudSwitch T="bool" Checked="@Public" CheckedChanged="OnPublicChanged" Label="Public" Color="Color.Primary" Class="mt-2"></MudSwitch>
+                    </MudTooltip>
+                }
             </MudItem>
         }
         else
