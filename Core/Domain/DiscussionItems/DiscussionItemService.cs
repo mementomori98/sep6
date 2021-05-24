@@ -44,90 +44,108 @@ namespace Core.Domain.DiscussionItems
             return await AddComment(comment);
         }
 
-        public async Task<IEnumerable<Comment>> GetCommentsOnDiscussable(long discussableId)
+        public async Task<IEnumerable<Comment>> GetCommentsOnDiscussable(long discussableId, int page, long userId)
         {
             var commentsDao = await context.Set<CommentDao>()
                 .Include(c => c.Author)
                 .Where(c => c.DiscussableId == discussableId)
-                .Take(10)
+                .OrderByDescending(c => c.Id)
+                .Take(page * 10)
                 .ToListAsync();
 
-            var comments = commentsDao.Select(async c => c.MapToComment(
-                await GetNumberOfInteractions(UserDiscussionItemInteractionType.Like, c.Id),
-                        await GetNumberOfInteractions(UserDiscussionItemInteractionType.Dislike, c.Id),
-                        await GetUserInteraction(c.AuthorId, c.Id))).ToList();
-            
+            return await GetComments(commentsDao, page, userId);
+        }
+
+        public async Task<IEnumerable<Comment>> GetSubcommentsOnDiscussionItem(long discussionItemId, int page, long userId)
+        {
+            var commentsDao = await context.Set<CommentDao>()
+                .Include(c => c.Author)
+                .Where(c => c.DiscussionItemId == discussionItemId)
+                .OrderByDescending(f => f.Id)
+                .Take(page * 10)
+                .ToListAsync();
+
+            return await GetComments(commentsDao, page, userId);
+        }
+
+        private async Task<IEnumerable<Comment>> GetComments(List<CommentDao> commentsDao, int page, long userId)
+        {
+            var comments = GetPage(commentsDao, page).Select(async c => await ToComment(c, userId)).ToList();
+
             await Task.WhenAll(comments);
             return comments.Select(c => c.Result);
         }
 
-        private async Task<Comment> ToComment(CommentDao dao)
+        private async Task<Comment> ToComment(CommentDao dao, long userId)
         {
             return dao.MapToComment(
                 await GetNumberOfInteractions(UserDiscussionItemInteractionType.Like, dao.Id),
                 await GetNumberOfInteractions(UserDiscussionItemInteractionType.Dislike, dao.Id),
-                await GetUserInteraction(dao.AuthorId, dao.Id)
+                await GetUserInteraction(userId, dao.Id)
             );
         }
 
-        private async Task<Review> ToReview(ReviewDao dao)
-        {
-            return dao.MapToReview(
-                await GetNumberOfInteractions(UserDiscussionItemInteractionType.Like, dao.Id),
-                await GetNumberOfInteractions(UserDiscussionItemInteractionType.Dislike, dao.Id),
-                await GetUserInteraction(dao.AuthorId, dao.Id)
-            );
-        }
-
-        private async Task<FunFact> ToFunFact(FunFactDao dao)
-        {
-            return dao.MapToFunFact(
-                await GetNumberOfInteractions(UserDiscussionItemInteractionType.Like, dao.Id),
-                await GetNumberOfInteractions(UserDiscussionItemInteractionType.Dislike, dao.Id),
-                await GetUserInteraction(dao.AuthorId, dao.Id)
-            );
-        }
-
-        public async Task<IEnumerable<Review>> GetReviewsOnDiscussable(long discussableId)
+        public async Task<IEnumerable<Review>> GetReviewsOnDiscussable(long discussableId, int page, long userId)
         {
             var reviewsDao = await context.Set<ReviewDao>()
-                .Include(c => c.Author)
-                .Where(c => c.DiscussableId == discussableId)
-                .Take(10)
+                .Include(r => r.Author)
+                .Where(r => r.DiscussableId == discussableId)
+                .OrderByDescending(r => r.Id)
+                .Take(page * 10)
                 .ToListAsync();
 
-            var reviews = reviewsDao.Select(async r => await ToReview(r)).ToList();
+            var reviews = GetPage(reviewsDao, page).Select(async r => await ToReview(r, userId)).ToList();
 
             await Task.WhenAll(reviews);
             return reviews.Select(c => c.Result);
         }
 
-        public async Task<IEnumerable<FunFact>> GetFunFactsOnDiscussable(long discussableId)
+        private async Task<Review> ToReview(ReviewDao dao, long userId)
+        {
+            return dao.MapToReview(
+                await GetNumberOfInteractions(UserDiscussionItemInteractionType.Like, dao.Id),
+                await GetNumberOfInteractions(UserDiscussionItemInteractionType.Dislike, dao.Id),
+                await GetUserInteraction(userId, dao.Id)
+            );
+        }
+
+        public async Task<IEnumerable<FunFact>> GetFunFactsOnDiscussable(long discussableId, int page, long userId)
         {
             var funFactsDao = await context.Set<FunFactDao>()
-                .Include(c => c.Author)
-                .Where(c => c.DiscussableId == discussableId)
-                .Take(10)
+                .Include(f => f.Author)
+                .Where(f => f.DiscussableId == discussableId)
+                .OrderByDescending(f => f.Id)
+                .Take(page * 10)
                 .ToListAsync();
 
-            var funFacts = funFactsDao.Select(async f => await ToFunFact(f)).ToList();
+            var funFacts = GetPage(funFactsDao, page).Select(async f => await ToFunFact(f, userId)).ToList();
 
             await Task.WhenAll(funFacts);
             return funFacts.Select(c => c.Result);
         }
 
-        public async Task<IEnumerable<Comment>> GetCommentsOnDiscussionItem(long discussionItemId)
+        private async Task<FunFact> ToFunFact(FunFactDao dao, long userId)
         {
-            var commentsDao = await context.Set<CommentDao>()
-                .Include(c => c.Author)
-                .Where(c => c.DiscussionItemId == discussionItemId)
-                .Take(10)
-                .ToListAsync();
+            return dao.MapToFunFact(
+                await GetNumberOfInteractions(UserDiscussionItemInteractionType.Like, dao.Id),
+                await GetNumberOfInteractions(UserDiscussionItemInteractionType.Dislike, dao.Id),
+                await GetUserInteraction(userId, dao.Id)
+            );
+        }
 
-            var comments = commentsDao.Select(async c => await ToComment(c)).ToList();
+        private int GetNumberOfEntriesToReturn(int entriesFromTheDatabase, int page)
+        {
+            if (entriesFromTheDatabase == page * 10)
+                return 10;
+            else if (entriesFromTheDatabase > (page - 1) * 10)
+                return entriesFromTheDatabase % 10;
+            else return 0;
+        }
 
-            await Task.WhenAll(comments);
-            return comments.Select(c => c.Result);
+        private IEnumerable<T> GetPage<T>(List<T> list, int page)
+        {
+            list.Reverse();
+            return list.Take(GetNumberOfEntriesToReturn(list.Count, page));
         }
 
         public async Task<UserDiscussionItemInteraction> LikeDiscussionItem(long discussionItemId, long userId)
@@ -142,8 +160,13 @@ namespace Core.Domain.DiscussionItems
 
         private async Task<UserDiscussionItemInteraction> SaveUserInteractionOnDiscussionItem(long discussionItemId, long userId, UserDiscussionItemInteractionType type)
         {
+            var previousUserInteraction = await context.Set<UserDiscussionItemInteraction>().SingleOrDefaultAsync(i => i.DiscussionItemId == discussionItemId && i.UserId == userId);
+            if(previousUserInteraction != null)
+                context.Set<UserDiscussionItemInteraction>().Remove(previousUserInteraction);
+            
             var entry = await context.AddAsync<UserDiscussionItemInteraction>(
-                new UserDiscussionItemInteraction() {
+                new UserDiscussionItemInteraction()
+                {
                     InteractionType = type,
                     DiscussionItemId = discussionItemId,
                     UserId = userId

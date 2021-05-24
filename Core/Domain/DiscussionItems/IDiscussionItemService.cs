@@ -10,10 +10,10 @@ namespace Core.Domain.DiscussionItems
 {
     public interface IDiscussionItemService
     {
-        Task<IEnumerable<Comment>> GetCommentsOnDiscussable(long discussableId);
-        Task<IEnumerable<Review>> GetReviewsOnDiscussable(long discussableId);
-        Task<IEnumerable<FunFact>> GetFunFactsOnDiscussable(long discussableId);
-        Task<IEnumerable<Comment>> GetCommentsOnDiscussionItem(long discussionItemId);
+        Task<IEnumerable<Comment>> GetCommentsOnDiscussable(long discussableId, int page, long userId);
+        Task<IEnumerable<Review>> GetReviewsOnDiscussable(long discussableId, int page, long userId);
+        Task<IEnumerable<FunFact>> GetFunFactsOnDiscussable(long discussableId, int page, long userId);
+        Task<IEnumerable<Comment>> GetSubcommentsOnDiscussionItem(long discussionItemId, int page, long userId);
         Task<long> AddComment(Comment comment);
         Task<long> AddFunFact(FunFact funFact);
         Task<long> AddReview(Review review);
