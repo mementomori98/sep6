@@ -20,7 +20,8 @@
     
     private string NewComment { get; set; }
     
-    private string _commentOpen = "";
+    private string _replyOpen = "";
+    private bool _commentOpen = false;
     private int _page = 0;
     private UserDao _user;
     PageResult<Comment> _subcomments = new();
@@ -58,7 +59,7 @@
             OpenLoginDialog();
             return;
         }
-        _commentOpen = _commentOpen.Equals("") ? "discussion__main" : "";
+        _replyOpen = _replyOpen.Equals("") ? "discussion__main" : "";
     }
 
     private void OpenLoginDialog()
@@ -76,7 +77,7 @@
         if (_subcomments.Items == null) _subcomments.Items = new List<Comment>();
         _subcomments.Items = _subcomments.Items.Prepend(reply);
         _subcomments.HasMore = _subcomments.HasMore;
-        _commentOpen = "";
+        _replyOpen = "";
     }
     
     private async Task OnGetComments()
@@ -92,13 +93,21 @@
         {
             _subcomments = newList;
         }
+        _commentOpen = true;
+    }
+    
+    private async Task OnCloseComments()
+    {
+        _subcomments = new PageResult<Comment>();
+        _page = 0;
+        _commentOpen = false;
     }
 }
 
 <div class="comment-item">
     <div class="discussion d-flex">
         <img src="/Images/avatar.png" class="discussion__avatar" alt="user avatar"/>
-        <div class="@_commentOpen" style="padding-left: 10px; width: 100%">
+        <div class="@_replyOpen" style="padding-left: 10px; width: 100%">
             <MudText Typo="Typo.body1">@Content.AuthorUsername</MudText>
             <MudText Typo="Typo.body2">@Content.Text</MudText>
             <div class="d-flex" style="font-size: 18px;">
@@ -114,11 +123,21 @@
                     <p>&#128490; </p>
                     <p class="discussion__iconText" style="padding-left: 3px">Reply</p>
                 </div>
-                <div @onmouseup="@OnGetComments" class="discussion__icon" id="discussion__commentAct" style="margin-left: 5px">
-                    <p class="discussion__iconText" style="padding-left: 3px">Get comments</p>
-                </div>
+                @if (!_commentOpen)
+                {
+                    <div @onmouseup="@OnGetComments" class="discussion__icon" id="discussion__commentAct" style="margin-left: 5px">
+                        <p class="discussion__iconText" style="padding-left: 3px">Get comments</p>
+                    </div>
+                }
+                else
+                {
+                    <div @onmouseup="@OnCloseComments" class="discussion__icon" id="discussion__commentAct" style="margin-left: 5px">
+                        <p class="discussion__iconText" style="padding-left: 3px">Close comments</p>
+                    </div>
+                }
+                
             </div>
-            @if (_commentOpen.Equals("discussion__main"))
+            @if (_replyOpen.Equals("discussion__main"))
             {
                 <div class="discussion__commentSection d-flex">
                     <MudTextField Class="discussion__comment" @bind-Value="NewComment" Label="@_user.Username" Placeholder="Comment..."/>
@@ -138,7 +157,6 @@
             @if (_subcomments.HasMore)
             {
                <p class="moreComments" @onmouseup="OnGetComments">View more comments</p>
-                <MudButton OnClick="OnGetComments">Pikachu</MudButton>
             }
             
         </div>
