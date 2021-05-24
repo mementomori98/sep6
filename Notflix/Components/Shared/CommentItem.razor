@@ -23,7 +23,7 @@
     private string _commentOpen = "";
     private int _page = 0;
     private UserDao _user;
-    IEnumerable<Comment> _subcomments;
+    IEnumerable<Comment> _subcomments = new List<Comment>();
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -71,15 +71,20 @@
     private async Task Reply()
     { 
         //Execute reply procedure
+
+        Comment reply = new Comment() {AuthorUsername = _user.Username,AuthorId = _user.Id, Text = NewComment, DiscussionItemId = Content.Id};
+        reply.Id = await DiscussionItemService.AddSubcomment(reply);
+        _subcomments = _subcomments.Prepend(reply);
         _commentOpen = "";
     }
     
     private async Task OnGetComments()
     {
+        Console.WriteLine(("HEYY"));
         _page++;
-        _subcomments.Add(await DiscussionItemService.GetSubcommentsOnDiscussionItem(83, _page, 1));
+        IEnumerable<Comment> newList = await DiscussionItemService.GetSubcommentsOnDiscussionItem(Content.Id, _page, 1);
+        _subcomments = _subcomments.Concat(newList);
     }
-
 }
 
 <div class="comment-item">

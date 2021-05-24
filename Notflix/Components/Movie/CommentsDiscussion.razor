@@ -1,29 +1,40 @@
 ﻿@using Core.Domain.DiscussionItems
 @using Core.Domain.DiscussionItems.Models
+@using Core.Domain.Authentication
+@using Core.Data.Models
 @inject IDiscussionItemService DiscussionItemService
+@inject IAuthenticationService AuthenticationService
+@inherits AuthBase
 
 @code {
 
     [Parameter]
     public long MovieId { get; set; }
+    
+    
+    private UserDao _user;
 
     private IEnumerable<Comment> _comments;
 
     protected override async Task OnInitializedAsync()
     {
-        _comments = await DiscussionItemService.GetCommentsOnDiscussable(2, 1, 1);
+        _comments = await DiscussionItemService.GetCommentsOnDiscussable(MovieId, 1, 1);
     }
-
-    public class Comments
+    
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        public string AuthorUsername { get; set; }
-        public string Text { get; set; }
-        public List<Comment> Children { get; set; }
-        public long NumberOfLikes { get; set; }
-        public long NumberOfDislikes { get; set; }
+        _user = await AuthenticationService.GetCurrentUser(await GetAuthToken());
+    }
+    
+    private async Task MakeComment()
+    {
+        Comment reply = new Comment() {AuthorUsername = _user.Username, AuthorId = _user.Id, Text = "What a movie!", DiscussableId = MovieId};
+        reply.Id = await DiscussionItemService.AddSubcomment(reply);
+        _comments = _comments.Prepend(reply);
     }
 
 }
+<MudButton OnClick="MakeComment">Make a comment</MudButton>
 
 @foreach (var comment in _comments)
 {
