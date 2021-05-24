@@ -1,10 +1,14 @@
 ﻿@using Notflix.Components.Movie
 @using Core.Domain.Authentication
 @using Core.Data.Models
+@using Core.Domain.DiscussionItems
 @using Notflix.Components.Accounts
+@using Core.Domain.DiscussionItems.Models
+@using Microsoft.AspNetCore.Components
 @inherits AuthBase
- @inject IDialogService DialogService
+@inject IDialogService DialogService
 @inject IAuthenticationService AuthenticationService
+@inject IDiscussionItemService DiscussionItemService
 
 @code {
 
@@ -12,11 +16,14 @@
     NavigationManager NavigationManager { get; set; }
     
     [Parameter]
-    public CommentsDiscussion.Comment Content { get; set; }
-
-    private string Comment { get; set; }
+    public Comment Content { get; set; }
+    
+    private string NewComment { get; set; }
+    
     private string _commentOpen = "";
+    private int _page = 0;
     private UserDao _user;
+    IEnumerable<Comment> _subcomments;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -66,6 +73,12 @@
         //Execute reply procedure
         _commentOpen = "";
     }
+    
+    private async Task OnGetComments()
+    {
+        _page++;
+        _subcomments.Add(await DiscussionItemService.GetSubcommentsOnDiscussionItem(83, _page, 1));
+    }
 
 }
 
@@ -88,26 +101,31 @@
                     <p>&#128490; </p>
                     <p class="discussion__iconText" style="padding-left: 3px">Reply</p>
                 </div>
+                <div @onmouseup="@OnGetComments" class="discussion__icon" id="discussion__commentAct" style="margin-left: 5px">
+                    <p class="discussion__iconText" style="padding-left: 3px">Get comments</p>
+                </div>
             </div>
             @if (_commentOpen.Equals("discussion__main"))
             {
                 <div class="discussion__commentSection d-flex">
-                    <MudTextField Class="discussion__comment" @bind-Value="Comment" Label="@_user.Username" Placeholder="Comment..."/>
+                    <MudTextField Class="discussion__comment" @bind-Value="NewComment" Label="@_user.Username" Placeholder="Comment..."/>
                     <MudButton Style="height: fit-content; margin-top: auto; border:1px solid #594ae2" OnClick="Reply">Reply</MudButton>
                 </div>
             }
         </div>
     </div>
 
-    @if (Content.Children != null && Content.Children.Any())
+    @if (_subcomments != null && _subcomments.Any())
     {
         <div class="comment-item-children">
-            @foreach (var child in Content.Children)
+            @foreach (var child in _subcomments)
             {
                 <CommentItem Content="@child"></CommentItem>
             }
+            <MudButton OnClick="OnGetComments">Pikachu</MudButton>
         </div>
     }
+    
 
 
 </div>
