@@ -63,7 +63,7 @@ namespace Core.Domain.Toplists
                 UserId = user.Id
             });
             await context.SaveChangesAsync();
-
+            
             return Map(await Fetch(entry.Entity.Id));
         }
 
