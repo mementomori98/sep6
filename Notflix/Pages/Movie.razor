@@ -7,13 +7,13 @@
     [Parameter] 
     public string Id { get; set; }
     
+    private MovieModel _movieModel;
+    
     protected override async Task OnParametersSetAsync()
     {
         _movieModel = await MovieService.GetMovieDetails(Id);
     }
-    private MovieModel _movieModel;
-
-
+    
     private int GetRating(MovieModel movieModel)
     {
         var value = movieModel.Ratings.First().Value;
@@ -26,8 +26,6 @@
     protected override void OnAfterRender(bool firstRender)
     {
         _rendered = true;
-        
-        
     }
 
 }
