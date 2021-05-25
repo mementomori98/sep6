@@ -1,0 +1,36 @@
+﻿@page "/Actor/{id}"
+@inject IJSRuntime JS
+@inject IMovieService MovieService
+
+@code {
+    [Parameter] 
+    public string Id { get; set; }
+    
+  //  private ActorModel _actorModel;
+    
+    protected override async Task OnParametersSetAsync()
+    {
+       // _actorodel = await ActorService.......GetActorDetails....(Id);
+    }
+    
+
+
+  /*  private int GetRating(ActorModel _actorModel)
+    {
+        var value = _actorModel.Ratings.First().Value;
+        var rating = value.Substring(0, value.IndexOf("/", StringComparison.Ordinal)).Trim();
+        return (int) Math.Round(float.Parse(rating) / 2);
+    }*/
+
+    private bool _rendered;
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        _rendered = true;
+    }
+
+}
+
+<Card>
+    Actor...
+</Card>
