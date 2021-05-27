@@ -25,7 +25,11 @@
 
     protected override void OnAfterRender(bool firstRender)
     {
-        _rendered = true;
+        if (firstRender)
+        {
+            _rendered = true;
+            StateHasChanged();
+        }
     }
 
 }
