@@ -87,7 +87,8 @@
 
     private async Task Reply()
     {
-    //Execute reply procedure
+        if (NewComment is null or "") return;
+        //Execute reply procedure
         var comment = await DiscussionItemService.AddComment(new AddCommentRequest
         {
             DiscussionItemId = Content.Id,
@@ -177,7 +178,4 @@
             }
         </div>
     }
-
-
-
 </div>
