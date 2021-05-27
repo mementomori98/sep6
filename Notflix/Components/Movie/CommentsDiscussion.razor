@@ -40,7 +40,18 @@
         });
         _comments = _comments.Prepend(CommentTreeViewModel.Map(comment)).OrderByDescending(c => c.Created).ToList();
     }
-
+    
+    private async Task OnGetComments(int limit = 10)
+    {
+        var comments = await DiscussionItemService.GetComments(new GetCommentsRequest
+        {
+            DiscussableId = MovieId,
+            ToDate = _comments.LastOrDefault()?.Created,
+            Token = await GetAuthToken()
+        });
+        HasMoreComments = comments.HasMore;
+        _comments = _comments.Concat(comments.Items.Select(CommentTreeViewModel.Map)).OrderByDescending(c => c.Created).ToList();
+    }
 }
 @if (_user != null)
 {
@@ -53,4 +64,8 @@
 @foreach (var comment in _comments ?? new CommentTreeViewModel[0])
 {
     <CommentItem Content="@comment"/>
+}
+@if (HasMoreComments)
+{
+    <p class="moreComments" @onmouseup="() => OnGetComments()">View more comments</p>
 }
