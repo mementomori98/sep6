@@ -18,15 +18,24 @@
 
     protected override async Task OnInitializedAsync()
     {
-        _comments = await DiscussionItemService.GetCommentsOnDiscussable(MovieId, 1, 1);
+        _comments = await DiscussionItemService.GetComments(new GetCommentsRequest
+        {
+            DiscussableId = MovieId,
+            ToDate = DateTime.Now,
+            
+        });
         _user = await AuthenticationService.GetCurrentUser(await GetAuthToken());
     }
     
     private async Task MakeComment()
     {
-        CommentModel reply = new CommentModel() {AuthorUsername = _user.Username, AuthorId = _user.Id, Text = NewComment, DiscussableId = MovieId};
-        reply.Id = await DiscussionItemService.AddSubcomment(reply);
-        _comments.Items = _comments.Items.Prepend(reply);
+        CommentModel comment = await DiscussionItemService.AddComment(new AddCommentRequest
+        {
+            DiscussableId = MovieId,
+            Text = NewComment,
+            Token = await GetAuthToken(),
+        });
+        _comments.Items = _comments.Items.Prepend(comment);
     }
 
 }
@@ -40,6 +49,5 @@
 
 @foreach (var comment in _comments.Items)
 {
-    
     <CommentItem Content="@comment"/>
 }
