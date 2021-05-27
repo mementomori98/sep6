@@ -8,209 +8,27 @@ using System.Threading.Tasks;
 using Core.Data;
 using Microsoft.EntityFrameworkCore;
 using Core.Data.Models.DiscussionItems;
+using Core.Domain.Authentication;
+using Org.BouncyCastle.Asn1.X509;
 
 namespace Core.Domain.DiscussionItems
 {
     public class DiscussionItemService : IDiscussionItemService
     {
-        MovieContext Context = new MovieContext();
         private const int DefaultPageSize = 10;
+        private readonly IAuthenticationService _authenticationService;
 
-        public async Task<long> AddComment(CommentModel comment)
+        public DiscussionItemService(
+            IAuthenticationService authenticationService)
         {
-            CommentDao dao = CommentDao.MapCommentToDao(comment);
-            var entry = await Context.AddAsync(dao);
-            await Context.SaveChangesAsync();
-            return entry.Entity.Id;
-        }
-
-        public async Task<long> AddFunFact(FunFactModel funFact)
-        {
-            FunFactDao dao = FunFactDao.MapFunFactToDao(funFact);
-            var entry = await Context.AddAsync(dao);
-            await Context.SaveChangesAsync();
-            return entry.Entity.Id;
-        }
-
-        public async Task<long> AddReview(ReviewModel review)
-        {
-            ReviewDao dao = ReviewDao.MapReviewToDao(review);
-            var entry = await Context.AddAsync(dao);
-            await Context.SaveChangesAsync();
-            return entry.Entity.Id;
-        }
-
-        public async Task<long> AddSubcomment(CommentModel comment)
-        {
-            return await AddComment(comment);
-        }
-
-        public async Task<PageResult<CommentModel>> GetCommentsOnDiscussable(long discussableId, int page, long userId)
-        {
-            var query = Context.Set<CommentDao>()
-                .Include(c => c.Author)
-                .Where(c => c.DiscussableId == discussableId)
-                .OrderByDescending(c => c.Id)
-                .Skip((page - 1) * DefaultPageSize);
-            
-            var commentsDao = await query
-                .Take(DefaultPageSize)
-                .ToListAsync();
-
-            return new PageResult<CommentModel>
-            {
-                Items = await GetComments(commentsDao, page, userId),
-                HasMore = await query.CountAsync() > DefaultPageSize
-            };
-        }
-
-        public async Task<PageResult<CommentModel>> GetSubcommentsOnDiscussionItem(long discussionItemId, int page, long userId)
-        {
-            var query = Context.Set<CommentDao>()
-                .Include(c => c.Author)
-                .Where(c => c.DiscussionItemId == discussionItemId)
-                .OrderByDescending(f => f.Id)
-                .Skip((page - 1) * DefaultPageSize);
-            
-            var commentsDao = await query
-                .Take(DefaultPageSize)
-                .ToListAsync();
-
-            return new PageResult<CommentModel>
-            {
-                Items = await GetComments(commentsDao, page, userId),
-                HasMore = await query.CountAsync() > DefaultPageSize
-            };
-        }
-
-        private async Task<IEnumerable<CommentModel>> GetComments(List<CommentDao> commentsDao, int page, long userId)
-        {
-            var comments = commentsDao.Select(async c => await ToComment(c, userId)).ToList();
-
-            await Task.WhenAll(comments);
-            return comments.Select(c => c.Result);
-        }
-
-        private async Task<CommentModel> ToComment(CommentDao dao, long userId)
-        {
-            return dao.MapToComment(
-                await GetNumberOfInteractions(UserDiscussionItemInteractionTypes.Like, dao.Id),
-                await GetNumberOfInteractions(UserDiscussionItemInteractionTypes.Dislike, dao.Id),
-                await GetUserInteraction(userId, dao.Id)
-            );
-        }
-
-        public async Task<PageResult<ReviewModel>> GetReviewsOnDiscussable(long discussableId, int page, long userId)
-        {
-            var query = Context.Set<ReviewDao>()
-                .Include(r => r.Author)
-                .Where(r => r.DiscussableId == discussableId)
-                .OrderByDescending(r => r.Id)
-                .Skip((page - 1) * DefaultPageSize);
-            var reviewsDao = await query
-                .Take(DefaultPageSize)
-                .ToListAsync();
-
-            var reviews = reviewsDao.Select(async r => await ToReview(r, userId)).ToList();
-
-            await Task.WhenAll(reviews);
-            return new PageResult<ReviewModel>
-            {
-                Items = reviews.Select(c => c.Result),
-                HasMore = await query.CountAsync() > DefaultPageSize
-            };
-        }
-
-        private async Task<ReviewModel> ToReview(ReviewDao dao, long userId)
-        {
-            return dao.MapToReview(
-                await GetNumberOfInteractions(UserDiscussionItemInteractionTypes.Like, dao.Id),
-                await GetNumberOfInteractions(UserDiscussionItemInteractionTypes.Dislike, dao.Id),
-                await GetUserInteraction(userId, dao.Id)
-            );
-        }
-
-        public async Task<PageResult<FunFactModel>> GetFunFactsOnDiscussable(long discussableId, int page, long userId)
-        {
-            var query = Context.Set<FunFactDao>()
-                .Include(f => f.Author)
-                .Where(f => f.DiscussableId == discussableId)
-                .OrderByDescending(f => f.Id)
-                .Skip((page - 1) * DefaultPageSize);
-            
-            var funFactsDao = await query
-                .Take(DefaultPageSize)
-                .ToListAsync();
-
-            var funFacts = funFactsDao.Select(async f => await ToFunFact(f, userId)).ToList();
-
-            await Task.WhenAll(funFacts);
-            return new PageResult<FunFactModel>
-            {
-                Items = funFacts.Select(c => c.Result),
-                HasMore = await query.CountAsync() > DefaultPageSize
-            };
-        }
-
-        private async Task<FunFactModel> ToFunFact(FunFactDao dao, long userId)
-        {
-            return dao.MapToFunFact(
-                await GetNumberOfInteractions(UserDiscussionItemInteractionTypes.Like, dao.Id),
-                await GetNumberOfInteractions(UserDiscussionItemInteractionTypes.Dislike, dao.Id),
-                await GetUserInteraction(userId, dao.Id)
-            );
-        }
-
-        public async Task<UserDiscussionItemInteractionDao> LikeDiscussionItem(long discussionItemId, long userId)
-        {
-            return await SaveUserInteractionOnDiscussionItem(discussionItemId, userId, UserDiscussionItemInteractionTypes.Like);
-        }
-
-        public async Task<UserDiscussionItemInteractionDao> DislikeDiscussionItem(long discussionItemId, long userId)
-        {
-            return await SaveUserInteractionOnDiscussionItem(discussionItemId, userId, UserDiscussionItemInteractionTypes.Dislike);
-        }
-
-        private async Task<UserDiscussionItemInteractionDao> SaveUserInteractionOnDiscussionItem(long discussionItemId, long userId, UserDiscussionItemInteractionTypes types)
-        {
-            var previousUserInteraction = await Context.Set<UserDiscussionItemInteractionDao>().SingleOrDefaultAsync(i => i.DiscussionItemId == discussionItemId && i.UserId == userId);
-            if(previousUserInteraction != null)
-                Context.Set<UserDiscussionItemInteractionDao>().Remove(previousUserInteraction);
-            
-            var entry = await Context.AddAsync<UserDiscussionItemInteractionDao>(
-                new UserDiscussionItemInteractionDao()
-                {
-                    InteractionType = types,
-                    DiscussionItemId = discussionItemId,
-                    UserId = userId
-                });
-            await Context.SaveChangesAsync();
-            return entry.Entity;
-        }
-
-        private async Task<long> GetNumberOfInteractions(UserDiscussionItemInteractionTypes interactionTypes, long discussionItemId)
-        {
-            return await Context.Set<UserDiscussionItemInteractionDao>()
-                .CountAsync(i => i.DiscussionItemId == discussionItemId && i.InteractionType == interactionTypes);
-        }
-
-        private async Task<UserDiscussionItemInteractionTypes?> GetUserInteraction(long userId, long discussionItemId)
-        {
-            var userInteraction = await Context.Set<UserDiscussionItemInteractionDao>()
-                .SingleOrDefaultAsync(i => i.DiscussionItemId == discussionItemId && i.UserId == userId);
-            return userInteraction == null ? null : userInteraction.InteractionType;
+            _authenticationService = authenticationService;
         }
 
         public async Task<PageResult<CommentModel>> GetComments(GetCommentsRequest request)
         {
             await using var context = new MovieContext();
-            var query = context.Set<CommentDao>()
-                .Where(c => c.DiscussableId == request.DiscussableId &&
-                            c.DiscussionItemId == request.DiscussionItemId);
-            if (request.FromDate != null)
-                query = query.Where(c => c.Created > request.FromDate.Value);
-            if (request.ToDate != null)
-                query = query.Where(c => c.Created < request.ToDate.Value);
+            var query = GetQuery<CommentDao>(context, request.DiscussableId, request.FromDate, request.ToDate)
+                .Where(c => c.DiscussionItemId == request.DiscussionItemId);
 
             var limit = request.Limit ?? DefaultPageSize;
             var count = await query.CountAsync();
@@ -218,10 +36,12 @@ namespace Core.Domain.DiscussionItems
             var comments = await query
                 .Take(limit)
                 .ToListAsync();
-            
+
+            var user = await _authenticationService.GetCurrentUser(request.Token);
+
             return new PageResult<CommentModel>
             {
-                Items = comments.Select(Map),
+                Items = comments.OrderBy(c => c.Created).Select(c => Map(c, user?.Id)),
                 HasMore = count > limit
             };
         }
@@ -229,27 +49,116 @@ namespace Core.Domain.DiscussionItems
         public async Task<PageResult<ReviewModel>> GetReviews(GetReviewsRequest request)
         {
             await using var context = new MovieContext();
-            return null;
+            var query = GetQuery<ReviewDao>(context, request.DiscussableId, request.FromDate, request.ToDate);
+
+            var limit = request.Limit ?? DefaultPageSize;
+            var count = await query.CountAsync();
+
+            var reviews = await query
+                .Take(limit)
+                .ToListAsync();
+
+            var user = await _authenticationService.GetCurrentUser(request.Token);
+
+            return new PageResult<ReviewModel>
+            {
+                Items = reviews.OrderBy(r => r.Created).Select(r => Map(r, user?.Id)),
+                HasMore = count > limit
+            };
         }
 
         public async Task<PageResult<FunFactModel>> GetFunFacts(GetFunFactsRequest request)
         {
-            throw new NotImplementedException();
+            await using var context = new MovieContext();
+            var query = GetQuery<FunFactDao>(context, request.DiscussableId, request.FromDate, request.ToDate);
+
+            var limit = request.Limit ?? DefaultPageSize;
+            var count = await query.CountAsync();
+
+            var funFacts = await query
+                .Take(limit)
+                .ToListAsync();
+
+            var user = await _authenticationService.GetCurrentUser(request.Token);
+
+            return new PageResult<FunFactModel>
+            {
+                Items = funFacts.OrderBy(f => f.Created).Select(f => Map(f, user?.Id)),
+                HasMore = count > limit
+            };
         }
 
         public async Task<CommentModel> AddComment(AddCommentRequest request)
         {
-            throw new NotImplementedException();
+            var user = await _authenticationService.GetCurrentUser(request.Token);
+            if (user == null)
+                throw new Exception("Unauthorized");
+
+            if (request.DiscussableId != null && request.DiscussionItemId != null)
+                throw new ArgumentException("Can't have both ids");
+            if (request.DiscussableId == null && request.DiscussionItemId == null)
+                throw new ArgumentException("Must have one id");
+
+            await using var context = new MovieContext();
+            var entry = await context.AddAsync(new CommentDao
+            {
+                Created = DateTime.Now,
+                Text = request.Text,
+                DiscussableId = request.DiscussableId,
+                DiscussionItemId = request.DiscussionItemId,
+                AuthorId = user.Id
+            });
+
+            await context.SaveChangesAsync();
+
+            var query = GetQuery<CommentDao>(context);
+
+            return Map(await query.SingleAsync(c => c.Id == entry.Entity.Id), null);
         }
 
         public async Task<ReviewModel> AddReview(AddReviewRequest request)
         {
-            throw new NotImplementedException();
+            var user = await _authenticationService.GetCurrentUser(request.Token);
+            if (user == null)
+                throw new Exception("Unauthorized");
+
+            await using var context = new MovieContext();
+            var entry = await context.AddAsync(new ReviewDao
+            {
+                Created = DateTime.Now,
+                Text = request.Text,
+                DiscussableId = request.DiscussableId,
+                NumberOfStars = request.Stars,
+                AuthorId = user.Id
+            });
+
+            await context.SaveChangesAsync();
+
+            var query = GetQuery<ReviewDao>(context);
+
+            return Map(await query.SingleAsync(r => r.Id == entry.Entity.Id), null);
         }
 
         public async Task<FunFactModel> AddFunFact(AddFunFactRequest request)
         {
-            throw new NotImplementedException();
+            var user = await _authenticationService.GetCurrentUser(request.Token);
+            if (user == null)
+                throw new Exception("Unauthorized");
+
+            await using var context = new MovieContext();
+            var entry = await context.AddAsync(new FunFactDao
+            {
+                Created = DateTime.Now,
+                Text = request.Text,
+                AuthorId = user.Id,
+                DiscussableId = request.DiscussableId
+            });
+
+            await context.SaveChangesAsync();
+
+            var query = GetQuery<FunFactDao>(context);
+
+            return Map(await query.SingleAsync(f => f.Id == entry.Entity.Id), null);
         }
 
         public async Task Interact(InteractRequest request)
@@ -262,9 +171,60 @@ namespace Core.Domain.DiscussionItems
             throw new NotImplementedException();
         }
 
-        private static CommentModel Map(CommentDao comment)
+        private static IQueryable<TDao> GetQuery<TDao>(MovieContext context, long? discussableId = null, DateTime? fromDate = null, DateTime? toDate = null) where TDao : DiscussionItemDao
         {
-            return null;
+            var query = context.Set<TDao>()
+                .Include(di => di.Author)
+                .Include(di => di.Interactions)
+                .AsQueryable();
+            
+            if (discussableId != null)
+                query = query.Where(di => di.DiscussableId == discussableId);
+            if (toDate != null)
+                query = query.Where(di => di.Created < toDate.Value)
+                    .OrderByDescending(di => di.Created);
+            if (fromDate != null)
+                query = query.Where(di => di.Created > fromDate.Value)
+                    .OrderBy(di => di.Created);
+
+            return query;
+        }
+        
+        private static CommentModel Map(CommentDao comment, long? userId)
+        {
+            var model = MapBase<CommentModel, CommentDao>(comment, userId);
+            model.DiscussionItemId = comment.DiscussableId;
+            return model;
+        }
+
+        private static ReviewModel Map(ReviewDao review, long? userId)
+        {
+            var model = MapBase<ReviewModel, ReviewDao>(review, userId);
+            model.NumberOfStars = review.NumberOfStars;
+            return model;
+        }
+
+        private static FunFactModel Map(FunFactDao funFact, long? userId)
+        {
+            return MapBase<FunFactModel, FunFactDao>(funFact, userId);
+        }
+
+        private static TModel MapBase<TModel, TDao>(TDao dao, long? userId = null)
+            where TModel : DiscussionItemModelBase, new()
+            where TDao : DiscussionItemDao
+        {
+            return new TModel
+            {
+                Id = dao.Id,
+                Created = dao.Created,
+                Text = dao.Text,
+                AuthorId = dao.AuthorId,
+                AuthorUsername = dao.Author.Username,
+                DiscussableId = dao.DiscussableId,
+                NumberOfLikes = dao.Interactions.Count(i => i.InteractionType == UserDiscussionItemInteractionTypes.Like),
+                NumberOfDislikes = dao.Interactions.Count(i => i.InteractionType == UserDiscussionItemInteractionTypes.Dislike),
+                UserInteractionType = dao.Interactions.SingleOrDefault(i => i.UserId == userId)?.InteractionType
+            };
         }
     }
 }

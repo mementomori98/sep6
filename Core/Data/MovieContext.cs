@@ -98,7 +98,7 @@ namespace Core.Data
                     .IsRequired()
                     .OnDelete(DeleteBehavior.Cascade), x =>
                 x.HasOne<DiscussionItemDao>()
-                    .WithMany()
+                    .WithMany(di => di.Interactions)
                     .HasForeignKey(i => i.DiscussionItemId)
                     .IsRequired()
                     .OnDelete(DeleteBehavior.Cascade));

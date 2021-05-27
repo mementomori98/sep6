@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Core.Data.Models.DiscussionItems;
 
 namespace Core.Data.Models
 {
@@ -15,6 +16,8 @@ namespace Core.Data.Models
         public long AuthorId { get; set; }
         public long? DiscussableId { get; set; }
         public UserDao Author { get; set; }
+        
+        public ICollection<UserDiscussionItemInteractionDao> Interactions { get; set; }
         
         public DiscussionItemModelBase MapToDiscussionItem(DiscussionItemModelBase copy, long numberOfLikes, long numberOfDislikes, UserDiscussionItemInteractionTypes? interaction)
         {

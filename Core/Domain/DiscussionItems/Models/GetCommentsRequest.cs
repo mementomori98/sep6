@@ -1,8 +1,9 @@
 ﻿using System;
+using Core.Domain.Utils;
 
 namespace Core.Domain.DiscussionItems.Models
 {
-    public class GetCommentsRequest
+    public class GetCommentsRequest : AuthorizedModel
     {
         public long? DiscussableId { get; set; }
         public long? DiscussionItemId { get; set; }
