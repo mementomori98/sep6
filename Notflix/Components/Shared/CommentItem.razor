@@ -88,7 +88,7 @@
     private async Task Reply()
     {
         if (NewComment is null or "") return;
-        //Execute reply procedure
+    //Execute reply procedure
         var comment = await DiscussionItemService.AddComment(new AddCommentRequest
         {
             DiscussionItemId = Content.Id,
@@ -155,13 +155,6 @@
                     <p class="moreComments" style="font-size: 12px; color: #4234aa" @onmouseup="() => OnCloseComments()">Hide comments</p>
                 }
             }
-            @if (_replyOpen.Equals("discussion__main"))
-            {
-                <div class="discussion__commentSection d-flex">
-                    <MudTextField Class="discussion__comment" @bind-Value="NewComment" Label="@_user.Username" Placeholder="Comment..."/>
-                    <MudButton Style="height: fit-content; margin-top: auto; border:1px solid #594ae2" OnClick="Reply">Reply</MudButton>
-                </div>
-            }
         </div>
     </div>
 
@@ -176,6 +169,13 @@
             {
                 <p class="moreComments moreComments__edge" @onmouseup="() => OnGetComments()">View more comments</p>
             }
+        </div>
+    }
+    @if (_replyOpen.Equals("discussion__main"))
+    {
+        <div class="discussion__commentSection discussion__commentEdge d-flex" style="margin-left: 16px">
+            <MudTextField Class="discussion__comment" @bind-Value="NewComment" Label="@_user.Username" Placeholder="Comment..."/>
+            <MudButton Style="height: fit-content; margin-top: auto; border:1px solid #594ae2" OnClick="Reply">Reply</MudButton>
         </div>
     }
 </div>
