@@ -17,7 +17,7 @@
     private IEnumerable<CommentTreeViewModel> _comments;
     private bool HasMoreComments { get; set; }
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnParametersSetAsync()
     {
         _user = await AuthenticationService.GetCurrentUser(await GetAuthToken());
         var comments = await DiscussionItemService.GetComments(new GetCommentsRequest
