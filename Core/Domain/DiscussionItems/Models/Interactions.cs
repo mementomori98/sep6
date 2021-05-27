@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Core.Domain.DiscussionItems.Models
 {
-    public enum UserDiscussionItemInteractionTypes
+    public enum Interactions
     {
         Like,
         Dislike

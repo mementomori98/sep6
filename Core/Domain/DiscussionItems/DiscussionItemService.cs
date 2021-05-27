@@ -166,12 +166,43 @@ namespace Core.Domain.DiscussionItems
 
         public async Task Interact(InteractRequest request)
         {
-            throw new NotImplementedException();
+            var user = await _authenticationService.GetCurrentUser(request.Token);
+            if (user == null)
+                throw new Exception("Unauthorized");
+
+            await using var context = new MovieContext();
+            if (request.Interaction != null)
+                await context.AddAsync(new InteractionDao
+                {
+                    UserId = user.Id,
+                    DiscussionItemId = request.DiscussionItemId,
+                    Type = request.Interaction.Value
+                });
+            else
+            {
+                var interaction = await context.Set<InteractionDao>()
+                    .SingleAsync(i => i.UserId == user.Id &&
+                                      i.DiscussionItemId == request.DiscussionItemId);
+                context.Remove(interaction);
+            }
+
+            await context.SaveChangesAsync();
         }
 
         public async Task Delete(DeleteRequest request)
         {
-            throw new NotImplementedException();
+            var user = await _authenticationService.GetCurrentUser(request.Token);
+            if (user == null)
+                throw new Exception("Unauthorized");
+
+            await using var context = new MovieContext();
+            var item = await context.Set<DiscussionItemDao>()
+                .SingleAsync(di => di.Id == request.DiscussionItemId);
+            if (item.AuthorId != user.Id)
+                throw new Exception("User does not own Discussion Item");
+
+            context.Remove(item);
+            await context.SaveChangesAsync();
         }
 
         private static IQueryable<TDao> GetQuery<TDao>(MovieContext context, long? discussableId = null, DateTime? fromDate = null, DateTime? toDate = null) where TDao : DiscussionItemDao
@@ -226,9 +257,9 @@ namespace Core.Domain.DiscussionItems
                 AuthorUsername = dao.Author.Username,
                 HasComments = dao.Comments.Any(),
                 DiscussableId = dao.DiscussableId,
-                NumberOfLikes = dao.Interactions.Count(i => i.InteractionType == UserDiscussionItemInteractionTypes.Like),
-                NumberOfDislikes = dao.Interactions.Count(i => i.InteractionType == UserDiscussionItemInteractionTypes.Dislike),
-                UserInteractionType = dao.Interactions.SingleOrDefault(i => i.UserId == userId)?.InteractionType
+                NumberOfLikes = dao.Interactions.Count(i => i.Type == Interactions.Like),
+                NumberOfDislikes = dao.Interactions.Count(i => i.Type == Interactions.Dislike),
+                UserInteractionType = dao.Interactions.SingleOrDefault(i => i.UserId == userId)?.Type
             };
         }
     }

@@ -89,9 +89,9 @@ namespace Core.Data
 
             b.Configure<FunFactDao>();
 
-            b.Configure<UserDiscussionItemInteractionDao>(x =>
+            b.Configure<InteractionDao>(x =>
                 x.HasKey(i => new {i.DiscussionItemId, i.UserId}), x =>
-                x.ToTable("UserDiscussionItemInteraction"), x =>
+                x.ToTable("Interaction"), x =>
                 x.HasOne<UserDao>()
                     .WithMany()
                     .HasForeignKey(i => i.UserId)

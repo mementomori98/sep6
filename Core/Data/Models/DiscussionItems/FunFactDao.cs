@@ -17,7 +17,7 @@ namespace Core.Data.Models
             );
         }
 
-        internal FunFactModel MapToFunFact(long numberOfLikes, long numberOfDislikes, UserDiscussionItemInteractionTypes? interaction)
+        internal FunFactModel MapToFunFact(long numberOfLikes, long numberOfDislikes, Interactions? interaction)
         {
             return (FunFactModel)MapToDiscussionItem(new FunFactModel(), numberOfLikes, numberOfDislikes, interaction);
         }

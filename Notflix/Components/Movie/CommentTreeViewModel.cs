@@ -12,7 +12,7 @@ namespace Notflix.Components.Movie
         public string AuthorUsername { get; set; }
         public long Likes { get; set; }
         public long Dislikes { get; set; }
-        public UserDiscussionItemInteractionTypes? Interaction { get; set; }
+        public Interactions? Interaction { get; set; }
         public IEnumerable<CommentTreeViewModel> Comments { get; set; }
         public bool HasMore { get; set; }
         
