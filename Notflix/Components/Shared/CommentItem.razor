@@ -16,7 +16,7 @@
     NavigationManager NavigationManager { get; set; }
     
     [Parameter]
-    public Comment Content { get; set; }
+    public CommentModel Content { get; set; }
     
     private string NewComment { get; set; }
     
@@ -24,7 +24,7 @@
     private bool _commentOpen = false;
     private int _page = 0;
     private UserDao _user;
-    PageResult<Comment> _subcomments = new();
+    PageResult<CommentModel> _subcomments = new();
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -72,9 +72,9 @@
     private async Task Reply()
     { 
         //Execute reply procedure
-        Comment reply = new Comment() {AuthorUsername = _user.Username,AuthorId = _user.Id, Text = NewComment, DiscussionItemId = Content.Id};
+        CommentModel reply = new CommentModel() {AuthorUsername = _user.Username,AuthorId = _user.Id, Text = NewComment, DiscussionItemId = Content.Id};
         reply.Id = await DiscussionItemService.AddSubcomment(reply);
-        if (_subcomments.Items == null) _subcomments.Items = new List<Comment>();
+        if (_subcomments.Items == null) _subcomments.Items = new List<CommentModel>();
         _subcomments.Items = _subcomments.Items.Prepend(reply);
         _subcomments.HasMore = _subcomments.HasMore;
         _replyOpen = "";
@@ -83,7 +83,7 @@
     private async Task OnGetComments()
     {
         _page++;
-        PageResult<Comment> newList = await DiscussionItemService.GetSubcommentsOnDiscussionItem(Content.Id, _page, 1);
+        PageResult<CommentModel> newList = await DiscussionItemService.GetSubcommentsOnDiscussionItem(Content.Id, _page, 1);
         if (_subcomments.Items != null)
         {
             _subcomments.Items = _subcomments.Items.Concat(newList.Items);
@@ -98,7 +98,7 @@
     
     private async Task OnCloseComments()
     {
-        _subcomments = new PageResult<Comment>();
+        _subcomments = new PageResult<CommentModel>();
         _page = 0;
         _commentOpen = false;
     }

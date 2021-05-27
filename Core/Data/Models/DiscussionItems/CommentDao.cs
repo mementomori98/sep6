@@ -11,16 +11,16 @@ namespace Core.Data.Models
     {
         public long? DiscussionItemId { get; set; }
 
-        public Comment MapToComment(long numberOfLikes, long numberOfDislikes, UserDiscussionItemInteractionType? interaction)
+        public CommentModel MapToComment(long numberOfLikes, long numberOfDislikes, UserDiscussionItemInteractionTypes? interaction)
         {
-            Comment copy = new Comment() { 
+            CommentModel copy = new CommentModel() { 
                 DiscussionItemId = DiscussionItemId
             };
 
-            return (Comment)MapToDiscussionItem(copy, numberOfLikes, numberOfDislikes, interaction);
+            return (CommentModel)MapToDiscussionItem(copy, numberOfLikes, numberOfDislikes, interaction);
         }
 
-        public static CommentDao MapCommentToDao(Comment comment)
+        public static CommentDao MapCommentToDao(CommentModel comment)
         {
             return (CommentDao) MapDiscussionItemToDao(
                 comment, 

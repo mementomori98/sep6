@@ -7,14 +7,14 @@
     int count;
     private async void GetDiscussionItem()
     {
-        Comment comment = new Comment()
+        CommentModel comment = new CommentModel()
         {
             Text = "Hello world",
             AuthorId = 1,
             DiscussableId = 2
         };
 
-        Review review = new Review()
+        ReviewModel review = new ReviewModel()
         {
             Text = "Hello review",
             AuthorId = 1,
@@ -22,14 +22,14 @@
             NumberOfStars = 5
         };
 
-        FunFact funFact = new FunFact()
+        FunFactModel funFact = new FunFactModel()
         {
             Text = "Hello fun fact",
             AuthorId = 1,
             DiscussableId = 2
         };
 
-        Comment subcomment = new Comment()
+        CommentModel subcomment = new CommentModel()
         {
             Text = "Subcomment",
             AuthorId = 1,

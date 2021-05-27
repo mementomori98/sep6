@@ -11,7 +11,7 @@ namespace Core.Data.Models
     {
         public int NumberOfStars { get; set; }
 
-        public static ReviewDao MapReviewToDao(Review review)
+        public static ReviewDao MapReviewToDao(ReviewModel review)
         {
             return (ReviewDao)MapDiscussionItemToDao(
                 review,
@@ -22,14 +22,14 @@ namespace Core.Data.Models
             );
         }
 
-        internal Review MapToReview(long numberOfLikes, long numberOfDislikes, UserDiscussionItemInteractionType? interaction)
+        internal ReviewModel MapToReview(long numberOfLikes, long numberOfDislikes, UserDiscussionItemInteractionTypes? interaction)
         {
-            Review copy = new Review()
+            ReviewModel copy = new ReviewModel()
             {
                 NumberOfStars = NumberOfStars
             };
 
-            return (Review)MapToDiscussionItem(copy, numberOfLikes, numberOfDislikes, interaction);
+            return (ReviewModel)MapToDiscussionItem(copy, numberOfLikes, numberOfDislikes, interaction);
         }
     }
 }

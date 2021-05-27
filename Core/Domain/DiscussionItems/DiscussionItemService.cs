@@ -13,77 +13,77 @@ namespace Core.Domain.DiscussionItems
 {
     public class DiscussionItemService : IDiscussionItemService
     {
-        MovieContext context = new MovieContext();
-        private const int PageSize = 10;
+        MovieContext Context = new MovieContext();
+        private const int DefaultPageSize = 10;
 
-        public async Task<long> AddComment(Comment comment)
+        public async Task<long> AddComment(CommentModel comment)
         {
             CommentDao dao = CommentDao.MapCommentToDao(comment);
-            var entry = await context.AddAsync(dao);
-            await context.SaveChangesAsync();
+            var entry = await Context.AddAsync(dao);
+            await Context.SaveChangesAsync();
             return entry.Entity.Id;
         }
 
-        public async Task<long> AddFunFact(FunFact funFact)
+        public async Task<long> AddFunFact(FunFactModel funFact)
         {
             FunFactDao dao = FunFactDao.MapFunFactToDao(funFact);
-            var entry = await context.AddAsync(dao);
-            await context.SaveChangesAsync();
+            var entry = await Context.AddAsync(dao);
+            await Context.SaveChangesAsync();
             return entry.Entity.Id;
         }
 
-        public async Task<long> AddReview(Review review)
+        public async Task<long> AddReview(ReviewModel review)
         {
             ReviewDao dao = ReviewDao.MapReviewToDao(review);
-            var entry = await context.AddAsync(dao);
-            await context.SaveChangesAsync();
+            var entry = await Context.AddAsync(dao);
+            await Context.SaveChangesAsync();
             return entry.Entity.Id;
         }
 
-        public async Task<long> AddSubcomment(Comment comment)
+        public async Task<long> AddSubcomment(CommentModel comment)
         {
             return await AddComment(comment);
         }
 
-        public async Task<PageResult<Comment>> GetCommentsOnDiscussable(long discussableId, int page, long userId)
+        public async Task<PageResult<CommentModel>> GetCommentsOnDiscussable(long discussableId, int page, long userId)
         {
-            var query = context.Set<CommentDao>()
+            var query = Context.Set<CommentDao>()
                 .Include(c => c.Author)
                 .Where(c => c.DiscussableId == discussableId)
                 .OrderByDescending(c => c.Id)
-                .Skip((page - 1) * PageSize);
+                .Skip((page - 1) * DefaultPageSize);
             
             var commentsDao = await query
-                .Take(PageSize)
+                .Take(DefaultPageSize)
                 .ToListAsync();
 
-            return new PageResult<Comment>
+            return new PageResult<CommentModel>
             {
                 Items = await GetComments(commentsDao, page, userId),
-                HasMore = await query.CountAsync() > PageSize
+                HasMore = await query.CountAsync() > DefaultPageSize
             };
         }
 
-        public async Task<PageResult<Comment>> GetSubcommentsOnDiscussionItem(long discussionItemId, int page, long userId)
+        public async Task<PageResult<CommentModel>> GetSubcommentsOnDiscussionItem(long discussionItemId, int page, long userId)
         {
-            var query = context.Set<CommentDao>()
+            var query = Context.Set<CommentDao>()
                 .Include(c => c.Author)
                 .Where(c => c.DiscussionItemId == discussionItemId)
                 .OrderByDescending(f => f.Id)
-                .Skip((page - 1) * PageSize);
+                .Skip((page - 1) * DefaultPageSize);
             
             var commentsDao = await query
-                .Take(PageSize)
+                .Take(DefaultPageSize)
                 .ToListAsync();
 
-            return new PageResult<Comment>
+            return new PageResult<CommentModel>
             {
                 Items = await GetComments(commentsDao, page, userId),
-                HasMore = await query.CountAsync() > PageSize
+                HasMore = await query.CountAsync() > DefaultPageSize
             };
         }
 
-        private async Task<IEnumerable<Comment>> GetComments(List<CommentDao> commentsDao, int page, long userId)
+        private async Task<IEnumerable<CommentModel>> GetComments(List<CommentDao> commentsDao, int page, long userId)
         {
             var comments = commentsDao.Select(async c => await ToComment(c, userId)).ToList();
 
@@ -91,114 +91,179 @@ namespace Core.Domain.DiscussionItems
             return comments.Select(c => c.Result);
         }
 
-        private async Task<Comment> ToComment(CommentDao dao, long userId)
+        private async Task<CommentModel> ToComment(CommentDao dao, long userId)
         {
             return dao.MapToComment(
-                await GetNumberOfInteractions(UserDiscussionItemInteractionType.Like, dao.Id),
-                await GetNumberOfInteractions(UserDiscussionItemInteractionType.Dislike, dao.Id),
+                await GetNumberOfInteractions(UserDiscussionItemInteractionTypes.Like, dao.Id),
+                await GetNumberOfInteractions(UserDiscussionItemInteractionTypes.Dislike, dao.Id),
                 await GetUserInteraction(userId, dao.Id)
             );
         }
 
-        public async Task<PageResult<Review>> GetReviewsOnDiscussable(long discussableId, int page, long userId)
+        public async Task<PageResult<ReviewModel>> GetReviewsOnDiscussable(long discussableId, int page, long userId)
         {
-            var query = context.Set<ReviewDao>()
+            var query = Context.Set<ReviewDao>()
                 .Include(r => r.Author)
                 .Where(r => r.DiscussableId == discussableId)
                 .OrderByDescending(r => r.Id)
-                .Skip((page - 1) * PageSize);
+                .Skip((page - 1) * DefaultPageSize);
             var reviewsDao = await query
-                .Take(PageSize)
+                .Take(DefaultPageSize)
                 .ToListAsync();
 
             var reviews = reviewsDao.Select(async r => await ToReview(r, userId)).ToList();
 
             await Task.WhenAll(reviews);
-            return new PageResult<Review>
+            return new PageResult<ReviewModel>
             {
                 Items = reviews.Select(c => c.Result),
-                HasMore = await query.CountAsync() > PageSize
+                HasMore = await query.CountAsync() > DefaultPageSize
             };
         }
 
-        private async Task<Review> ToReview(ReviewDao dao, long userId)
+        private async Task<ReviewModel> ToReview(ReviewDao dao, long userId)
         {
             return dao.MapToReview(
-                await GetNumberOfInteractions(UserDiscussionItemInteractionType.Like, dao.Id),
-                await GetNumberOfInteractions(UserDiscussionItemInteractionType.Dislike, dao.Id),
+                await GetNumberOfInteractions(UserDiscussionItemInteractionTypes.Like, dao.Id),
+                await GetNumberOfInteractions(UserDiscussionItemInteractionTypes.Dislike, dao.Id),
                 await GetUserInteraction(userId, dao.Id)
             );
         }
 
-        public async Task<PageResult<FunFact>> GetFunFactsOnDiscussable(long discussableId, int page, long userId)
+        public async Task<PageResult<FunFactModel>> GetFunFactsOnDiscussable(long discussableId, int page, long userId)
         {
-            var query = context.Set<FunFactDao>()
+            var query = Context.Set<FunFactDao>()
                 .Include(f => f.Author)
                 .Where(f => f.DiscussableId == discussableId)
                 .OrderByDescending(f => f.Id)
-                .Skip((page - 1) * PageSize);
+                .Skip((page - 1) * DefaultPageSize);
             
             var funFactsDao = await query
-                .Take(PageSize)
+                .Take(DefaultPageSize)
                 .ToListAsync();
 
             var funFacts = funFactsDao.Select(async f => await ToFunFact(f, userId)).ToList();
 
             await Task.WhenAll(funFacts);
-            return new PageResult<FunFact>
+            return new PageResult<FunFactModel>
             {
                 Items = funFacts.Select(c => c.Result),
-                HasMore = await query.CountAsync() > PageSize
+                HasMore = await query.CountAsync() > DefaultPageSize
             };
         }
 
-        private async Task<FunFact> ToFunFact(FunFactDao dao, long userId)
+        private async Task<FunFactModel> ToFunFact(FunFactDao dao, long userId)
         {
             return dao.MapToFunFact(
-                await GetNumberOfInteractions(UserDiscussionItemInteractionType.Like, dao.Id),
-                await GetNumberOfInteractions(UserDiscussionItemInteractionType.Dislike, dao.Id),
+                await GetNumberOfInteractions(UserDiscussionItemInteractionTypes.Like, dao.Id),
+                await GetNumberOfInteractions(UserDiscussionItemInteractionTypes.Dislike, dao.Id),
                 await GetUserInteraction(userId, dao.Id)
             );
         }
 
-        public async Task<UserDiscussionItemInteraction> LikeDiscussionItem(long discussionItemId, long userId)
+        public async Task<UserDiscussionItemInteractionDao> LikeDiscussionItem(long discussionItemId, long userId)
         {
-            return await SaveUserInteractionOnDiscussionItem(discussionItemId, userId, UserDiscussionItemInteractionType.Like);
+            return await SaveUserInteractionOnDiscussionItem(discussionItemId, userId, UserDiscussionItemInteractionTypes.Like);
         }
 
-        public async Task<UserDiscussionItemInteraction> DislikeDiscussionItem(long discussionItemId, long userId)
+        public async Task<UserDiscussionItemInteractionDao> DislikeDiscussionItem(long discussionItemId, long userId)
         {
-            return await SaveUserInteractionOnDiscussionItem(discussionItemId, userId, UserDiscussionItemInteractionType.Dislike);
+            return await SaveUserInteractionOnDiscussionItem(discussionItemId, userId, UserDiscussionItemInteractionTypes.Dislike);
         }
 
-        private async Task<UserDiscussionItemInteraction> SaveUserInteractionOnDiscussionItem(long discussionItemId, long userId, UserDiscussionItemInteractionType type)
+        private async Task<UserDiscussionItemInteractionDao> SaveUserInteractionOnDiscussionItem(long discussionItemId, long userId, UserDiscussionItemInteractionTypes types)
         {
-            var previousUserInteraction = await context.Set<UserDiscussionItemInteraction>().SingleOrDefaultAsync(i => i.DiscussionItemId == discussionItemId && i.UserId == userId);
+            var previousUserInteraction = await Context.Set<UserDiscussionItemInteractionDao>().SingleOrDefaultAsync(i => i.DiscussionItemId == discussionItemId && i.UserId == userId);
             if(previousUserInteraction != null)
-                context.Set<UserDiscussionItemInteraction>().Remove(previousUserInteraction);
+                Context.Set<UserDiscussionItemInteractionDao>().Remove(previousUserInteraction);
             
-            var entry = await context.AddAsync<UserDiscussionItemInteraction>(
-                new UserDiscussionItemInteraction()
+            var entry = await Context.AddAsync<UserDiscussionItemInteractionDao>(
+                new UserDiscussionItemInteractionDao()
                 {
-                    InteractionType = type,
+                    InteractionType = types,
                     DiscussionItemId = discussionItemId,
                     UserId = userId
                 });
-            await context.SaveChangesAsync();
+            await Context.SaveChangesAsync();
             return entry.Entity;
         }
 
-        private async Task<long> GetNumberOfInteractions(UserDiscussionItemInteractionType interactionType, long discussionItemId)
+        private async Task<long> GetNumberOfInteractions(UserDiscussionItemInteractionTypes interactionTypes, long discussionItemId)
         {
-            return await context.Set<UserDiscussionItemInteraction>()
-                .CountAsync(i => i.DiscussionItemId == discussionItemId && i.InteractionType == interactionType);
+            return await Context.Set<UserDiscussionItemInteractionDao>()
+                .CountAsync(i => i.DiscussionItemId == discussionItemId && i.InteractionType == interactionTypes);
         }
 
-        private async Task<UserDiscussionItemInteractionType?> GetUserInteraction(long userId, long discussionItemId)
+        private async Task<UserDiscussionItemInteractionTypes?> GetUserInteraction(long userId, long discussionItemId)
         {
-            var userInteraction = await context.Set<UserDiscussionItemInteraction>()
+            var userInteraction = await Context.Set<UserDiscussionItemInteractionDao>()
                 .SingleOrDefaultAsync(i => i.DiscussionItemId == discussionItemId && i.UserId == userId);
             return userInteraction == null ? null : userInteraction.InteractionType;
+        }
+
+        public async Task<PageResult<CommentModel>> GetComments(GetCommentsRequest request)
+        {
+            await using var context = new MovieContext();
+            var query = context.Set<CommentDao>()
+                .Where(c => c.DiscussableId == request.DiscussableId &&
+                            c.DiscussionItemId == request.DiscussionItemId);
+            if (request.FromDate != null)
+                query = query.Where(c => c.Created > request.FromDate.Value);
+            if (request.ToDate != null)
+                query = query.Where(c => c.Created < request.ToDate.Value);
+
+            var limit = request.Limit ?? DefaultPageSize;
+            var count = await query.CountAsync();
+
+            var comments = await query
+                .Take(limit)
+                .ToListAsync();
+            
+            return new PageResult<CommentModel>
+            {
+                Items = comments.Select(Map),
+                HasMore = count > limit
+            };
+        }
+
+        public async Task<PageResult<CommentModel>> GetReviews(GetReviewsRequest request)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<PageResult<CommentModel>> GetFunFacts(GetFunFactsRequest request)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<CommentModel> AddComment(AddCommentRequest request)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<ReviewModel> AddReview(AddReviewRequest request)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<FunFactModel> AddFunFact(AddFunFactRequest request)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task Interact(InteractRequest request)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task Delete(DeleteRequest request)
+        {
+            throw new NotImplementedException();
+        }
+
+        private static CommentModel Map(CommentDao comment)
+        {
+            
         }
     }
 }

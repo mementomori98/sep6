@@ -9,16 +9,14 @@ namespace Core.Data.Models
 {
     public class DiscussionItemDao
     {
-        //comment's/review's/fun fact's id
         public long Id { get; set; }
+        public DateTime Created { get; set; }
         public string Text { get; set; }
         public long AuthorId { get; set; }
-        //movie/toplist/actor id
         public long? DiscussableId { get; set; }
         public UserDao Author { get; set; }
-
-
-        public DiscussionItem MapToDiscussionItem(DiscussionItem copy, long numberOfLikes, long numberOfDislikes, UserDiscussionItemInteractionType? interaction)
+        
+        public DiscussionItemModelBase MapToDiscussionItem(DiscussionItemModelBase copy, long numberOfLikes, long numberOfDislikes, UserDiscussionItemInteractionTypes? interaction)
         {
             copy.Id = Id;
             copy.Text = Text;
@@ -27,12 +25,12 @@ namespace Core.Data.Models
             copy.DiscussableId = DiscussableId;
             copy.NumberOfLikes = numberOfLikes;
             copy.NumberOfDislikes = numberOfDislikes;
-            copy.userInteractionType = interaction;
+            copy.UserInteractionType = interaction;
 
             return copy;
         }
 
-        public static DiscussionItemDao MapDiscussionItemToDao(DiscussionItem item, DiscussionItemDao dao)
+        public static DiscussionItemDao MapDiscussionItemToDao(DiscussionItemModelBase item, DiscussionItemDao dao)
         {
             dao.Id = item.Id;
             dao.Text = item.Text;

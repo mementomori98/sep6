@@ -6,9 +6,8 @@ using System.Threading.Tasks;
 
 namespace Core.Domain.DiscussionItems.Models
 {
-    public enum UserDiscussionItemInteractionType
+    public class ReviewModel : DiscussionItemModelBase
     {
-        Like,
-        Dislike
+        public int NumberOfStars { get; set; }
     }
 }

@@ -9,7 +9,7 @@ namespace Core.Data.Models
 {
     public class FunFactDao : DiscussionItemDao
     {
-        internal static FunFactDao MapFunFactToDao(FunFact funFact)
+        internal static FunFactDao MapFunFactToDao(FunFactModel funFact)
         {
             return (FunFactDao)MapDiscussionItemToDao(
                 funFact,
@@ -17,9 +17,9 @@ namespace Core.Data.Models
             );
         }
 
-        internal FunFact MapToFunFact(long numberOfLikes, long numberOfDislikes, UserDiscussionItemInteractionType? interaction)
+        internal FunFactModel MapToFunFact(long numberOfLikes, long numberOfDislikes, UserDiscussionItemInteractionTypes? interaction)
         {
-            return (FunFact)MapToDiscussionItem(new FunFact(), numberOfLikes, numberOfDislikes, interaction);
+            return (FunFactModel)MapToDiscussionItem(new FunFactModel(), numberOfLikes, numberOfDislikes, interaction);
         }
     }
 }

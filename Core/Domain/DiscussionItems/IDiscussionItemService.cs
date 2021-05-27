@@ -10,15 +10,13 @@ namespace Core.Domain.DiscussionItems
 {
     public interface IDiscussionItemService
     {
-        Task<PageResult<Comment>> GetCommentsOnDiscussable(long discussableId, int page, long userId);
-        Task<PageResult<Review>> GetReviewsOnDiscussable(long discussableId, int page, long userId);
-        Task<PageResult<FunFact>> GetFunFactsOnDiscussable(long discussableId, int page, long userId);
-        Task<PageResult<Comment>> GetSubcommentsOnDiscussionItem(long discussionItemId, int page, long userId);
-        Task<long> AddComment(Comment comment);
-        Task<long> AddFunFact(FunFact funFact);
-        Task<long> AddReview(Review review);
-        Task<long> AddSubcomment(Comment comment);
-        Task<UserDiscussionItemInteraction> LikeDiscussionItem(long discussionItemId, long userId);
-        Task<UserDiscussionItemInteraction> DislikeDiscussionItem(long discussionItemId, long userId);
+        Task<PageResult<CommentModel>> GetComments(GetCommentsRequest request);
+        Task<PageResult<CommentModel>> GetReviews(GetReviewsRequest request);
+        Task<PageResult<CommentModel>> GetFunFacts(GetFunFactsRequest request);
+        Task<CommentModel> AddComment(AddCommentRequest request);
+        Task<ReviewModel> AddReview(AddReviewRequest request);
+        Task<FunFactModel> AddFunFact(AddFunFactRequest request);
+        Task Interact(InteractRequest request);
+        Task Delete(DeleteRequest request);
     }
 }

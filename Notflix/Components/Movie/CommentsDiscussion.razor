@@ -14,7 +14,7 @@
     
     private UserDao _user;
     private string NewComment { get; set; }
-    private PageResult<Comment> _comments;
+    private PageResult<CommentModel> _comments;
 
     protected override async Task OnInitializedAsync()
     {
@@ -24,7 +24,7 @@
     
     private async Task MakeComment()
     {
-        Comment reply = new Comment() {AuthorUsername = _user.Username, AuthorId = _user.Id, Text = NewComment, DiscussableId = MovieId};
+        CommentModel reply = new CommentModel() {AuthorUsername = _user.Username, AuthorId = _user.Id, Text = NewComment, DiscussableId = MovieId};
         reply.Id = await DiscussionItemService.AddSubcomment(reply);
         _comments.Items = _comments.Items.Prepend(reply);
     }
