@@ -28,7 +28,7 @@ namespace Notflix.Components.Movie
                 Dislikes = c.NumberOfDislikes,
                 Interaction = c.UserInteractionType,
                 Comments = new List<CommentTreeViewModel>(),
-                HasMore = true // todo add to model
+                HasMore = c.HasComments
             };
         }
     }
