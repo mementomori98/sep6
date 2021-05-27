@@ -207,7 +207,7 @@
     font-size: 13px;
     font-weight: bold;
     color: #808080;
-    margin-bottom: 15px;
+    margin-bottom: 5px;
 }
 
 .moreComments:hover{
@@ -229,7 +229,7 @@
     border-top: 2px solid #E6E6E6;
 }
 
-.moreComments:after{
+.moreComments__edge:after{
     content: '';
     display: block;
     position: absolute;

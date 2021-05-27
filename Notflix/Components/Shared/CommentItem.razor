@@ -14,12 +14,12 @@
 
     [Inject]
     NavigationManager NavigationManager { get; set; }
-    
+
     [Parameter]
     public CommentTreeViewModel Content { get; set; }
-    
+
     private string NewComment { get; set; }
-    
+
     private string _replyOpen = "";
     private bool _commentOpen = false;
     private UserDao _user;
@@ -39,7 +39,7 @@
         }
         Console.WriteLine("VoteUp"); //............
     }
-    
+
     private void OnVoteDown(MouseEventArgs mouseEvent)
     {
         if (_user == null)
@@ -49,7 +49,7 @@
         }
         Console.WriteLine("VoteDown"); //............
     }
-    
+
     private async Task OnComment(MouseEventArgs mouseEvent)
     {
         while (Content.HasMore)
@@ -84,10 +84,10 @@
         parameters.Add("SuccessCallback", new Action(() => NavigationManager.NavigateTo(NavigationManager.Uri, true)));
         DialogService.Show<LoginDialog>("Sign in", parameters);
     }
-    
+
     private async Task Reply()
-    { 
-        //Execute reply procedure
+    {
+    //Execute reply procedure
         var comment = await DiscussionItemService.AddComment(new AddCommentRequest
         {
             DiscussionItemId = Content.Id,
@@ -98,7 +98,7 @@
         _commentOpen = true;
         HandleCommentWindow();
     }
-    
+
     private async Task OnGetComments(int limit = 10)
     {
         var comments = await DiscussionItemService.GetComments(new GetCommentsRequest
@@ -113,13 +113,14 @@
         Content.HasMore = comments.HasMore;
         _commentOpen = true;
     }
-    
+
     private async Task OnCloseComments()
     {
         Content.Comments = new List<CommentTreeViewModel>();
         Content.HasMore = true;
         _commentOpen = false;
     }
+
 }
 
 <div class="comment-item">
@@ -129,11 +130,11 @@
             <MudText Typo="Typo.body1">@Content.AuthorUsername</MudText>
             <MudText Typo="Typo.body2">@Content.Text</MudText>
             <div class="d-flex" style="font-size: 18px;">
-                <div @onmouseup="@OnVoteUp"  class="discussion__icon" id="discussion__voteUp">
+                <div @onmouseup="@OnVoteUp" class="discussion__icon" id="discussion__voteUp">
                     <p>&#129145;</p>
                 </div>
                 <p class="discussion__iconText" style="margin-left: 3px; margin-right: 5px;">@Content.Likes</p>
-                <div @onmouseup="@OnVoteDown"  class="discussion__icon" id="discussion__voteDown">
+                <div @onmouseup="@OnVoteDown" class="discussion__icon" id="discussion__voteDown">
                     <p>&#129147;</p>
                 </div>
                 <p class="discussion__iconText" style="margin-left: 3px; margin-right: 5px">@Content.Dislikes</p>
@@ -141,21 +142,18 @@
                     <p>&#128490; </p>
                     <p class="discussion__iconText" style="padding-left: 3px">Reply</p>
                 </div>
-                @if(Content.HasMore || Content.Comments.Count() != 0){
+            </div>
+            @if (Content.HasMore || Content.Comments.Count() != 0)
+            {
                 @if (!_commentOpen)
                 {
-                    <div @onmouseup="() => OnGetComments()" class="discussion__icon" id="discussion__commentAct" style="margin-left: 5px">
-                        <p class="discussion__iconText" style="padding-left: 3px">Get comments</p>
-                    </div>
+                    <p class="moreComments" style="font-size: 12px; color: #4234aa" @onmouseup="() => OnGetComments()">View comments</p>
                 }
                 else
                 {
-                    <div @onmouseup="@OnCloseComments" class="discussion__icon" id="discussion__commentAct" style="margin-left: 5px">
-                        <p class="discussion__iconText" style="padding-left: 3px">Close comments</p>
-                    </div>
-                }}
-                
-            </div>
+                    <p class="moreComments" style="font-size: 12px; color: #4234aa" @onmouseup="() => OnCloseComments()">Hide comments</p>
+                }
+            }
             @if (_replyOpen.Equals("discussion__main"))
             {
                 <div class="discussion__commentSection d-flex">
@@ -175,11 +173,11 @@
             }
             @if (Content.HasMore)
             {
-               <p class="moreComments moreComments__edge" @onmouseup="() => OnGetComments()">View more comments</p>
+                <p class="moreComments moreComments__edge" @onmouseup="() => OnGetComments()">View more comments</p>
             }
         </div>
     }
-    
+
 
 
 </div>
