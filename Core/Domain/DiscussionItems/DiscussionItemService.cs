@@ -171,18 +171,23 @@ namespace Core.Domain.DiscussionItems
                 throw new Exception("Unauthorized");
 
             await using var context = new MovieContext();
-            if (request.Interaction != null)
+            var interaction = await context.Set<InteractionDao>()
+                .SingleOrDefaultAsync(i => i.UserId == user.Id &&
+                                  i.DiscussionItemId == request.DiscussionItemId);
+            if (request.Interaction != null && interaction == null)
                 await context.AddAsync(new InteractionDao
                 {
                     UserId = user.Id,
                     DiscussionItemId = request.DiscussionItemId,
                     Type = request.Interaction.Value
                 });
-            else
+            else if (request.Interaction != null && interaction != null)
             {
-                var interaction = await context.Set<InteractionDao>()
-                    .SingleAsync(i => i.UserId == user.Id &&
-                                      i.DiscussionItemId == request.DiscussionItemId);
+                interaction.Type = request.Interaction.Value;
+                context.Update(interaction);
+            }
+            else if (request.Interaction == null && interaction != null)
+            {
                 context.Remove(interaction);
             }
 
