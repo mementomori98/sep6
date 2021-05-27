@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 
 namespace Core.Data.Models.DiscussionItems
 {
-    public class UserDiscussionItemInteractionDao
+    public class InteractionDao
     {
         public long DiscussionItemId { get; set; }
         public long UserId { get; set; }
-        public UserDiscussionItemInteractionTypes InteractionType { get; set; }
+        public Interactions Type { get; set; }
     }
 }

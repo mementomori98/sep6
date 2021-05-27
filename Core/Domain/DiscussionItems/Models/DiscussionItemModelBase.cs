@@ -18,6 +18,6 @@ namespace Core.Domain.DiscussionItems.Models
         public long? DiscussableId { get; set; }
         public long NumberOfLikes { get; set; }
         public long NumberOfDislikes { get; set; }
-        public UserDiscussionItemInteractionTypes? UserInteractionType { get; set; }
+        public Interactions? UserInteractionType { get; set; }
     }
 }

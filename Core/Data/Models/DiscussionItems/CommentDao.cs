@@ -11,7 +11,7 @@ namespace Core.Data.Models
     {
         public long? DiscussionItemId { get; set; }
 
-        public CommentModel MapToComment(long numberOfLikes, long numberOfDislikes, UserDiscussionItemInteractionTypes? interaction)
+        public CommentModel MapToComment(long numberOfLikes, long numberOfDislikes, Interactions? interaction)
         {
             CommentModel copy = new CommentModel() { 
                 DiscussionItemId = DiscussionItemId

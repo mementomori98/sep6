@@ -22,7 +22,7 @@ namespace Core.Data.Models
             );
         }
 
-        internal ReviewModel MapToReview(long numberOfLikes, long numberOfDislikes, UserDiscussionItemInteractionTypes? interaction)
+        internal ReviewModel MapToReview(long numberOfLikes, long numberOfDislikes, Interactions? interaction)
         {
             ReviewModel copy = new ReviewModel()
             {

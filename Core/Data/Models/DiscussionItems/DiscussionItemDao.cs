@@ -17,10 +17,10 @@ namespace Core.Data.Models
         public long? DiscussableId { get; set; }
         public UserDao Author { get; set; }
         
-        public ICollection<UserDiscussionItemInteractionDao> Interactions { get; set; }
+        public ICollection<InteractionDao> Interactions { get; set; }
         public ICollection<CommentDao> Comments { get; set; }
         
-        public DiscussionItemModelBase MapToDiscussionItem(DiscussionItemModelBase copy, long numberOfLikes, long numberOfDislikes, UserDiscussionItemInteractionTypes? interaction)
+        public DiscussionItemModelBase MapToDiscussionItem(DiscussionItemModelBase copy, long numberOfLikes, long numberOfDislikes, Interactions? interaction)
         {
             copy.Id = Id;
             copy.Text = Text;
