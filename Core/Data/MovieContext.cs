@@ -80,7 +80,7 @@ namespace Core.Data
 
             b.Configure<CommentDao>(x =>
                 x.HasOne<DiscussionItemDao>()
-                    .WithMany()
+                    .WithMany(di => di.Comments)
                     .HasForeignKey(c => c.DiscussionItemId)
                     .IsRequired(false)
                     .OnDelete(DeleteBehavior.Cascade));

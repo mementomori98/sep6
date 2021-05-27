@@ -18,6 +18,7 @@ namespace Core.Data.Models
         public UserDao Author { get; set; }
         
         public ICollection<UserDiscussionItemInteractionDao> Interactions { get; set; }
+        public ICollection<CommentDao> Comments { get; set; }
         
         public DiscussionItemModelBase MapToDiscussionItem(DiscussionItemModelBase copy, long numberOfLikes, long numberOfDislikes, UserDiscussionItemInteractionTypes? interaction)
         {

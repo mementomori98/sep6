@@ -13,6 +13,7 @@ namespace Core.Domain.DiscussionItems.Models
         public long AuthorId { get; set; }
         public string Text { get; set; }
         public DateTime Created { get; set; }
+        public bool HasComments { get; set; }
 
         public long? DiscussableId { get; set; }
         public long NumberOfLikes { get; set; }

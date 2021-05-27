@@ -100,9 +100,10 @@ namespace Core.Domain.DiscussionItems
                 throw new ArgumentException("Must have one id");
 
             await using var context = new MovieContext();
+            var now = DateTime.Now;
             var entry = await context.AddAsync(new CommentDao
             {
-                Created = DateTime.Now,
+                Created = now,
                 Text = request.Text,
                 DiscussableId = request.DiscussableId,
                 DiscussionItemId = request.DiscussionItemId,
@@ -123,9 +124,10 @@ namespace Core.Domain.DiscussionItems
                 throw new Exception("Unauthorized");
 
             await using var context = new MovieContext();
+            var now = DateTime.Now;
             var entry = await context.AddAsync(new ReviewDao
             {
-                Created = DateTime.Now,
+                Created = now,
                 Text = request.Text,
                 DiscussableId = request.DiscussableId,
                 NumberOfStars = request.Stars,
@@ -146,9 +148,10 @@ namespace Core.Domain.DiscussionItems
                 throw new Exception("Unauthorized");
 
             await using var context = new MovieContext();
+            var now = DateTime.Now;
             var entry = await context.AddAsync(new FunFactDao
             {
-                Created = DateTime.Now,
+                Created = now,
                 Text = request.Text,
                 AuthorId = user.Id,
                 DiscussableId = request.DiscussableId
@@ -176,6 +179,7 @@ namespace Core.Domain.DiscussionItems
             var query = context.Set<TDao>()
                 .Include(di => di.Author)
                 .Include(di => di.Interactions)
+                .Include(di => di.Comments)
                 .AsQueryable();
             
             if (discussableId != null)
@@ -220,6 +224,7 @@ namespace Core.Domain.DiscussionItems
                 Text = dao.Text,
                 AuthorId = dao.AuthorId,
                 AuthorUsername = dao.Author.Username,
+                HasComments = dao.Comments.Any(),
                 DiscussableId = dao.DiscussableId,
                 NumberOfLikes = dao.Interactions.Count(i => i.InteractionType == UserDiscussionItemInteractionTypes.Like),
                 NumberOfDislikes = dao.Interactions.Count(i => i.InteractionType == UserDiscussionItemInteractionTypes.Dislike),

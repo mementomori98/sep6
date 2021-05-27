@@ -16,15 +16,13 @@
     NavigationManager NavigationManager { get; set; }
     
     [Parameter]
-    public CommentModel Content { get; set; }
+    public CommentTreeViewModel Content { get; set; }
     
     private string NewComment { get; set; }
     
     private string _replyOpen = "";
     private bool _commentOpen = false;
-    private int _page = 0;
     private UserDao _user;
-    PageResult<CommentModel> _subcomments = new();
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -52,8 +50,12 @@
         Console.WriteLine("VoteDown"); //............
     }
     
-    private void OnComment(MouseEventArgs mouseEvent)
+    private async Task OnComment(MouseEventArgs mouseEvent)
     {
+        while (Content.HasMore)
+        {
+            await OnGetComments(100);
+        }
         if (_user == null)
         {
             OpenLoginDialog();
@@ -72,45 +74,34 @@
     private async Task Reply()
     { 
         //Execute reply procedure
-        CommentModel rep = await DiscussionItemService.AddComment(new AddCommentRequest
+        var comment = await DiscussionItemService.AddComment(new AddCommentRequest
         {
             DiscussionItemId = Content.Id,
             Text = NewComment,
             Token = await GetAuthToken(),
         });
-        if (_subcomments.Items == null) _subcomments.Items = new List<CommentModel>();
-        _subcomments.Items = _subcomments.Items.Prepend(rep);
-        _subcomments.HasMore = _subcomments.HasMore;
+        Content.Comments = Content.Comments.Append(CommentTreeViewModel.Map(comment));
         _replyOpen = "";
     }
     
-    private async Task OnGetComments()
+    private async Task OnGetComments(int limit = 10)
     {
-        if (_subcomments.Items == null)
+        var comments = await DiscussionItemService.GetComments(new GetCommentsRequest
         {
-            _subcomments = await DiscussionItemService.GetComments(new GetCommentsRequest
-            {
-                DiscussionItemId = Content.Id
-            });
-        }
-        else
-        {
-            PageResult<CommentModel> newList = await DiscussionItemService.GetComments(new GetCommentsRequest
-            {
-                DiscussionItemId = Content.Id,
-                FromDate = _subcomments.Items.Last().Created
-            });
-            _subcomments.Items = _subcomments.Items.Concat(newList.Items);
-            _subcomments.HasMore = newList.HasMore;
-        }
-        
+            DiscussionItemId = Content.Id,
+            FromDate = Content.Comments.LastOrDefault()?.Created,
+            Token = await GetAuthToken(),
+            Limit = limit
+        });
+        Content.Comments ??= new List<CommentTreeViewModel>();
+        Content.Comments = Content.Comments.Concat(comments.Items.Select(CommentTreeViewModel.Map));
+        Content.HasMore = comments.HasMore;
         _commentOpen = true;
     }
     
     private async Task OnCloseComments()
     {
-        _subcomments = new PageResult<CommentModel>();
-        _page = 0;
+        Content.Comments = new List<CommentTreeViewModel>();
         _commentOpen = false;
     }
 }
@@ -125,18 +116,18 @@
                 <div @onmouseup="@OnVoteUp"  class="discussion__icon" id="discussion__voteUp">
                     <p>&#129145;</p>
                 </div>
-                <p class="discussion__iconText" style="margin-left: 3px; margin-right: 5px;">@Content.NumberOfLikes</p>
+                <p class="discussion__iconText" style="margin-left: 3px; margin-right: 5px;">@Content.Likes</p>
                 <div @onmouseup="@OnVoteDown"  class="discussion__icon" id="discussion__voteDown">
                     <p>&#129147;</p>
                 </div>
-                <p class="discussion__iconText" style="margin-left: 3px; margin-right: 5px">@Content.NumberOfDislikes</p>
+                <p class="discussion__iconText" style="margin-left: 3px; margin-right: 5px">@Content.Dislikes</p>
                 <div @onmouseup="@OnComment" class="discussion__icon" id="discussion__commentAct" style="margin-left: 5px">
                     <p>&#128490; </p>
                     <p class="discussion__iconText" style="padding-left: 3px">Reply</p>
                 </div>
                 @if (!_commentOpen)
                 {
-                    <div @onmouseup="@OnGetComments" class="discussion__icon" id="discussion__commentAct" style="margin-left: 5px">
+                    <div @onmouseup="() => OnGetComments()" class="discussion__icon" id="discussion__commentAct" style="margin-left: 5px">
                         <p class="discussion__iconText" style="padding-left: 3px">Get comments</p>
                     </div>
                 }
@@ -158,18 +149,17 @@
         </div>
     </div>
 
-    @if (_subcomments.Items != null && _subcomments.Items.Any())
+    @if (Content.Comments != null && Content.Comments.Any())
     {
         <div class="comment-item-children">
-            @foreach (var child in _subcomments.Items)
+            @foreach (var child in Content.Comments)
             {
-                <CommentItem Content="@child"></CommentItem>
+                <CommentItem Content="@child"/>
             }
-            @if (_subcomments.HasMore)
+            @if (Content.HasMore)
             {
-               <p class="moreComments" @onmouseup="OnGetComments">View more comments</p>
+               <p class="moreComments" @onmouseup="() => OnGetComments()">View more comments</p>
             }
-            
         </div>
     }
     
