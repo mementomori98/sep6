@@ -263,7 +263,7 @@ namespace Core.Domain.DiscussionItems
 
         private static CommentModel Map(CommentDao comment)
         {
-            
+            return null;
         }
     }
 }
