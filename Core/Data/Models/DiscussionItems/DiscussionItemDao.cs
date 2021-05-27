@@ -19,29 +19,5 @@ namespace Core.Data.Models
         
         public ICollection<InteractionDao> Interactions { get; set; }
         public ICollection<CommentDao> Comments { get; set; }
-        
-        public DiscussionItemModelBase MapToDiscussionItem(DiscussionItemModelBase copy, long numberOfLikes, long numberOfDislikes, Interactions? interaction)
-        {
-            copy.Id = Id;
-            copy.Text = Text;
-            copy.AuthorUsername = Author.Username;
-            copy.AuthorId = Author.Id;
-            copy.DiscussableId = DiscussableId;
-            copy.NumberOfLikes = numberOfLikes;
-            copy.NumberOfDislikes = numberOfDislikes;
-            copy.UserInteractionType = interaction;
-
-            return copy;
-        }
-
-        public static DiscussionItemDao MapDiscussionItemToDao(DiscussionItemModelBase item, DiscussionItemDao dao)
-        {
-            dao.Id = item.Id;
-            dao.Text = item.Text;
-            dao.DiscussableId = item.DiscussableId;
-            dao.AuthorId = item.AuthorId;
-
-            return dao;
-        }
     }
 }
