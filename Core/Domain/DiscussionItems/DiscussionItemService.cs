@@ -226,12 +226,13 @@ namespace Core.Domain.DiscussionItems
             };
         }
 
-        public async Task<PageResult<CommentModel>> GetReviews(GetReviewsRequest request)
+        public async Task<PageResult<ReviewModel>> GetReviews(GetReviewsRequest request)
         {
-            throw new NotImplementedException();
+            await using var context = new MovieContext();
+            return null;
         }
 
-        public async Task<PageResult<CommentModel>> GetFunFacts(GetFunFactsRequest request)
+        public async Task<PageResult<FunFactModel>> GetFunFacts(GetFunFactsRequest request)
         {
             throw new NotImplementedException();
         }

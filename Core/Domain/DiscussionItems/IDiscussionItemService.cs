@@ -11,8 +11,8 @@ namespace Core.Domain.DiscussionItems
     public interface IDiscussionItemService
     {
         Task<PageResult<CommentModel>> GetComments(GetCommentsRequest request);
-        Task<PageResult<CommentModel>> GetReviews(GetReviewsRequest request);
-        Task<PageResult<CommentModel>> GetFunFacts(GetFunFactsRequest request);
+        Task<PageResult<ReviewModel>> GetReviews(GetReviewsRequest request);
+        Task<PageResult<FunFactModel>> GetFunFacts(GetFunFactsRequest request);
         Task<CommentModel> AddComment(AddCommentRequest request);
         Task<ReviewModel> AddReview(AddReviewRequest request);
         Task<FunFactModel> AddFunFact(AddFunFactRequest request);
