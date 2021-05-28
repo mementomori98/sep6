@@ -7,6 +7,7 @@ using Core.Data;
 using Core.Data.Models;
 using Core.Domain.DiscussionItems.Models;
 using Core.Domain.Movies.Models;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace Core.Domain.Movies
 {
@@ -19,8 +20,6 @@ namespace Core.Domain.Movies
         {
             var response = await client.GetAsync($"http://www.omdbapi.com/?apikey={ApiKey}&i={ImdbId}&plot=full");
             var content = await response.Content.ReadAsStringAsync();
-
-            // todo add the discussion items
 
             var model = JsonSerializer.Deserialize<MovieApiModel>(content);
             
@@ -56,10 +55,21 @@ namespace Core.Domain.Movies
                 var entry = await context.Set<MovieDao>().AddAsync(new MovieDao
                 {
                     ImdbId = model.imdbID,
-                    Title = model.Title
+                    Title = model.Title,
+                    Year = model.Year,
+                    ImageUrl = model.Poster
                 });
                 await context.SaveChangesAsync();
                 movie = entry.Entity;
+            }
+            else
+            {
+                movie.Year = model.Year;
+                movie.ImageUrl = model.Poster;
+                movie.Title = model.Title;
+                movie.ImdbId = model.imdbID;
+                context.Update(movie);
+                await context.SaveChangesAsync();
             }
             return new MovieModel
             {

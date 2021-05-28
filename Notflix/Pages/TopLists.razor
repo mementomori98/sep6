@@ -19,7 +19,7 @@
     {
         if ((await GetAuthToken())?.HasExpired() ?? true)
             return;
-        Toplists = await ToplistService.GetToplists(new GetToplistsRequest
+        Toplists = await ToplistService.GetUserToplists(new GetToplistsRequest
         {
             Token = await GetAuthToken()
         });
@@ -50,8 +50,8 @@
 <MudGrid>
     @foreach (var toplist in Toplists ?? new ToplistModel[0])
     {
-        <MudItem sm="4" md="3" xs="6">
-            <MudLink Href="@($"/Toplists/{toplist.Id}")">
+        <MudItem xs="12">
+            <MudLink Href="@($"/Toplists/{toplist.Id}")" Underline="Underline.None" Color="Color.Default">
                 <Card>
                     <ToplistOverviewItem Toplist="toplist"/>
                 </Card>

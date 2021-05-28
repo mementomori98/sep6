@@ -3,9 +3,15 @@
     
     [Parameter]
     public RenderFragment ChildContent { get; set; }
+
+    [Parameter]
+    public string Class { get; set; }
+    
+    [Parameter]
+    public string Style { get; set; }
     
 }
 
-<MudCard Elevation="3" Square="true" Class="ma-2 pa-3">
+<MudCard Elevation="3" Square="true" Class="@($"ma-2 pa-3 {Class}")" Style="@Style">
     @ChildContent
 </MudCard>
