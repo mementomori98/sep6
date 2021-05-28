@@ -150,6 +150,11 @@
         Public = Toplist.Public;
         StateHasChanged();
     }
+    
+    protected void OnMouseUp(string id)
+    {
+        NavigationManager.NavigateTo($"/Main/{id}");
+    }
 
 }
 
@@ -195,7 +200,7 @@
         }
         @foreach (var item in Toplist.Items.OrderBy(i => i.Position))
         {
-            <MudItem xs="12">
+            <MudItem xs="12" @onmouseup="() => OnMouseUp(item.ImdbId)" Style="cursor: pointer">
                 <MudDivider Class="mb-4 mt-n3"/>
                 <MudGrid>
                     <MudItem xs="2">
