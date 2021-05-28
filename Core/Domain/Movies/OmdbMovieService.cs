@@ -17,7 +17,7 @@ namespace Core.Domain.Movies
 
         public async Task<MovieModel> GetMovieDetails(string ImdbId)
         {
-            var response = await client.GetAsync($"http://www.omdbapi.com/?apikey={ApiKey}&i={ImdbId}");
+            var response = await client.GetAsync($"http://www.omdbapi.com/?apikey={ApiKey}&i={ImdbId}&plot=full");
             var content = await response.Content.ReadAsStringAsync();
 
             // todo add the discussion items
