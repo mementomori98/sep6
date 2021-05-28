@@ -30,24 +30,60 @@
     }
 
 
-    private void OnVoteUp(MouseEventArgs mouseEvent)
+    private async void OnVoteUp(MouseEventArgs mouseEvent)
     {
         if (_user == null)
         {
             OpenLoginDialog();
             return;
         }
-        Console.WriteLine("VoteUp"); //............
+        if (Content.Interaction == Interactions.Like) return;
+        await DiscussionItemService.Interact(new InteractRequest
+        {
+            DiscussionItemId = Content.Id,
+            Token = await GetAuthToken(),
+            Interaction = Interactions.Like
+        });
+        if (Content.Interaction == Interactions.Dislike)
+        {
+            Content.Interaction = Interactions.Like;
+            Content.Dislikes--;
+            Content.Likes++;
+        }else
+        {
+            Content.Interaction = Interactions.Like;
+            Content.Likes++;
+        }
+        
+        StateHasChanged();
     }
 
-    private void OnVoteDown(MouseEventArgs mouseEvent)
+    private async void OnVoteDown(MouseEventArgs mouseEvent)
     {
         if (_user == null)
         {
             OpenLoginDialog();
             return;
         }
-        Console.WriteLine("VoteDown"); //............
+        if (Content.Interaction == Interactions.Dislike) return;
+        await DiscussionItemService.Interact(new InteractRequest
+        {
+            DiscussionItemId = Content.Id,
+            Token = await GetAuthToken(),
+            Interaction = Interactions.Dislike
+        });
+        if (Content.Interaction == Interactions.Like)
+        {
+            Content.Interaction = Interactions.Dislike;
+            Content.Likes--;
+            Content.Dislikes++;
+        }else
+        {
+            Content.Interaction = Interactions.Dislike;
+            Content.Dislikes++;
+        }
+        
+        StateHasChanged();
     }
 
     private async Task OnComment(MouseEventArgs mouseEvent)
@@ -88,7 +124,7 @@
     private async Task Reply()
     {
         if (NewComment is null or "") return;
-    //Execute reply procedure
+        
         var comment = await DiscussionItemService.AddComment(new AddCommentRequest
         {
             DiscussionItemId = Content.Id,
@@ -132,11 +168,11 @@
             <MudText Typo="Typo.body2">@Content.Text</MudText>
             <div class="d-flex" style="font-size: 18px;">
                 <div @onmouseup="@OnVoteUp" class="discussion__icon" id="discussion__voteUp">
-                    <p>&#129145;</p>
+                    <p style="@(Content.Interaction == Interactions.Like ? "color: #008d41" : "")">&#129145;</p>
                 </div>
                 <p class="discussion__iconText" style="margin-left: 3px; margin-right: 5px;">@Content.Likes</p>
                 <div @onmouseup="@OnVoteDown" class="discussion__icon" id="discussion__voteDown">
-                    <p>&#129147;</p>
+                    <p style="@(Content.Interaction == Interactions.Dislike ? "color: #dc0000" : "")">&#129147;</p>
                 </div>
                 <p class="discussion__iconText" style="margin-left: 3px; margin-right: 5px">@Content.Dislikes</p>
                 <div @onmouseup="@OnComment" class="discussion__icon" id="discussion__commentAct" style="margin-left: 5px">
