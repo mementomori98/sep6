@@ -84,7 +84,7 @@ namespace Core.Domain.Movies
                 Title = model.Title,
                 Type = model.Type,
                 Year = model.Year,
-                DiscusionItems = new List<DiscussionItem>(),
+                DiscusionItems = new List<DiscussionItemModelBase>(),
                 Ratings = model.Ratings.Append(new Rating
                 {
                     Source = "Imdb",

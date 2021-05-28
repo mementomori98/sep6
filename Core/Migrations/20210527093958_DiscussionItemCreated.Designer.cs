@@ -3,14 +3,16 @@ using System;
 using Core.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Core.Migrations
 {
     [DbContext(typeof(MovieContext))]
-    partial class MovieContextModelSnapshot : ModelSnapshot
+    [Migration("20210527093958_DiscussionItemCreated")]
+    partial class DiscussionItemCreated
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -66,7 +68,7 @@ namespace Core.Migrations
                     b.HasDiscriminator<string>("Discriminator").HasValue("DiscussionItemDao");
                 });
 
-            modelBuilder.Entity("Core.Data.Models.DiscussionItems.InteractionDao", b =>
+            modelBuilder.Entity("Core.Data.Models.DiscussionItems.UserDiscussionItemInteractionDao", b =>
                 {
                     b.Property<long>("DiscussionItemId")
                         .HasColumnType("bigint");
@@ -74,14 +76,14 @@ namespace Core.Migrations
                     b.Property<long>("UserId")
                         .HasColumnType("bigint");
 
-                    b.Property<int>("Type")
+                    b.Property<int>("InteractionType")
                         .HasColumnType("int");
 
                     b.HasKey("DiscussionItemId", "UserId");
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Interaction");
+                    b.ToTable("UserDiscussionItemInteraction");
                 });
 
             modelBuilder.Entity("Core.Data.Models.LoginSessionDao", b =>
@@ -164,17 +166,11 @@ namespace Core.Migrations
                 {
                     b.HasBaseType("Core.Data.Models.DiscussableDao");
 
-                    b.Property<string>("ImageUrl")
-                        .HasColumnType("text");
-
                     b.Property<string>("ImdbId")
                         .IsRequired()
                         .HasColumnType("varchar(767)");
 
                     b.Property<string>("Title")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Year")
                         .HasColumnType("text");
 
                     b.HasIndex("ImdbId")
@@ -190,13 +186,8 @@ namespace Core.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("text");
 
-                    b.Property<bool>("Public")
-                        .HasColumnType("tinyint(1)");
-
                     b.Property<long>("UserId")
                         .HasColumnType("bigint");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Toplist");
                 });
@@ -246,7 +237,7 @@ namespace Core.Migrations
                     b.Navigation("Author");
                 });
 
-            modelBuilder.Entity("Core.Data.Models.DiscussionItems.InteractionDao", b =>
+            modelBuilder.Entity("Core.Data.Models.DiscussionItems.UserDiscussionItemInteractionDao", b =>
                 {
                     b.HasOne("Core.Data.Models.DiscussionItemDao", null)
                         .WithMany("Interactions")
@@ -314,28 +305,18 @@ namespace Core.Migrations
                         .HasForeignKey("Core.Data.Models.ToplistDao", "Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("Core.Data.Models.UserDao", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Core.Data.Models.CommentDao", b =>
                 {
                     b.HasOne("Core.Data.Models.DiscussionItemDao", null)
-                        .WithMany("Comments")
+                        .WithMany()
                         .HasForeignKey("DiscussionItemId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("Core.Data.Models.DiscussionItemDao", b =>
                 {
-                    b.Navigation("Comments");
-
                     b.Navigation("Interactions");
                 });
 

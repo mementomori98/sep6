@@ -18,7 +18,7 @@ namespace Core.Domain.Movies.Models
         public string Runtime { get; set; }
         public IEnumerable<string> Genres { get; set; }
         public IEnumerable<string> Actors { get; set; }
-        public IEnumerable<DiscussionItem> DiscusionItems { get; set; }
+        public IEnumerable<DiscussionItemModelBase> DiscusionItems { get; set; }
         public IEnumerable<Rating> Ratings { get; set; }
     }
 }

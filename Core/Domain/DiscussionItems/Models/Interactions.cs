@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 
 namespace Core.Domain.DiscussionItems.Models
 {
-    public class FunFact : DiscussionItem
+    public enum Interactions
     {
+        Like,
+        Dislike
     }
 }

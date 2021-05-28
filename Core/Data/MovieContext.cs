@@ -85,7 +85,7 @@ namespace Core.Data
 
             b.Configure<CommentDao>(x =>
                 x.HasOne<DiscussionItemDao>()
-                    .WithMany()
+                    .WithMany(di => di.Comments)
                     .HasForeignKey(c => c.DiscussionItemId)
                     .IsRequired(false)
                     .OnDelete(DeleteBehavior.Cascade));
@@ -94,16 +94,16 @@ namespace Core.Data
 
             b.Configure<FunFactDao>();
 
-            b.Configure<UserDiscussionItemInteraction>(x =>
+            b.Configure<InteractionDao>(x =>
                 x.HasKey(i => new {i.DiscussionItemId, i.UserId}), x =>
-                x.ToTable("UserDiscussionItemInteraction"), x =>
+                x.ToTable("Interaction"), x =>
                 x.HasOne<UserDao>()
                     .WithMany()
                     .HasForeignKey(i => i.UserId)
                     .IsRequired()
                     .OnDelete(DeleteBehavior.Cascade), x =>
                 x.HasOne<DiscussionItemDao>()
-                    .WithMany()
+                    .WithMany(di => di.Interactions)
                     .HasForeignKey(i => i.DiscussionItemId)
                     .IsRequired()
                     .OnDelete(DeleteBehavior.Cascade));

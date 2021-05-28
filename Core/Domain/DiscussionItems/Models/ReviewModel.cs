@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Core.Domain.DiscussionItems.Models
 {
-    public class Review : DiscussionItem
+    public class ReviewModel : DiscussionItemModelBase
     {
         public int NumberOfStars { get; set; }
     }

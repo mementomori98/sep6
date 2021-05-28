@@ -10,25 +10,49 @@
 
     [Parameter]
     public long MovieId { get; set; }
-    
-    
+
+
     private UserDao _user;
     private string NewComment { get; set; }
-    private PageResult<Comment> _comments;
+    private IEnumerable<CommentTreeViewModel> _comments;
+    private bool HasMoreComments { get; set; }
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnParametersSetAsync()
     {
-        _comments = await DiscussionItemService.GetCommentsOnDiscussable(MovieId, 1, 1);
         _user = await AuthenticationService.GetCurrentUser(await GetAuthToken());
+        var comments = await DiscussionItemService.GetComments(new GetCommentsRequest
+        {
+            DiscussableId = MovieId,
+            ToDate = DateTime.Now,
+            Token = await GetAuthToken(),
+        });
+        HasMoreComments = comments.HasMore;
+        _comments = comments.Items.Select(CommentTreeViewModel.Map).OrderByDescending(c => c.Created).ToList();
     }
-    
+
     private async Task MakeComment()
     {
-        Comment reply = new Comment() {AuthorUsername = _user.Username, AuthorId = _user.Id, Text = NewComment, DiscussableId = MovieId};
-        reply.Id = await DiscussionItemService.AddSubcomment(reply);
-        _comments.Items = _comments.Items.Prepend(reply);
+        if (NewComment is null or "") return;
+        var comment = await DiscussionItemService.AddComment(new AddCommentRequest
+        {
+            DiscussableId = MovieId,
+            Text = NewComment,
+            Token = await GetAuthToken(),
+        });
+        _comments = _comments.Prepend(CommentTreeViewModel.Map(comment)).OrderByDescending(c => c.Created).ToList();
     }
-
+    
+    private async Task OnGetComments(int limit = 10)
+    {
+        var comments = await DiscussionItemService.GetComments(new GetCommentsRequest
+        {
+            DiscussableId = MovieId,
+            ToDate = _comments.LastOrDefault()?.Created,
+            Token = await GetAuthToken()
+        });
+        HasMoreComments = comments.HasMore;
+        _comments = _comments.Concat(comments.Items.Select(CommentTreeViewModel.Map)).OrderByDescending(c => c.Created).ToList();
+    }
 }
 @if (_user != null)
 {
@@ -38,8 +62,11 @@
     </div>
 }
 
-@foreach (var comment in _comments.Items)
+@foreach (var comment in _comments ?? new CommentTreeViewModel[0])
 {
-    
     <CommentItem Content="@comment"/>
+}
+@if (HasMoreComments)
+{
+    <p class="moreComments" @onmouseup="() => OnGetComments()">Load more comments</p>
 }
