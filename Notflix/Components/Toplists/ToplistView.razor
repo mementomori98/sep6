@@ -150,7 +150,7 @@
         Public = Toplist.Public;
         StateHasChanged();
     }
-    
+
     protected void OnMouseUp(string id)
     {
         NavigationManager.NavigateTo($"/Main/{id}");
@@ -200,13 +200,13 @@
         }
         @foreach (var item in Toplist.Items.OrderBy(i => i.Position))
         {
-            <MudItem xs="12" @onmouseup="() => OnMouseUp(item.ImdbId)" Style="cursor: pointer">
+            <MudItem xs="12">
                 <MudDivider Class="mb-4 mt-n3"/>
                 <MudGrid>
-                    <MudItem xs="2">
+                    <MudItem xs="2" @onmouseup="() => OnMouseUp(item.ImdbId)" Style="cursor: pointer">
                         <Avatar Href="@item.ImageUrl"/>
                     </MudItem>
-                    <MudItem xs="9" Class="d-flex flex-column justify-space-around">
+                    <MudItem xs="9" @onmouseup="() => OnMouseUp(item.ImdbId)" Style="cursor: pointer" Class="d-flex flex-column justify-space-around">
                         <div>
                             <MudText Typo="Typo.h5">@item.Title</MudText>
                             <MudText Typo="Typo.body1">@item.Year</MudText>
