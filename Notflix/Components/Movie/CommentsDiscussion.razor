@@ -56,7 +56,7 @@
 }
 @if (_user != null)
 {
-    <div class="discussion__commentSection d-flex" style="margin-bottom: 10px">
+    <div class="discussion__makeNew d-flex" style="margin-bottom: 10px">
          <MudTextField  @bind-Value="NewComment" Label="@_user.Username" Placeholder="Post a new comment..."/>
          <MudButton Style="height: fit-content; margin-top: auto; border:1px solid #594ae2" OnClick="MakeComment">Post</MudButton>
     </div>
@@ -68,5 +68,5 @@
 }
 @if (HasMoreComments)
 {
-    <p class="moreComments" @onmouseup="() => OnGetComments()">Load more comments</p>
+    <p class="moreDiscussion" @onmouseup="() => OnGetComments()">Load more comments</p>
 }

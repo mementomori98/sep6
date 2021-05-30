@@ -16,7 +16,7 @@ namespace Notflix.Components.Movie
         public IEnumerable<CommentTreeViewModel> Comments { get; set; }
         public bool HasMore { get; set; }
         
-        public static CommentTreeViewModel Map(CommentModel c)
+        public static CommentTreeViewModel Map(DiscussionItemModelBase c)
         {
             return new CommentTreeViewModel
             {

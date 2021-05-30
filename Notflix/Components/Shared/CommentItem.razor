@@ -184,11 +184,11 @@
             {
                 @if (!_commentOpen)
                 {
-                    <p class="moreComments" style="font-size: 12px; color: #4234aa" @onmouseup="() => OnGetComments()">View comments</p>
+                    <p class="moreDiscussion" style="font-size: 12px; color: #4234aa" @onmouseup="() => OnGetComments()">View comments</p>
                 }
                 else
                 {
-                    <p class="moreComments" style="font-size: 12px; color: #4234aa" @onmouseup="() => OnCloseComments()">Hide comments</p>
+                    <p class="moreDiscussion" style="font-size: 12px; color: #4234aa" @onmouseup="() => OnCloseComments()">Hide comments</p>
                 }
             }
         </div>
@@ -203,7 +203,7 @@
             }
             @if (Content.HasMore)
             {
-                <p class="moreComments moreComments__edge" @onmouseup="() => OnGetComments()">View more comments</p>
+                <p class="moreDiscussion moreDiscussion__edge" @onmouseup="() => OnGetComments()">View more comments</p>
             }
         </div>
     }
