@@ -1,0 +1,139 @@
+﻿@page "/Statistics"
+@using System.Text.Json.Serialization
+@using System.Text.Json
+@using ChartJs.Blazor.Common
+@using ChartJs.Blazor.Common.Axes
+@using ChartJs.Blazor.Common.Axes.Ticks
+@using ChartJs.Blazor.Common.Time
+@using ChartJs.Blazor.LineChart
+@using ChartJs.Blazor.Util
+@using System.Globalization
+@using ChartJs.Blazor.Common.Enums
+
+@code {
+
+
+    private LineConfig _config;
+    static readonly HttpClient Client = new();
+    private bool _loaded;
+
+    private class MovieRating
+    {
+        public string Title { get; set; }
+        public string Released { get; set; }
+
+        [JsonPropertyName("imdb_rating")]
+        public string Rating { get; set; }
+
+        public double ParsedRating => ParseRating(Rating);
+        public DateTime ParsedReleaseDate => DateTime.ParseExact(Released, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+        public string DatedTitle => $"{Title} ({Released})";
+
+        private static double ParseRating(string rating)
+        {
+            if (double.TryParse(rating, out var res))
+                return res;
+            return -1;
+        }
+    }
+
+    private static async Task<IEnumerable<MovieRating>> GetActorMovieRatings(string actorId)
+    {
+        var url = $"https://sep6movies-statiscics.herokuapp.com/actor/{actorId}/movieratings";
+        var result = await Client.GetAsync(url);
+        var resp = JsonSerializer.Deserialize<List<MovieRating>>(
+            await result.Content.ReadAsStringAsync(),
+            new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            });
+        var orderedResp =
+            resp?
+                .Where(x => (int) x.ParsedRating != -1)
+                .OrderBy(x => x.Released).ToList();
+        return orderedResp;
+    }
+
+    private static LineConfig GetLineConfig()
+    {
+        return new()
+        {
+            Options = new LineOptions()
+            {
+                Responsive = true,
+                Title = new OptionsTitle
+                {
+                    Display = true,
+                    Text = "Movie ratings for actor credits"
+                },
+                Scales = new Scales
+                {
+                    XAxes = new List<CartesianAxis>
+                    {
+                        new TimeAxis
+                        {
+                            ScaleLabel = new ScaleLabel
+                            {
+                                LabelString = "Date"
+                            },
+                            Time = new TimeOptions
+                            {
+                                TooltipFormat = "yyyy-dd-MM"
+                            },
+                        }
+                    },
+                    YAxes = new List<CartesianAxis>
+                    {
+                        new LinearCartesianAxis
+                        {
+                            ScaleLabel = new ScaleLabel("Rating"),
+                            Ticks = new LinearCartesianTicks
+                            {
+                                Min = 0,
+                                Max = 10,
+                                StepSize = 1
+                            }
+                        }
+                    }
+                }
+            }
+        };
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        _loaded = false;
+        
+        var orderedResp = await GetActorMovieRatings("nm0000129");
+
+        _config = GetLineConfig();
+
+        IDataset<TimePoint> dataset = new LineDataset<TimePoint>()
+        {
+            Label = "Dataset with point data",
+    // BackgroundColor = ColorUtil.FromDrawingColor(Color.),
+    // BorderColor = ColorUtil.FromDrawingColor(ChartColors.Green),
+            Fill = FillingMode.Disabled
+        };
+        foreach (var movieRating in orderedResp)
+        {
+            dataset.Add(new TimePoint(movieRating.ParsedReleaseDate, movieRating.ParsedRating));
+        }
+
+        _config.Data.Datasets.Add(dataset);
+
+        _loaded = true;
+    }
+
+}
+
+
+
+@if (_loaded)
+{
+    <Chart Config="_config"></Chart>
+}
+else
+{
+    <MudProgressCircular Color="Color.Default" Indeterminate="true"/>
+}
