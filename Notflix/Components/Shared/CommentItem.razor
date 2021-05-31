@@ -151,11 +151,13 @@
         _commentOpen = true;
     }
 
-    private async Task OnCloseComments()
+    private async Task OnCloseComments() //**********************************************
     {
         Content.Comments = new List<CommentTreeViewModel>();
         Content.HasMore = true;
         _commentOpen = false;
+        NewComment = "";
+        _replyOpen = "";
     }
 
 }
@@ -209,7 +211,7 @@
     }
     @if (_replyOpen.Equals("discussion__main"))
     {
-        <div class="discussion__commentSection discussion__commentEdge d-flex" style="margin-left: 16px">
+        <div class="discussion__makeNew discussion__commentEdge d-flex" style="margin-left: 16px">
             <MudTextField Class="discussion__comment" @bind-Value="NewComment" Label="@_user.Username" Placeholder="Comment..."/>
             <MudButton Style="height: fit-content; margin-top: auto; border:1px solid #594ae2" OnClick="Reply">Reply</MudButton>
         </div>
