@@ -40,6 +40,7 @@
             Token = await GetAuthToken(),
         });
         _reviews = _reviews.Prepend(CommentTreeViewModel.Map(reviews)).OrderByDescending(c => c.Created).ToList();
+        NewReview = "";
     }
     
     private async Task OnGetReviews(int limit = 10)
