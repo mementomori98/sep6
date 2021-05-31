@@ -17,7 +17,7 @@
     [Inject]
     LocalStorage LocalStorage { get; set; }
 
-    private Func<MovieListModel, string> Href = m => $"/Main/{m.ImdbId}";
+    private Func<MovieListModel, string> Href = m => $"/{m.ImdbId}";
 
     private AuthToken Token { get; set; }
     private bool IsLoggedIn { get; set; }
@@ -102,13 +102,11 @@
             <MudText Typo="Typo.h6" Class="pa-3">Notflix</MudText>
             <MudDivider Class="mb-3"/>
             <MudNavLink Href="/" Icon="@(Icons.Outlined.Home)" Match="NavLinkMatch.All">Home</MudNavLink>
-            <MudNavLink Href="/Zolly" Icon="@(Icons.Outlined.Brush)">Zolly Test Page</MudNavLink>
             <MudNavLink Href="/BrowseToplists" Icon="@(Icons.Outlined.Brush)">Browse Toplists</MudNavLink>
             @if (IsLoggedIn)
             {
                 <MudNavLink Href="/TopLists" Icon="@(Icons.Outlined.Brush)">My TopLists</MudNavLink>
             }
-            <MudNavLink Href="/Main" Icon="@(Icons.Outlined.Brush)">Main</MudNavLink>
         </MudNavMenu>
     </MudDrawer>
     <MudMainContent>

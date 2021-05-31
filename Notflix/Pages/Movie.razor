@@ -1,4 +1,4 @@
-﻿@page "/Main/{id}"
+﻿@page "/{id}"
 @using Notflix.Components.Movie
 @inject IJSRuntime JS
 @inject IMovieService MovieService
@@ -61,7 +61,7 @@
                     <CommentsDiscussion MovieId="@_movieModel.Id"/>
                 </MudTabPanel>
                 <MudTabPanel Text="Reviews" ToolTip="ToolTip Two">
-                    <ReviewsDiscussion  MovieId="@_movieModel.Id"/>
+                    <ReviewsDiscussion MovieId="@_movieModel.Id"/>
                 </MudTabPanel>
                 <MudTabPanel Text="Fun Facts" ToolTip="ToolTip Three">
                     <FunFactsDiscussion MovieId="@_movieModel.Id"/>
