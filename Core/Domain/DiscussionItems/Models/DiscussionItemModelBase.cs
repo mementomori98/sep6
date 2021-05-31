@@ -6,17 +6,18 @@ using System.Threading.Tasks;
 
 namespace Core.Domain.DiscussionItems.Models
 {
-    public abstract class DiscussionItem
+    public abstract class DiscussionItemModelBase
     {
-        //comment's/review's/fun fact's id
         public long Id { get; set; }
-        public string Text { get; set; }
         public string AuthorUsername { get; set; }
         public long AuthorId { get; set; }
-        //movie/toplist/actor id
+        public string Text { get; set; }
+        public DateTime Created { get; set; }
+        public bool HasComments { get; set; }
+
         public long? DiscussableId { get; set; }
         public long NumberOfLikes { get; set; }
         public long NumberOfDislikes { get; set; }
-        public UserDiscussionItemInteractionType? userInteractionType { get; set; }
+        public Interactions? UserInteractionType { get; set; }
     }
 }

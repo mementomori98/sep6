@@ -18,7 +18,7 @@ namespace Core.Domain.Movies
 
         public async Task<MovieModel> GetMovieDetails(string ImdbId)
         {
-            var response = await client.GetAsync($"http://www.omdbapi.com/?apikey={ApiKey}&i={ImdbId}");
+            var response = await client.GetAsync($"http://www.omdbapi.com/?apikey={ApiKey}&i={ImdbId}&plot=full");
             var content = await response.Content.ReadAsStringAsync();
 
             var model = JsonSerializer.Deserialize<MovieApiModel>(content);
@@ -84,7 +84,7 @@ namespace Core.Domain.Movies
                 Title = model.Title,
                 Type = model.Type,
                 Year = model.Year,
-                DiscusionItems = new List<DiscussionItem>(),
+                DiscusionItems = new List<DiscussionItemModelBase>(),
                 Ratings = model.Ratings.Append(new Rating
                 {
                     Source = "Imdb",

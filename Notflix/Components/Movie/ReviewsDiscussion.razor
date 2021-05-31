@@ -1,5 +1,72 @@
-﻿<h3>ReviewsDiscussion</h3>
+﻿@using Core.Domain.DiscussionItems
+@using Core.Domain.DiscussionItems.Models
+@using Core.Domain.Authentication
+@using Core.Data.Models
+@inject IDiscussionItemService DiscussionItemService
+@inject IAuthenticationService AuthenticationService
+@inherits AuthBase
 
 @code {
+
+    [Parameter]
+    public long MovieId { get; set; }
+
+
+    private UserDao _user;
+    private string NewReview { get; set; }
+    private IEnumerable<CommentTreeViewModel> _reviews;
+    private bool HasMoreReviews { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        _user = await AuthenticationService.GetCurrentUser(await GetAuthToken());
+        var reviews = await DiscussionItemService.GetReviews(new GetReviewsRequest
+        {
+            DiscussableId = MovieId,
+            ToDate = DateTime.Now,
+            Token = await GetAuthToken(),
+        });
+        HasMoreReviews = reviews.HasMore;
+        _reviews = reviews.Items.Select(CommentTreeViewModel.Map).OrderByDescending(c => c.Created).ToList();
+    }
+
+    private async Task MakeReview()
+    {
+        if (NewReview is null or "") return;
+        var reviews = await DiscussionItemService.AddReview(new AddReviewRequest
+        {
+            DiscussableId = MovieId,
+            Text = NewReview,
+            Token = await GetAuthToken(),
+        });
+        _reviews = _reviews.Prepend(CommentTreeViewModel.Map(reviews)).OrderByDescending(c => c.Created).ToList();
+    }
     
+    private async Task OnGetReviews(int limit = 10)
+    {
+        var reviews = await DiscussionItemService.GetReviews(new GetReviewsRequest
+        {
+            DiscussableId = MovieId,
+            ToDate = _reviews.LastOrDefault()?.Created,
+            Token = await GetAuthToken()
+        });
+        HasMoreReviews = reviews.HasMore;
+        _reviews = _reviews.Concat(reviews.Items.Select(CommentTreeViewModel.Map)).OrderByDescending(c => c.Created).ToList();
+    }
+}
+@if (_user != null)
+{
+    <div class="discussion__makeNew d-flex" style="margin-bottom: 10px">
+         <MudTextField  @bind-Value="NewReview" Label="@_user.Username" Placeholder="Post a new review..."/>
+         <MudButton Style="height: fit-content; margin-top: auto; border:1px solid #594ae2" OnClick="MakeReview">Post</MudButton>
+    </div>
+}
+
+@foreach (var review in _reviews ?? new CommentTreeViewModel[0])
+{
+    <CommentItem Content="@review"/>
+}
+@if (HasMoreReviews)
+{
+    <p class="moreDiscussion" @onmouseup="() => OnGetReviews()">Load more reviews</p>
 }

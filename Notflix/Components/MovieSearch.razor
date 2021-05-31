@@ -46,7 +46,7 @@
 
 }
 
-<div>
+<div style="position: relative">
     <MudOverlay @bind-Visible="@_isOpen" DarkBackground="false" AutoClose="true" ZIndex="100"/>
     <MudTextField
         Margin="Margin.Dense"
@@ -60,7 +60,7 @@
         Class="@Class"
         @onfocusin="CheckResults"
         Style="z-index: 101"/>
-    <MudPopover Open="@(PopoverOpen)" Direction="Direction.Bottom" OffsetY="true" Style="max-width: 45%">
+    <MudPopover Open="@(PopoverOpen)" Direction="Direction.Bottom" OffsetY="true" Style="max-width: 40vw">
         @for (var i = 0; i < _results?.Count(); i++)
         {
             var movie = _results.ToList()[i];
