@@ -37,24 +37,29 @@
             OpenLoginDialog();
             return;
         }
-        if (Content.Interaction == Interactions.Like) return;
         await DiscussionItemService.Interact(new InteractRequest
         {
             DiscussionItemId = Content.Id,
             Token = await GetAuthToken(),
-            Interaction = Interactions.Like
+            Interaction = Content.Interaction == Interactions.Like ? null : Interactions.Like
         });
         if (Content.Interaction == Interactions.Dislike)
         {
             Content.Interaction = Interactions.Like;
             Content.Dislikes--;
             Content.Likes++;
-        }else
+        }
+        else if (Content.Interaction == null)
         {
             Content.Interaction = Interactions.Like;
             Content.Likes++;
         }
-        
+        else
+        {
+            Content.Interaction = null;
+            Content.Likes--;
+        }
+
         StateHasChanged();
     }
 
@@ -65,24 +70,29 @@
             OpenLoginDialog();
             return;
         }
-        if (Content.Interaction == Interactions.Dislike) return;
         await DiscussionItemService.Interact(new InteractRequest
         {
             DiscussionItemId = Content.Id,
             Token = await GetAuthToken(),
-            Interaction = Interactions.Dislike
+            Interaction = Content.Interaction == Interactions.Dislike ? null : Interactions.Dislike
         });
         if (Content.Interaction == Interactions.Like)
         {
             Content.Interaction = Interactions.Dislike;
             Content.Likes--;
             Content.Dislikes++;
-        }else
+        }
+        else if (Content.Interaction == null)
         {
             Content.Interaction = Interactions.Dislike;
             Content.Dislikes++;
         }
-        
+        else
+        {
+            Content.Interaction = null;
+            Content.Dislikes--;
+        }
+
         StateHasChanged();
     }
 
@@ -124,7 +134,7 @@
     private async Task Reply()
     {
         if (NewComment is null or "") return;
-        
+
         var comment = await DiscussionItemService.AddComment(new AddCommentRequest
         {
             DiscussionItemId = Content.Id,
@@ -164,7 +174,7 @@
     <div class="discussion d-flex">
         <img src="/Images/avatar.png" class="discussion__avatar" alt="user avatar"/>
         <div class="@_replyOpen" style="padding-left: 10px; width: 100%">
-            <MudText Typo="Typo.body1">@Content.AuthorUsername</MudText>
+            <MudText Typo="Typo.body2" Style="font-weight: bold;font-size: 13px">@Content.AuthorUsername</MudText>
             <MudText Typo="Typo.body2">@Content.Text</MudText>
             <div class="d-flex" style="font-size: 18px;">
                 <div @onmouseup="@OnVoteUp" class="discussion__icon" id="discussion__voteUp">
