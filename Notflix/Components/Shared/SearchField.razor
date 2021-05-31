@@ -15,7 +15,7 @@
     public string Class { get; set; }
 
     [Parameter]
-    public Func<IEnumerable<TItem>> Search { get; set; }
+    public Func<string, IEnumerable<TItem>> Search { get; set; }
 
     [Parameter]
     public RenderFragment<TItem> ResultItem { get; set; }
@@ -34,7 +34,7 @@
 
     private async Task OnSearch()
     {
-        _results = Search.Invoke();
+        _results = Search.Invoke(Text);
         if (_results?.Any() ?? false)
             _isOpen = true;
     }
