@@ -1,19 +1,39 @@
 ﻿@page "/{id}"
 @using Notflix.Components.Movie
+@using Core.Domain.DiscussionItems.Models
+@using Core.Domain.DiscussionItems
 @inject IJSRuntime JS
 @inject IMovieService MovieService
+@inject IAuthorizationService AuthenticationService
+@inject IDiscussionItemService DiscussionItemService
+@inherits AuthBase
 
 @code {
-    [Parameter] 
+
+    [Parameter]
     public string Id { get; set; }
-    
+
     private MovieModel _movieModel;
-    
+    private ReviewModel _userReview;
+    private bool ShowFullReview { get; set; }
+
     protected override async Task OnParametersSetAsync()
     {
         _movieModel = await MovieService.GetMovieDetails(Id);
+
+        await LoadReview();
     }
-    
+
+    private async Task LoadReview()
+    {
+        Console.WriteLine("Load");
+        _userReview = await DiscussionItemService.GetUserReview(new GetUserReviewRequest
+        {
+            DiscussableId = _movieModel.Id,
+            Token = await GetAuthToken(),
+        });
+    }
+
     private int GetRating(MovieModel movieModel)
     {
         var value = movieModel.Ratings.First().Value;
@@ -32,25 +52,58 @@
         }
     }
 
+    private void HandleReviewMessage(bool action)
+    {
+        ShowFullReview = action;
+    }
+
 }
 
 @if (_movieModel != null)
 {
     <Card>
         <div style="position: relative">
-            <figure class="movieFigure"><img class="movieFigure__clip" src="@(_movieModel.ImageUrl)"/></figure> 
-            <MudText Typo="Typo.h3"  Style="position: absolute; bottom: 0; color: white; font-weight: bold; padding: 15px">@_movieModel.Title</MudText>
+            <figure class="movieFigure">
+                <img class="movieFigure__clip" src="@(_movieModel.ImageUrl)"/>
+            </figure>
+            <MudText Typo="Typo.h3" Style="position: absolute; bottom: 0; color: white; font-weight: bold; padding: 15px">@_movieModel.Title</MudText>
         </div>
-        
+
         <MudGrid Style="margin-bottom: 20px;">
             <MudItem sm="8" lg="8">
                 <MudText Typo="Typo.body2">@_movieModel.Plot</MudText>
             </MudItem>
             <MudItem sm="4" lg="4" Class="white">
-                <MudRating ReadOnly="true" Size="Size.Medium" SelectedValue="GetRating(_movieModel)"/>
+                <div class="d-flex">
+                    <MudText Typo="Typo.body2">IMDB rating:</MudText>
+                    <MudRating ReadOnly="true" Size="Size.Medium" SelectedValue="GetRating(_movieModel)"/>
+                </div>
                 <MudText Typo="Typo.body2">Genre: @_movieModel.Genres.First()</MudText>
                 <MudText Typo="Typo.body2">Actors: @string.Join(",", _movieModel.Actors)</MudText>
+                @if (_userReview != null)
+                {
+                    <div style="background-color: #e8f0f8; border-radius: 15px; padding: 10px">
+                        <div class="d-flex">
+                            <MudText Typo="Typo.body2" Style="font-weight: bold">Your rating:</MudText>
+                            <MudRating SelectedValue="@_userReview.NumberOfStars" ReadOnly="true" Style="margin: auto 5px auto 5px;" Size="Size.Medium" FullIcon="@Icons.Material.Filled.Favorite" EmptyIcon="@Icons.Material.Filled.FavoriteBorder" Color="Color.Secondary"/>
+                        </div>
+                        @if (!ShowFullReview && _userReview.Text.Length > 150)
+                        {
+                            <MudText Typo="Typo.body2" Style="font-style: italic">„@_userReview.Text.Substring(0, 150)<a style="cursor: pointer; font-weight: bold" @onmouseup="() => HandleReviewMessage(true)">...</a>”</MudText>
+                        }
+                        else
+                        {
+                            <MudText Typo="Typo.body2" Style="font-style: italic">
+                                „@_userReview.Text”
+                                @if (ShowFullReview)
+                                {
+                                    <a style="cursor: pointer; font-weight: bold" @onmouseup="() => HandleReviewMessage(false)">[hide]</a>
+                                }
+                            </MudText>
+                        }
 
+                    </div>
+                }
             </MudItem>
         </MudGrid>
 
@@ -61,7 +114,7 @@
                     <CommentsDiscussion MovieId="@_movieModel.Id"/>
                 </MudTabPanel>
                 <MudTabPanel Text="Reviews" ToolTip="ToolTip Two">
-                    <ReviewsDiscussion MovieId="@_movieModel.Id"/>
+                    <ReviewsDiscussion MovieId="@_movieModel.Id" LoadReview="@LoadReview"/>
                 </MudTabPanel>
                 <MudTabPanel Text="Fun Facts" ToolTip="ToolTip Three">
                     <FunFactsDiscussion MovieId="@_movieModel.Id"/>

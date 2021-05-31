@@ -161,7 +161,7 @@
         _commentOpen = true;
     }
 
-    private async Task OnCloseComments() //**********************************************
+    private async Task OnCloseComments()
     {
         Content.Comments = new List<CommentTreeViewModel>();
         Content.HasMore = true;
@@ -172,11 +172,19 @@
 
 }
 
+
 <div class="comment-item">
     <div class="discussion d-flex">
         <img src="/Images/avatar.png" class="discussion__avatar" alt="user avatar"/>
         <div class="@_replyOpen" style="padding-left: 10px; width: 100%">
-            <MudText Typo="Typo.body2" Style="font-weight: bold;font-size: 13px">@Content.AuthorUsername</MudText>
+            <div class="d-flex">
+                <MudText Typo="Typo.body2" Style="font-weight: bold;font-size: 13px">@Content.AuthorUsername</MudText>
+                @if (Content.NumberOfStars != null)
+                {
+                    <MudRating SelectedValue="@Content.NumberOfStars.Value" ReadOnly="true" Style="margin: auto 5px auto 5px;" Size="Size.Small" FullIcon="@Icons.Material.Filled.Favorite" EmptyIcon="@Icons.Material.Filled.FavoriteBorder" Color="Color.Secondary"/>
+                }
+            </div>
+
             <MudText Typo="Typo.body2">@Content.Text</MudText>
             <div class="d-flex" style="font-size: 18px;">
                 <div @onmouseup="@OnVoteUp" class="discussion__icon" id="discussion__voteUp">

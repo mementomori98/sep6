@@ -99,7 +99,7 @@ namespace Core.Domain.DiscussionItems
                 throw new Exception("Unauthorized");
             
             var review = await query.SingleOrDefaultAsync(r => r.AuthorId == user.Id);
-            
+            if (review == null) return null;
             return Map(review, user.Id);
         }
 
