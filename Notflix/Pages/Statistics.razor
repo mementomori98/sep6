@@ -11,11 +11,16 @@
 @using ChartJs.Blazor.Common.Enums
 
 @code {
-
+    // TODO: This is a bit of a mess. A lot of the methods should be extracted 
+    // to a service to keep the focus on presentation logic.
 
     private LineConfig _config;
     static readonly HttpClient Client = new();
-    private bool _loaded;
+    private Chart _chart;
+    private bool _loadingRatings = false;
+    private bool _loadingSearch = false;
+
+    private bool IsLoading => _loadingRatings || _loadingSearch;
 
     private class MovieRating
     {
@@ -37,8 +42,18 @@
         }
     }
 
-    private static async Task<IEnumerable<MovieRating>> GetActorMovieRatings(string actorId)
+    private class ActorResult
     {
+        public string Name { get; set; }
+
+        [JsonPropertyName("imdb_id")]
+        public string ImdbId { get; set; }
+    }
+
+    private async Task<IEnumerable<MovieRating>> GetActorMovieRatings(string actorId)
+    {
+        _loadingRatings = true;
+        StateHasChanged();
         var url = $"https://sep6movies-statiscics.herokuapp.com/actor/{actorId}/movieratings";
         var result = await Client.GetAsync(url);
         var resp = JsonSerializer.Deserialize<List<MovieRating>>(
@@ -51,14 +66,33 @@
             resp?
                 .Where(x => (int) x.ParsedRating != -1)
                 .OrderBy(x => x.Released).ToList();
+        _loadingRatings = false;
+        StateHasChanged();
         return orderedResp;
+    }
+
+    private async Task<IEnumerable<ActorResult>> SearchActors(string query)
+    {
+        _loadingSearch = true;
+        StateHasChanged();
+        var url = $"http://127.0.0.1:5000/search/people?query={query}";
+        var result = await Client.GetAsync(url);
+        var resp = JsonSerializer.Deserialize<List<ActorResult>>(
+            await result.Content.ReadAsStringAsync(),
+            new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            });
+        _loadingSearch = false;
+        StateHasChanged();
+        return resp;
     }
 
     private static LineConfig GetLineConfig()
     {
         return new()
         {
-            Options = new LineOptions()
+            Options = new LineOptions
             {
                 Responsive = true,
                 Title = new OptionsTitle
@@ -78,7 +112,7 @@
                             },
                             Time = new TimeOptions
                             {
-                                TooltipFormat = "yyyy-dd-MM"
+                                TooltipFormat = "yyyy-MM-DD"
                             },
                         }
                     },
@@ -100,40 +134,59 @@
         };
     }
 
-    protected override async Task OnInitializedAsync()
+    private async Task<IDataset<TimePoint>> GetActorDataset(ActorResult actor)
     {
-        _loaded = false;
-        
-        var orderedResp = await GetActorMovieRatings("nm0000129");
+        var color = ColorUtil.RandomColorString();
 
-        _config = GetLineConfig();
+        var orderedResp = await GetActorMovieRatings(actor.ImdbId);
 
         IDataset<TimePoint> dataset = new LineDataset<TimePoint>()
         {
-            Label = "Dataset with point data",
-    // BackgroundColor = ColorUtil.FromDrawingColor(Color.),
-    // BorderColor = ColorUtil.FromDrawingColor(ChartColors.Green),
+            Label = $"{actor.Name} movie ratings",
+            BackgroundColor = color,
+            BorderColor = color,
+            LineTension = 0,
             Fill = FillingMode.Disabled
         };
         foreach (var movieRating in orderedResp)
         {
             dataset.Add(new TimePoint(movieRating.ParsedReleaseDate, movieRating.ParsedRating));
         }
+        return dataset;
+    }
 
-        _config.Data.Datasets.Add(dataset);
+    private async void AddDataSet(ActorResult actor)
+    {
+        _config.Data.Datasets.Add(await GetActorDataset(actor));
+        await _chart.Update();
+    }
 
-        _loaded = true;
+    protected override async Task OnInitializedAsync()
+    {
+        _config = GetLineConfig();
     }
 
 }
 
+@if (IsLoading)
+{
+    <MudOverlay Visible="true" DarkBackground="true">
+        <MudProgressCircular Color="Color.Secondary" Indeterminate="true" />
+    </MudOverlay>
+}
 
 
-@if (_loaded)
-{
-    <Chart Config="_config"></Chart>
-}
-else
-{
-    <MudProgressCircular Color="Color.Default" Indeterminate="true"/>
-}
+<MudText Typo="Typo.h2">Actor statistics</MudText>
+<MudText Typo="Typo.body1">Ever wondered how well the movies an actor has participated in was rated ovearll? Try to search up an actor and find out. Add as many actors as you like and compare :)</MudText>
+
+<SearchField
+    TItem="ActorResult"
+    OnItemClicked="@(result => AddDataSet(result))"
+    Search="@(s => SearchActors(s))"
+    Immediate="false"
+    PlaceHolder="Actor name">
+    <ResultItem>
+        <p>@context.Name</p>
+    </ResultItem>
+</SearchField>
+<Chart Config="_config" @ref="_chart"></Chart>
