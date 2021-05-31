@@ -1,70 +1,45 @@
 ﻿@page "/"
-@using Core.Domain.DiscussionItems
-@using Core.Domain.DiscussionItems.Models
-@inject IDiscussionItemService DiscussionItemService
-
+@inject IMovieService MovieService
+@if (_movieModel != null)
+{
+    <MudGrid Justify="Justify.Center" Class="d-flex flex-xs-column flex-sm-row" Style="margin-top:20px">
+        <MainIconCard Content="@_movieModel" />
+        <MainIconCard Content="@_movieModel" />
+        <MainIconCard Content="@_movieModel" />
+        <MainIconCard Content="@_movieModel" />
+        <MainIconCard Content="@_movieModel" />
+        <MainIconCard Content="@_movieModel" />
+        <MainIconCard Content="@_movieModel" />
+        <MainIconCard Content="@_movieModel" />
+        <MainIconCard Content="@_movieModel" />
+        <MainIconCard Content="@_movieModel" />
+        <MainIconCard Content="@_movieModel" />
+        <MainIconCard Content="@_movieModel" />
+        <MainIconCard Content="@_movieModel" />
+        <MainIconCard Content="@_movieModel" />
+        <MainIconCard Content="@_movieModel" />
+        <MainIconCard Content="@_movieModel" />
+        <MainIconCard Content="@_movieModel" />
+        <MainIconCard Content="@_movieModel" />
+        <MainIconCard Content="@_movieModel" />
+        <MainIconCard Content="@_movieModel" />
+        <MainIconCard Content="@_movieModel" />
+        <MainIconCard Content="@_movieModel" />
+        <MainIconCard Content="@_movieModel" />
+        <MainIconCard Content="@_movieModel" />
+        <MainIconCard Content="@_movieModel" />
+        <MainIconCard Content="@_movieModel" />
+        <MainIconCard Content="@_movieModel" />
+        <MainIconCard Content="@_movieModel" />
+        <MainIconCard Content="@_movieModel" />
+        <MainIconCard Content="@_movieModel" />
+    </MudGrid>
+}
 @code {
-    int count;
-    private async void GetDiscussionItem()
+    private MovieModel _movieModel;
+
+    protected override async Task OnInitializedAsync()
     {
-        CommentModel comment = new CommentModel()
-        {
-            Text = "Hello world",
-            AuthorId = 1,
-            DiscussableId = 2
-        };
-
-        ReviewModel review = new ReviewModel()
-        {
-            Text = "Hello review",
-            AuthorId = 1,
-            DiscussableId = 2,
-            NumberOfStars = 5
-        };
-
-        FunFactModel funFact = new FunFactModel()
-        {
-            Text = "Hello fun fact",
-            AuthorId = 1,
-            DiscussableId = 2
-        };
-
-        CommentModel subcomment = new CommentModel()
-        {
-            Text = "Subcomment",
-            AuthorId = 1,
-            DiscussionItemId = 83
-        };
-/*
-        long c = await DiscussionItemService.AddComment(comment);
-        long r = await DiscussionItemService.AddReview(review);
-        long f = await DiscussionItemService.AddFunFact(funFact);
-        long s = await DiscussionItemService.AddSubcomment(subcomment);
-        var i = await DiscussionItemService.DislikeDiscussionItem(83, 1);
-        var i2 = await DiscussionItemService.DislikeDiscussionItem(85, 1);
-        PageResult<Comment> comments = await DiscussionItemService.GetCommentsOnDiscussable(2, 1, 1);
-        PageResult<Comment> comments2 = await DiscussionItemService.GetCommentsOnDiscussable(2, 2, 1);
-        PageResult<Comment> comments3 = await DiscussionItemService.GetCommentsOnDiscussable(2, 3, 1);
-        PageResult<Comment> comments4 = await DiscussionItemService.GetCommentsOnDiscussable(2, 4, 1);
-        IEnumerable<Review> reviews = await DiscussionItemService.GetReviewsOnDiscussable(2, 1, 1);
-        IEnumerable<Review> reviews2 = await DiscussionItemService.GetReviewsOnDiscussable(2, 2, 1);
-        IEnumerable<Review> reviews3 = await DiscussionItemService.GetReviewsOnDiscussable(2, 4, 1);
-        IEnumerable<FunFact> funFacts = await DiscussionItemService.GetFunFactsOnDiscussable(2, 1, 1);
-        IEnumerable<FunFact> funFacts2 = await DiscussionItemService.GetFunFactsOnDiscussable(2, 2, 1);
-        IEnumerable<FunFact> funFacts3 = await DiscussionItemService.GetFunFactsOnDiscussable(2, 5, 1);
-        IEnumerable<Comment> subcomments = await DiscussionItemService.GetSubcommentsOnDiscussionItem(83, 1, 1);
-        IEnumerable<Comment> subcomments2 = await DiscussionItemService.GetSubcommentsOnDiscussionItem(83, 2, 1);
-        IEnumerable<Comment> subcomments3 = await DiscussionItemService.GetSubcommentsOnDiscussionItem(83, 6, 1);
-        count = comments.Count();
-*/
+        _movieModel = await MovieService.GetMovieDetails("tt0120737");
     }
 }
-
-<h1>Hello, world!</h1>
-
-Welcome to your new app.
-
-@count
-<button @onclick="GetDiscussionItem">
-    GetDiscussionItem</button>
-    <!--<SurveyPrompt Title="How is Blazor working for you?" />-->
