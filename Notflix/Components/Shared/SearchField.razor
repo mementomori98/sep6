@@ -15,7 +15,7 @@
     public string Class { get; set; }
 
     [Parameter]
-    public Func<IEnumerable<TItem>> Search { get; set; }
+    public Func<string, IEnumerable<TItem>> Search { get; set; }
 
     [Parameter]
     public RenderFragment<TItem> ResultItem { get; set; }
@@ -34,7 +34,7 @@
 
     private async Task OnSearch()
     {
-        _results = Search.Invoke();
+        _results = Search.Invoke(Text);
         if (_results?.Any() ?? false)
             _isOpen = true;
     }
@@ -59,45 +59,47 @@
 
 }
 
-<MudOverlay @bind-Visible="@_isOpen" DarkBackground="false" AutoClose="true" ZIndex="100"/>
-<MudTextField
-    Margin="Margin.Dense"
-    T="string"
-    @bind-Value="@Text"
-    OnDebounceIntervalElapsed="OnSearch"
-    Immediate="true"
-    DebounceInterval="100"
-    Placeholder="@PlaceHolder"
-    Variant="Variant.Outlined"
-    Class="@Class"
-    @onfocusin="CheckResults"
-    Style="z-index: 101"/>
-<MudPopover Open="@(PopoverOpen)" Direction="Direction.Bottom" OffsetY="true" Style="max-width: 45%">
-    <div class="pa-4">
-        @for (var i = 0; i < _results?.Count(); i++)
-        {
-            var item = _results.ToList()[i];
-            <div class="py-2">
-                @if (Href != null)
-                {
-                    <a href="@(Href.Invoke(item))">
-                        @ResultItem(item)
-                    </a>
-                }
-                else
-                {
-                    <div style="cursor: pointer" @onclick="() => OnItemSelected(item)">
-                        @ResultItem(item)
-                    </div>
-                }
-            </div>
-
-            if (i != _results.Count() - 1)
+<div  style="position: relative">
+    <MudOverlay @bind-Visible="@_isOpen" DarkBackground="false" AutoClose="true" ZIndex="100"/>
+    <MudTextField
+        Margin="Margin.Dense"
+        T="string"
+        @bind-Value="@Text"
+        OnDebounceIntervalElapsed="OnSearch"
+        Immediate="true"
+        DebounceInterval="100"
+        Placeholder="@PlaceHolder"
+        Variant="Variant.Outlined"
+        Class="@Class"
+        @onfocusin="CheckResults"
+        Style="z-index: 101"/>
+    <MudPopover Open="@(PopoverOpen)" Direction="Direction.Bottom" OffsetY="true" Style="max-width: 40vw">
+        <div class="pa-4">
+            @for (var i = 0; i < _results?.Count(); i++)
             {
-                <MudDivider/>
+                var item = _results.ToList()[i];
+                <div class="py-2">
+                    @if (Href != null)
+                    {
+                        <a href="@(Href.Invoke(item))">
+                            @ResultItem(item)
+                        </a>
+                    }
+                    else
+                    {
+                        <div style="cursor: pointer" @onclick="() => OnItemSelected(item)">
+                            @ResultItem(item)
+                        </div>
+                    }
+                </div>
+    
+                if (i != _results.Count() - 1)
+                {
+                    <MudDivider/>
+                }
             }
-        }
-    </div>
-
-
-</MudPopover>
+        </div>
+    
+    
+    </MudPopover>
+</div>
