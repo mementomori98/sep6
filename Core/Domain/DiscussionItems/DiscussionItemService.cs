@@ -9,6 +9,7 @@ using Core.Data;
 using Microsoft.EntityFrameworkCore;
 using Core.Data.Models.DiscussionItems;
 using Core.Domain.Authentication;
+using Core.Domain.Utils;
 using Org.BouncyCastle.Asn1.X509;
 
 namespace Core.Domain.DiscussionItems
@@ -86,6 +87,20 @@ namespace Core.Domain.DiscussionItems
                 Items = funFacts.OrderBy(f => f.Created).Select(f => Map(f, user?.Id)),
                 HasMore = count > limit
             };
+        }
+
+        public async Task<ReviewModel> GetUserReview(GetUserReviewRequest request)
+        {
+            await using var context = new MovieContext();
+            var query = GetQuery<ReviewDao>(context, request.DiscussableId);
+            
+            var user = await _authenticationService.GetCurrentUser(request.Token);
+            if (user == null)
+                throw new Exception("Unauthorized");
+            
+            var review = await query.SingleOrDefaultAsync(r => r.AuthorId == user.Id);
+            
+            return Map(review, user.Id);
         }
 
         public async Task<CommentModel> AddComment(AddCommentRequest request)
