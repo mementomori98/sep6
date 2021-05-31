@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using Core.Data.Models;
 using Core.Data.Models.DiscussionItems;
+using Core.Domain.Recommendations.Models;
 using Microsoft.EntityFrameworkCore;
 using MySql.Data.MySqlClient;
 
@@ -107,6 +108,27 @@ namespace Core.Data
                     .HasForeignKey(i => i.DiscussionItemId)
                     .IsRequired()
                     .OnDelete(DeleteBehavior.Cascade));
+
+            b.Configure<RecommendationRequestDao>(x =>
+                x.HasKey(rr => rr.UserId), x =>
+                x.HasOne<UserDao>()
+                    .WithOne()
+                    .HasForeignKey<RecommendationRequestDao>(rec => rec.UserId)
+                    .IsRequired()
+                    .OnDelete(DeleteBehavior.Cascade));
+
+            b.Configure<ReviewRecommendation>(x =>
+                x.HasKey(rec => rec.ReviewId), x =>
+                  x.HasOne<ReviewDao>()
+                      .WithOne()
+                      .HasForeignKey<ReviewRecommendation>(rec => rec.ReviewId)
+                      .IsRequired()
+                      .OnDelete(DeleteBehavior.Cascade), x => 
+                   x.HasOne<RecommendationRequestDao>()
+                        .WithMany(r => r.Recommendations)
+                        .HasForeignKey(r => r.UserId)
+                        .IsRequired()
+                        .OnDelete(DeleteBehavior.Cascade));
         }
     }
 }

@@ -17,5 +17,6 @@ namespace Core.Domain.Movies.Models
         public string imdbVotes { get; set; }
         public string Actors { get; set; }
         public IEnumerable<Rating> Ratings { get; set; }
+        public long TmdbId { get; set; }
     }
 }
