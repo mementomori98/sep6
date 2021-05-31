@@ -146,7 +146,7 @@
             Limit = limit
         });
         Content.Comments ??= new List<CommentTreeViewModel>();
-        Content.Comments = Content.Comments.Concat(comments.Items.Select(CommentTreeViewModel.Map));
+        Content.Comments = Content.Comments.Concat(comments.Items.Select(CommentTreeViewModel.Map)).ToList();
         Content.HasMore = comments.HasMore;
         _commentOpen = true;
     }
