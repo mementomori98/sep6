@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Text.Json;
@@ -56,7 +57,15 @@ namespace Core.Domain.Movies
         {
             var response = await client.GetAsync($"https://sep6movies-statiscics.herokuapp.com/tmdb_id/{imdbId}");
             string tmdbIdJson = await response.Content.ReadAsStringAsync();
-            return long.Parse(JsonSerializer.Deserialize<string>(tmdbIdJson));
+            try
+            {
+                return long.Parse(JsonSerializer.Deserialize<string>(tmdbIdJson));
+            }
+            catch (Exception e)
+            {
+                return 0;
+            }
+            
         }
 
         public async Task<MovieModel> GetMovieDetails(long tmdbId)
