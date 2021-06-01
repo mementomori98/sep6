@@ -47,11 +47,12 @@ namespace Notflix
                 c.SnackbarConfiguration.HideTransitionDuration = 500;
                 c.SnackbarConfiguration.SnackbarVariant = Variant.Filled;
             });
-            services.AddTransient<IMovieService, OmdbMovieService>();
+            services.AddTransient<IMovieService, MovieService>();
+            services.AddTransient<IMovieRecommendationService, MovieService>();
             services.AddTransient<IRecommendationService, RecommendationsService>();
             services.AddTransient<IDiscussionItemService, DiscussionItemService>();
             services.AddTransient<LocalStorage>();
-            services.AddTransient<IMovieService, OmdbMovieService>();
+            services.AddTransient<IMovieService, MovieService>();
             services.AddTransient<IAuthenticationService, AuthenticationService>();
             services.AddTransient<IToplistService, ToplistService>();
         }

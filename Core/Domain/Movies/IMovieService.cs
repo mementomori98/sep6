@@ -9,7 +9,5 @@ namespace Core.Domain.Movies
     {
         Task<IEnumerable<MovieListModel>> SearchList(string text);
         Task<MovieModel> GetMovieDetails(string ImdbId);
-        Task<MovieModel> GetMovieDetails(long tmdbId);
-        Task<MovieDao> GetMovieRecommendation(long tmdbId);
     }
 }

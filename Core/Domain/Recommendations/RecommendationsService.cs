@@ -20,12 +20,12 @@ namespace Core.Domain.Recommendations
     public class RecommendationsService : IRecommendationService
     {
         private readonly IDiscussionItemService _discussionItemService;
-        private readonly IMovieService _movieService;
+        private readonly IMovieRecommendationService _movieService;
         private readonly IAuthenticationService _authenticationService;
         private string ApiKey = "d7c20c31c1ae99c2b49085a9c733817e";
         private static HttpClient client = new HttpClient();
 
-        public RecommendationsService(IDiscussionItemService discussionItemService, IAuthenticationService authenticationService, IMovieService movieService)
+        public RecommendationsService(IDiscussionItemService discussionItemService, IAuthenticationService authenticationService, IMovieRecommendationService movieService)
         {
             _discussionItemService = discussionItemService;
             _authenticationService = authenticationService;
@@ -76,18 +76,12 @@ namespace Core.Domain.Recommendations
             MovieContext context = new MovieContext();
             if (recommendationsGetModel.RequestPerSession == 1)
             {
-                List<ReviewRecommendation> reviews;
-                if (recommendationsGetModel.Recommendations.Count() == 0)
-                {
-                    reviews = await GetReviewRecommendationsExcludingExisting(userId, 3, recommendationsGetModel.Recommendations);
-                }
-                else
-                {
-                    reviews = await GetReviewRecommendationsExcludingExisting(userId, 1, recommendationsGetModel.Recommendations);
-                }
+                List<ReviewRecommendation> reviews = await GetReviewRecommendations(userId);
+                
                 recommendationsGetModel.Recommendations = recommendationsGetModel.Recommendations.Concat(reviews).ToList();
+                return await GetMoviesFromReviewRecommendations(recommendationsGetModel);
             }
-            return await GetMoviesFromReviewRecommendations(recommendationsGetModel);
+            return await GetTopRated(recommendationsGetModel);
         }
 
         private async Task<List<MovieDao>> GetMoviesFromReviewRecommendations(RecommendationsGetModel recommendationsGetModel)
@@ -121,24 +115,6 @@ namespace Core.Domain.Recommendations
             var model = JsonSerializer.Deserialize<TmdbSearchResult>(content);
             
             return model.results;
-        }
-
-        private async Task<List<ReviewRecommendation>> GetReviewRecommendationsExcludingExisting(long userId, int numberOfEntries, List<ReviewRecommendation> existing)
-        {
-            var recommendations = await GetReviewRecommendations(userId);
-            for(int i = 0; i < recommendations.Count; ++i)
-            {
-                foreach(ReviewRecommendation recommendation in existing)
-                {
-                    if(recommendations[i].ReviewId == recommendation.ReviewId)
-                    {
-                        i--;
-                        recommendations.RemoveAt(i+1);
-                        break;
-                    }
-                }
-            }
-            return recommendations.Take(numberOfEntries).ToList();
         }
 
         private async Task<List<ReviewRecommendation>> GetReviewRecommendations(long userId)

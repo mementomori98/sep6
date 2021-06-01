@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace Core.Domain.Movies
 {
-    public class OmdbMovieService : IMovieService
+    public class MovieService : IMovieService, IMovieRecommendationService
     {
         private static HttpClient client = new HttpClient();
         private static string ApiKey = "720a2f69";
@@ -62,7 +62,7 @@ namespace Core.Domain.Movies
             
         }
 
-        public async Task<MovieModel> GetMovieDetails(long tmdbId)
+        private async Task<MovieModel> GetMovieDetails(long tmdbId)
         {
             return await GetMovieDetails(await GetImdbId(tmdbId), tmdbId);
         }
