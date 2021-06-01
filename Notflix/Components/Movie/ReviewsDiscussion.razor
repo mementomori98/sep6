@@ -2,6 +2,7 @@
 @using Core.Domain.DiscussionItems.Models
 @using Core.Domain.Authentication
 @using Core.Data.Models
+@inject ISnackbar Snackbar
 @inject IDiscussionItemService DiscussionItemService
 @inject IAuthenticationService AuthenticationService
 @inherits AuthBase
@@ -11,62 +12,98 @@
     [Parameter]
     public long MovieId { get; set; }
 
+    [Parameter]
+    public EventCallback LoadReview { get; set; }
 
-    private UserDao _user;
+    [Parameter]
+    public UserDao User { get; set; }
+    
+    [Parameter]
+    public ReviewModel UserReview { get; set; }
+    
+    [Parameter]
+    public IEnumerable<CommentTreeViewModel> Reviews { get; set; }
+    
+    [Parameter]
+    public bool HasMoreReviews { get; set; }
+    
     private string NewReview { get; set; }
-    private IEnumerable<CommentTreeViewModel> _reviews;
-    private bool HasMoreReviews { get; set; }
-
-    protected override async Task OnParametersSetAsync()
-    {
-        _user = await AuthenticationService.GetCurrentUser(await GetAuthToken());
-        var reviews = await DiscussionItemService.GetReviews(new GetReviewsRequest
-        {
-            DiscussableId = MovieId,
-            ToDate = DateTime.Now,
-            Token = await GetAuthToken(),
-        });
-        HasMoreReviews = reviews.HasMore;
-        _reviews = reviews.Items.Select(CommentTreeViewModel.Map).OrderByDescending(c => c.Created).ToList();
-    }
-
+    private int NewRevRating { get; set; }
+    
     private async Task MakeReview()
     {
-        if (NewReview is null or "") return;
-        var reviews = await DiscussionItemService.AddReview(new AddReviewRequest
+        if (UserReview != null)
         {
-            DiscussableId = MovieId,
-            Text = NewReview,
-            Token = await GetAuthToken(),
-        });
-        _reviews = _reviews.Prepend(CommentTreeViewModel.Map(reviews)).OrderByDescending(c => c.Created).ToList();
+            Snackbar.Add("You have written a review already!", Severity.Warning);
+            return;
+        }
+        if (NewReview is null or "")
+        {
+            Snackbar.Add("You have to write a review!", Severity.Warning);
+            return;
+        }
+        if (NewRevRating == 0)
+        {
+            Snackbar.Add("You have to rate the movie!", Severity.Warning);
+            return;
+        }
+        try
+        {
+            var reviews = await DiscussionItemService.AddReview(new AddReviewRequest
+            {
+                DiscussableId = MovieId,
+                Text = NewReview,
+                Stars = NewRevRating,
+                Token = await GetAuthToken(),
+            });
+            Reviews = Reviews.Prepend(CommentTreeViewModel.Map(reviews)).OrderByDescending(c => c.Created).ToList();
+            NewReview = "";
+            UserReview = new ReviewModel();
+            await LoadReview.InvokeAsync();
+            StateHasChanged();
+        }
+        catch (Exception e)
+        {
+            Snackbar.Add("You have made a review already", Severity.Error);
+            throw;
+        }
     }
-    
-    private async Task OnGetReviews(int limit = 10)
+
+    private async Task GetMoreReviews(int limit = 10)
     {
         var reviews = await DiscussionItemService.GetReviews(new GetReviewsRequest
         {
             DiscussableId = MovieId,
-            ToDate = _reviews.LastOrDefault()?.Created,
+            ToDate = Reviews.LastOrDefault()?.Created,
             Token = await GetAuthToken()
         });
         HasMoreReviews = reviews.HasMore;
-        _reviews = _reviews.Concat(reviews.Items.Select(CommentTreeViewModel.Map)).OrderByDescending(c => c.Created).ToList();
+        Reviews = Reviews.Concat(reviews.Items.Select(CommentTreeViewModel.Map)).OrderByDescending(c => c.Created).ToList();
     }
-}
-@if (_user != null)
-{
-    <div class="discussion__makeNew d-flex" style="margin-bottom: 10px">
-         <MudTextField  @bind-Value="NewReview" Label="@_user.Username" Placeholder="Post a new review..."/>
-         <MudButton Style="height: fit-content; margin-top: auto; border:1px solid #594ae2" OnClick="MakeReview">Post</MudButton>
-    </div>
+
 }
 
-@foreach (var review in _reviews ?? new CommentTreeViewModel[0])
+@if (User != null)
+{
+    if (UserReview == null)
+    {
+        <div class="discussion__makeNew d-flex" style="margin-bottom: 10px">
+            <MudTextField @bind-Value="NewReview" Label="@User.Username" Placeholder="Post a new review..."/>
+            <MudRating @bind-SelectedValue="@NewRevRating" Style="margin: auto 10px 0 10px" FullIcon="@Icons.Material.Filled.Favorite" EmptyIcon="@Icons.Material.Filled.FavoriteBorder" Color="Color.Secondary"/>
+            <MudButton Style="height: fit-content; margin-top: auto; border:1px solid #594ae2" OnClick="MakeReview">Post</MudButton>
+        </div>
+    }
+}
+else
+{
+    <MudText Style="font-style: italic; padding-bottom: 10px">You have to log in, to write a review!</MudText>
+}
+
+@foreach (var review in Reviews ?? new CommentTreeViewModel[0])
 {
     <CommentItem Content="@review"/>
 }
 @if (HasMoreReviews)
 {
-    <p class="moreDiscussion" @onmouseup="() => OnGetReviews()">Load more reviews</p>
+    <p class="moreDiscussion" @onmouseup="() => GetMoreReviews()">Load more reviews</p>
 }

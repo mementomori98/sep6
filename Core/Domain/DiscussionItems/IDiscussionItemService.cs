@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Core.Domain.Utils;
 
 namespace Core.Domain.DiscussionItems
 {
@@ -13,6 +14,7 @@ namespace Core.Domain.DiscussionItems
         Task<PageResult<CommentModel>> GetComments(GetCommentsRequest request);
         Task<PageResult<ReviewModel>> GetReviews(GetReviewsRequest request);
         Task<PageResult<FunFactModel>> GetFunFacts(GetFunFactsRequest request);
+        Task<ReviewModel> GetUserReview(GetUserReviewRequest request);
         Task<CommentModel> AddComment(AddCommentRequest request);
         Task<ReviewModel> AddReview(AddReviewRequest request);
         Task<FunFactModel> AddFunFact(AddFunFactRequest request);

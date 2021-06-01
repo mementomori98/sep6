@@ -9,6 +9,7 @@ using Core.Data;
 using Microsoft.EntityFrameworkCore;
 using Core.Data.Models.DiscussionItems;
 using Core.Domain.Authentication;
+using Core.Domain.Utils;
 using Org.BouncyCastle.Asn1.X509;
 
 namespace Core.Domain.DiscussionItems
@@ -88,6 +89,20 @@ namespace Core.Domain.DiscussionItems
             };
         }
 
+        public async Task<ReviewModel> GetUserReview(GetUserReviewRequest request)
+        {
+            await using var context = new MovieContext();
+            var query = GetQuery<ReviewDao>(context, request.DiscussableId);
+            
+            var user = await _authenticationService.GetCurrentUser(request.Token);
+            if (user == null)
+                throw new Exception("Unauthorized");
+            
+            var review = await query.SingleOrDefaultAsync(r => r.AuthorId == user.Id);
+            if (review == null) return null;
+            return Map(review, user.Id);
+        }
+
         public async Task<CommentModel> AddComment(AddCommentRequest request)
         {
             var user = await _authenticationService.GetCurrentUser(request.Token);
@@ -124,6 +139,11 @@ namespace Core.Domain.DiscussionItems
                 throw new Exception("Unauthorized");
 
             await using var context = new MovieContext();
+
+            var existingReview = context.Set<ReviewDao>().SingleOrDefault(r => r.AuthorId == user.Id && r.DiscussableId == request.DiscussableId);
+            if(existingReview != null)
+                throw new Exception("Already wrote a review");
+
             var now = DateTime.Now;
             var entry = await context.AddAsync(new ReviewDao
             {

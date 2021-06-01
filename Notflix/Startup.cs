@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Core.Domain.Authentication;
 using Core.Domain.DiscussionItems;
 using Core.Domain.Movies;
+using Core.Domain.Recommendations;
 using Core.Domain.Toplists;
 using Core.Domain.Toplists.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -47,6 +48,7 @@ namespace Notflix
                 c.SnackbarConfiguration.SnackbarVariant = Variant.Filled;
             });
             services.AddTransient<IMovieService, OmdbMovieService>();
+            services.AddTransient<IRecommendationService, RecommendationsService>();
             services.AddTransient<IDiscussionItemService, DiscussionItemService>();
             services.AddTransient<LocalStorage>();
             services.AddTransient<IMovieService, OmdbMovieService>();

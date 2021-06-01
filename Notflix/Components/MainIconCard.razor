@@ -1,5 +1,6 @@
 ﻿@using Microsoft.AspNetCore.Components.Web
 @using Core.Domain.Movies.Models
+@using Core.Data.Models
 @inject NavigationManager navigationManager
 
 
@@ -22,38 +23,35 @@
                     <MudText Class="red-text bold" Typo="Typo.subtitle2">
                         Length: <span style="color: white">@Content.Runtime</span>
                     </MudText>
-                    <MudPaper Class="red white-text" Style="width: 28px; height: 28px;position: absolute;right: 0px; bottom: 0px; margin:5px">
-                        <MudText Align="Align.Center" Typo="Typo.body1">@Content.Ratings.SingleOrDefault(r => r.Source == "Imdb")?.Value</MudText>
-                    </MudPaper>
                 </div>
             </div>
         }
     </div>
 
-    <div class="iconCard" @onmouseout="@OnMouseOut" @onmouseover="@OnMouseOver" @onmouseup="@OnMouseUp" style="cursor:pointer"/>
+    <div class="iconCard" @onmouseout="@OnMouseOut" @onmouseover="@OnMouseOver" @onmouseup="@OnMouseUp" style="cursor:pointer" />
 
-    </div>
+</div>
 
 
-    @code {
+@code {
 
-        bool _IsHovering = false;
+    bool _IsHovering = false;
 
-        protected void OnMouseOver(MouseEventArgs mouseEvent)
-        {
-            if (!_IsHovering) _IsHovering = true;
-        }
-
-        protected void OnMouseOut(MouseEventArgs mouseEvent)
-        {
-            _IsHovering = false;
-        }
-
-        protected void OnMouseUp(MouseEventArgs mouseEvent)
-        {
-            navigationManager.NavigateTo($"/Main/{Content.ImdbId}");
-        }
-
-        [Parameter]
-        public MovieModel Content { get; set; }
+    protected void OnMouseOver(MouseEventArgs mouseEvent)
+    {
+        if (!_IsHovering) _IsHovering = true;
     }
+
+    protected void OnMouseOut(MouseEventArgs mouseEvent)
+    {
+        _IsHovering = false;
+    }
+    
+    protected void OnMouseUp(MouseEventArgs mouseEvent)
+    {
+        navigationManager.NavigateTo($"/{Content.ImdbId}");
+    }
+
+    [Parameter]
+    public MovieDao Content { get; set; }
+}
