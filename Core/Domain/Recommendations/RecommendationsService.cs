@@ -95,7 +95,7 @@ namespace Core.Domain.Recommendations
             if (recommendationsGetModel.Recommendations.Count == 0)
                 return await GetTopRated(recommendationsGetModel);
             List<MovieDao> recommendations = new List<MovieDao>();
-            for(int i = recommendationsGetModel.Recommendations.Count()-1; i > recommendationsGetModel.Recommendations.Count()-4; --i)
+            for(int i = recommendationsGetModel.Recommendations.Count()-1; i >= Math.Max(recommendationsGetModel.Recommendations.Count()-4, 0); --i)
             {
                 ++recommendationsGetModel.Recommendations[i].NumberOfPagesShown;
                 var tmdbIds = await GetSimilarMoviesTmdbIds(recommendationsGetModel.Recommendations[i]);
@@ -218,13 +218,13 @@ namespace Core.Domain.Recommendations
                 context.Set<RecommendationRequestDao>().Add(dao);
             }
 
-            var existingReommendations = (await context.Set<ReviewRecommendation>().Where(r => r.UserId == getModel.UserId).ToListAsync());
-            var existingRecommendationsId = existingReommendations.Select(e => e.ReviewId);
+            var existingRecommendations = (await context.Set<ReviewRecommendation>().Where(r => r.UserId == getModel.UserId).ToListAsync());
+            var existingRecommendationsId = existingRecommendations.Select(e => e.ReviewId);
 
             var toUpdateRecommendations = getModel.Recommendations.Where(r => existingRecommendationsId.Contains(r.ReviewId));
             var toAddRecommendations = getModel.Recommendations.Where(r => !existingRecommendationsId.Contains(r.ReviewId));
                         
-            foreach(ReviewRecommendation existingRecommendation in existingReommendations)
+            foreach(ReviewRecommendation existingRecommendation in existingRecommendations)
             {
                 foreach(ReviewRecommendation recommendation in toUpdateRecommendations)
                 {
@@ -236,8 +236,7 @@ namespace Core.Domain.Recommendations
                     }
                 }
             }
-            
-            
+
             foreach (ReviewRecommendation recommendation in toAddRecommendations)
             {
                 context.Set<ReviewRecommendation>().Add(recommendation);

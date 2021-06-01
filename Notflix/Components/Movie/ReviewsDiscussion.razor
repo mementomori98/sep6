@@ -60,6 +60,7 @@
             NewReview = "";
             UserReview = new ReviewModel();
             await LoadReview.InvokeAsync();
+            StateHasChanged();
         }
         catch (Exception e)
         {

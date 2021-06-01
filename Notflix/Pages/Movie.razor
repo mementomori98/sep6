@@ -73,12 +73,13 @@
             DiscussableId = _movieModel.Id,
             Token = await GetAuthToken(),
         });
+        StateHasChanged();
     }
 
     private int GetRating(MovieModel movieModel)
     {
-        var value = movieModel.Ratings.First().Value;
-        var rating = value.Substring(0, value.IndexOf("/", StringComparison.Ordinal)).Trim();
+        var rating = movieModel.Ratings.First(x => x.Source == "Imdb").Value;
+        if (rating == "N/A") return 0;
         return (int) Math.Round(float.Parse(rating) / 2);
     }
 

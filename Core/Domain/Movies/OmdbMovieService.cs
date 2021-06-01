@@ -57,14 +57,8 @@ namespace Core.Domain.Movies
         {
             var response = await client.GetAsync($"https://sep6movies-statiscics.herokuapp.com/tmdb_id/{imdbId}");
             string tmdbIdJson = await response.Content.ReadAsStringAsync();
-            try
-            {
-                return long.Parse(JsonSerializer.Deserialize<string>(tmdbIdJson));
-            }
-            catch (Exception e)
-            {
-                return 0;
-            }
+            
+            return long.Parse(tmdbIdJson.Replace("\"", ""));
             
         }
 
