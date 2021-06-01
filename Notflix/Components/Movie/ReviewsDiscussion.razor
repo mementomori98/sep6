@@ -11,10 +11,13 @@
 
     [Parameter]
     public long MovieId { get; set; }
+
     [Parameter]
     public EventCallback LoadReview { get; set; }
 
-    private UserDao _user;
+    [Parameter]
+    public UserDao User { get; set; }
+
     private string NewReview { get; set; }
     private int NewRevRating { get; set; }
     private IEnumerable<CommentTreeViewModel> _reviews;
@@ -23,7 +26,6 @@
 
     protected override async Task OnParametersSetAsync()
     {
-        _user = await AuthenticationService.GetCurrentUser(await GetAuthToken());
         var reviews = await DiscussionItemService.GetReviews(new GetReviewsRequest
         {
             DiscussableId = MovieId,
@@ -32,15 +34,14 @@
         });
         HasMoreReviews = reviews.HasMore;
         _reviews = reviews.Items.Select(CommentTreeViewModel.Map).OrderByDescending(c => c.Created).ToList();
-        if (_user != null)
+        if (User != null)
         {
             _userReview = await DiscussionItemService.GetUserReview(new GetUserReviewRequest
-                 {
-                     DiscussableId = MovieId,
-                     Token = await GetAuthToken(),
-                 });
+            {
+                DiscussableId = MovieId,
+                Token = await GetAuthToken(),
+            });
         }
-       
     }
 
     private async Task MakeReview()
@@ -95,16 +96,20 @@
 
 }
 
-@if (_user != null)
+@if (User != null)
 {
     if (_userReview == null)
     {
         <div class="discussion__makeNew d-flex" style="margin-bottom: 10px">
-            <MudTextField @bind-Value="NewReview" Label="@_user.Username" Placeholder="Post a new review..."/>
+            <MudTextField @bind-Value="NewReview" Label="@User.Username" Placeholder="Post a new review..."/>
             <MudRating @bind-SelectedValue="@NewRevRating" Style="margin: auto 10px 0 10px" FullIcon="@Icons.Material.Filled.Favorite" EmptyIcon="@Icons.Material.Filled.FavoriteBorder" Color="Color.Secondary"/>
             <MudButton Style="height: fit-content; margin-top: auto; border:1px solid #594ae2" OnClick="MakeReview">Post</MudButton>
         </div>
     }
+}
+else
+{
+    <MudText Style="font-style: italic; padding-bottom: 10px">You have to log in, to write a review!</MudText>
 }
 
 @foreach (var review in _reviews ?? new CommentTreeViewModel[0])
