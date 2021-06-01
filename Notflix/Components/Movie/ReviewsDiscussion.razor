@@ -32,12 +32,15 @@
         });
         HasMoreReviews = reviews.HasMore;
         _reviews = reviews.Items.Select(CommentTreeViewModel.Map).OrderByDescending(c => c.Created).ToList();
-
-        _userReview = await DiscussionItemService.GetUserReview(new GetUserReviewRequest
+        if (_user != null)
         {
-            DiscussableId = MovieId,
-            Token = await GetAuthToken(),
-        });
+            _userReview = await DiscussionItemService.GetUserReview(new GetUserReviewRequest
+                 {
+                     DiscussableId = MovieId,
+                     Token = await GetAuthToken(),
+                 });
+        }
+       
     }
 
     private async Task MakeReview()

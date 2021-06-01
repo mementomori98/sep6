@@ -2,9 +2,11 @@
 @using Notflix.Components.Movie
 @using Core.Domain.DiscussionItems.Models
 @using Core.Domain.DiscussionItems
+@using Core.Data.Models
+@using Core.Domain.Authentication
 @inject IJSRuntime JS
 @inject IMovieService MovieService
-@inject IAuthorizationService AuthenticationService
+@inject IAuthenticationService AuthenticationService
 @inject IDiscussionItemService DiscussionItemService
 @inherits AuthBase
 
@@ -15,18 +17,19 @@
 
     private MovieModel _movieModel;
     private ReviewModel _userReview;
+    private UserDao _user;
     private bool ShowFullReview { get; set; }
 
     protected override async Task OnParametersSetAsync()
     {
+        _user = await AuthenticationService.GetCurrentUser(await GetAuthToken());
         _movieModel = await MovieService.GetMovieDetails(Id);
-
         await LoadReview();
     }
 
     private async Task LoadReview()
     {
-        Console.WriteLine("Load");
+        if (_user == null) return;
         _userReview = await DiscussionItemService.GetUserReview(new GetUserReviewRequest
         {
             DiscussableId = _movieModel.Id,
