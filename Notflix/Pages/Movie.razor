@@ -26,13 +26,22 @@
     private bool HasMoreReviews { get; set; }
     private bool HasMoreFunFacts { get; set; }
     private bool HasMoreComments { get; set; }
+    private bool _isLoading;
+
+    private void SetLoading(bool loading)
+    {
+        _isLoading = loading;
+        StateHasChanged();
+    }
 
     protected override async Task OnParametersSetAsync()
     {
+        SetLoading(true);
         _user = await AuthenticationService.GetCurrentUser(await GetAuthToken());
         _movieModel = await MovieService.GetMovieDetails(Id);
         await LoadUserReview();
         await LoadDiscussions();
+        SetLoading(false);
     }
 
     private async Task LoadDiscussions()
@@ -99,6 +108,13 @@
         ShowFullReview = action;
     }
 
+}
+
+@if (_isLoading)
+{
+    <MudOverlay Visible="true" DarkBackground="true">
+        <MudProgressCircular Color="Color.Secondary" Indeterminate="true" />
+    </MudOverlay>
 }
 
 @if (_movieModel != null)
