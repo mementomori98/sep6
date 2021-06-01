@@ -17,12 +17,15 @@
 
     [Parameter]
     public UserDao User { get; set; }
+    
+    [Parameter]
+    public ReviewModel UserReview { get; set; }
 
     private string NewReview { get; set; }
     private int NewRevRating { get; set; }
     private IEnumerable<CommentTreeViewModel> _reviews;
     private bool HasMoreReviews { get; set; }
-    private ReviewModel _userReview = null;
+    
 
     protected override async Task OnParametersSetAsync()
     {
@@ -34,19 +37,11 @@
         });
         HasMoreReviews = reviews.HasMore;
         _reviews = reviews.Items.Select(CommentTreeViewModel.Map).OrderByDescending(c => c.Created).ToList();
-        if (User != null)
-        {
-            _userReview = await DiscussionItemService.GetUserReview(new GetUserReviewRequest
-            {
-                DiscussableId = MovieId,
-                Token = await GetAuthToken(),
-            });
-        }
     }
 
     private async Task MakeReview()
     {
-        if (_userReview != null)
+        if (UserReview != null)
         {
             Snackbar.Add("You have written a review already!", Severity.Warning);
             return;
@@ -72,7 +67,7 @@
             });
             _reviews = _reviews.Prepend(CommentTreeViewModel.Map(reviews)).OrderByDescending(c => c.Created).ToList();
             NewReview = "";
-            _userReview = new ReviewModel();
+            UserReview = new ReviewModel();
             await LoadReview.InvokeAsync();
         }
         catch (Exception e)
@@ -98,7 +93,7 @@
 
 @if (User != null)
 {
-    if (_userReview == null)
+    if (UserReview == null)
     {
         <div class="discussion__makeNew d-flex" style="margin-bottom: 10px">
             <MudTextField @bind-Value="NewReview" Label="@User.Username" Placeholder="Post a new review..."/>
