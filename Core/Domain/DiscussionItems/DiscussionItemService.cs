@@ -139,6 +139,11 @@ namespace Core.Domain.DiscussionItems
                 throw new Exception("Unauthorized");
 
             await using var context = new MovieContext();
+
+            var existingReview = context.Set<ReviewDao>().SingleOrDefault(r => r.AuthorId == user.Id && r.DiscussableId == request.DiscussableId);
+            if(existingReview != null)
+                throw new Exception("Already wrote a review");
+
             var now = DateTime.Now;
             var entry = await context.AddAsync(new ReviewDao
             {

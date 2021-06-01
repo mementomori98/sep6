@@ -3,14 +3,16 @@ using System;
 using Core.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Core.Migrations
 {
     [DbContext(typeof(MovieContext))]
-    partial class MovieContextModelSnapshot : ModelSnapshot
+    [Migration("20210531110149_recommendations")]
+    partial class recommendations
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -204,18 +206,12 @@ namespace Core.Migrations
                 {
                     b.HasBaseType("Core.Data.Models.DiscussableDao");
 
-                    b.Property<string>("Director")
-                        .HasColumnType("text");
-
                     b.Property<string>("ImageUrl")
                         .HasColumnType("text");
 
                     b.Property<string>("ImdbId")
                         .IsRequired()
                         .HasColumnType("varchar(767)");
-
-                    b.Property<string>("Runtime")
-                        .HasColumnType("text");
 
                     b.Property<string>("Title")
                         .HasColumnType("text");

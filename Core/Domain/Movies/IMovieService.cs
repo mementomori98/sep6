@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Core.Data.Models;
 using Core.Domain.Movies.Models;
 
 namespace Core.Domain.Movies
@@ -8,5 +9,7 @@ namespace Core.Domain.Movies
     {
         Task<IEnumerable<MovieListModel>> SearchList(string text);
         Task<MovieModel> GetMovieDetails(string ImdbId);
+        Task<MovieModel> GetMovieDetails(long tmdbId);
+        Task<MovieDao> GetMovieRecommendation(long tmdbId);
     }
 }

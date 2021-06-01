@@ -9,6 +9,7 @@ namespace Core.Domain.Movies.Models
     {
         public long Id { get; set; }
         public string ImdbId { get; set; }
+        public long TmdbId { get; set; }
         public string Type { get; set; }
         public string Title { get; set; }
         public string Director { get; set; }

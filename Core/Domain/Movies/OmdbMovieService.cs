@@ -16,14 +16,52 @@ namespace Core.Domain.Movies
         private static HttpClient client = new HttpClient();
         private static string ApiKey = "720a2f69";
 
-        public async Task<MovieModel> GetMovieDetails(string ImdbId)
+        public async Task<MovieModel> GetMovieDetails(string imdbId)
+        {
+            return await GetMovieDetails(imdbId, await GetTmdbId(imdbId));
+        }
+
+        public async Task<MovieDao> GetMovieRecommendation(long tmdbId)
+        {
+            MovieContext context = new MovieContext();
+            var movie = context.Set<MovieDao>()
+                .SingleOrDefault(m => m.TmdbId == tmdbId);
+            if (movie != null) return movie;
+            else
+            {
+                var movieDetails = await GetMovieDetails(tmdbId);
+                return MovieDao.MapFromModel(movieDetails);
+            }
+        }
+
+        private async Task<MovieModel> GetMovieDetails(string ImdbId, long tmdbId)
         {
             var response = await client.GetAsync($"http://www.omdbapi.com/?apikey={ApiKey}&i={ImdbId}&plot=full");
             var content = await response.Content.ReadAsStringAsync();
 
             var model = JsonSerializer.Deserialize<MovieApiModel>(content);
+            model.TmdbId = tmdbId;
             
             return await Sync(model);
+        }
+
+        private async Task<string> GetImdbId(long tmdbId)
+        {
+            var response = await client.GetAsync($"https://sep6movies-statiscics.herokuapp.com/imdb_id/{tmdbId}");
+            string imdbIdJson = await response.Content.ReadAsStringAsync();
+            return JsonSerializer.Deserialize<string>(imdbIdJson);
+        }
+
+        private async Task<long> GetTmdbId(string imdbId)
+        {
+            var response = await client.GetAsync($"https://sep6movies-statiscics.herokuapp.com/tmdb_id/{imdbId}");
+            string tmdbIdJson = await response.Content.ReadAsStringAsync();
+            return long.Parse(JsonSerializer.Deserialize<string>(tmdbIdJson));
+        }
+
+        public async Task<MovieModel> GetMovieDetails(long tmdbId)
+        {
+            return await GetMovieDetails(await GetImdbId(tmdbId), tmdbId);
         }
 
         public async Task<IEnumerable<MovieListModel>> SearchList(string text)
@@ -57,7 +95,10 @@ namespace Core.Domain.Movies
                     ImdbId = model.imdbID,
                     Title = model.Title,
                     Year = model.Year,
-                    ImageUrl = model.Poster
+                    ImageUrl = model.Poster,
+                    TmdbId = model.TmdbId,
+                    Director = model.Director,
+                    Runtime = model.Runtime
                 });
                 await context.SaveChangesAsync();
                 movie = entry.Entity;
@@ -71,10 +112,12 @@ namespace Core.Domain.Movies
                 context.Update(movie);
                 await context.SaveChangesAsync();
             }
+
             return new MovieModel
             {
                 Id = movie.Id,
                 ImdbId = model.imdbID,
+                TmdbId = model.TmdbId,
                 Actors = model.Actors.Split(",").Select(s => s.Trim()),
                 Director = model.Director,
                 Genres = model.Genre.Split(",").Select(s => s.Trim()),
@@ -89,7 +132,7 @@ namespace Core.Domain.Movies
                 {
                     Source = "Imdb",
                     Value = model.imdbRating,
-                    Votes = long.Parse(model.imdbVotes.Replace(",", ""))
+                    Votes = model.imdbVotes == "N/A" ? null : long.Parse(model.imdbVotes.Replace(",", ""))
                 })
             };
         }
