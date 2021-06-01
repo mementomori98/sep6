@@ -15,8 +15,9 @@ namespace Notflix.Components.Movie
         public Interactions? Interaction { get; set; }
         public IEnumerable<CommentTreeViewModel> Comments { get; set; }
         public bool HasMore { get; set; }
+        public int? NumberOfStars { get; set; }
         
-        public static CommentTreeViewModel Map(CommentModel c)
+        public static CommentTreeViewModel Map(DiscussionItemModelBase c)
         {
             return new CommentTreeViewModel
             {
@@ -28,7 +29,8 @@ namespace Notflix.Components.Movie
                 Dislikes = c.NumberOfDislikes,
                 Interaction = c.UserInteractionType,
                 Comments = new List<CommentTreeViewModel>(),
-                HasMore = c.HasComments
+                HasMore = c.HasComments,
+                NumberOfStars = (c as ReviewModel)?.NumberOfStars
             };
         }
     }

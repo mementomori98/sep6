@@ -36,7 +36,7 @@ namespace Core.Domain.Movies
 
         private async Task<MovieModel> GetMovieDetails(string ImdbId, long tmdbId)
         {
-            var response = await client.GetAsync($"http://www.omdbapi.com/?apikey={ApiKey}&i={ImdbId}");
+            var response = await client.GetAsync($"http://www.omdbapi.com/?apikey={ApiKey}&i={ImdbId}&plot=full");
             var content = await response.Content.ReadAsStringAsync();
 
             var model = JsonSerializer.Deserialize<MovieApiModel>(content);

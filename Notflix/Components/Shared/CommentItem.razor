@@ -30,24 +30,70 @@
     }
 
 
-    private void OnVoteUp(MouseEventArgs mouseEvent)
+    private async void OnVoteUp(MouseEventArgs mouseEvent)
     {
         if (_user == null)
         {
             OpenLoginDialog();
             return;
         }
-        Console.WriteLine("VoteUp"); //............
+        await DiscussionItemService.Interact(new InteractRequest
+        {
+            DiscussionItemId = Content.Id,
+            Token = await GetAuthToken(),
+            Interaction = Content.Interaction == Interactions.Like ? null : Interactions.Like
+        });
+        if (Content.Interaction == Interactions.Dislike)
+        {
+            Content.Interaction = Interactions.Like;
+            Content.Dislikes--;
+            Content.Likes++;
+        }
+        else if (Content.Interaction == null)
+        {
+            Content.Interaction = Interactions.Like;
+            Content.Likes++;
+        }
+        else
+        {
+            Content.Interaction = null;
+            Content.Likes--;
+        }
+
+        StateHasChanged();
     }
 
-    private void OnVoteDown(MouseEventArgs mouseEvent)
+    private async void OnVoteDown(MouseEventArgs mouseEvent)
     {
         if (_user == null)
         {
             OpenLoginDialog();
             return;
         }
-        Console.WriteLine("VoteDown"); //............
+        await DiscussionItemService.Interact(new InteractRequest
+        {
+            DiscussionItemId = Content.Id,
+            Token = await GetAuthToken(),
+            Interaction = Content.Interaction == Interactions.Dislike ? null : Interactions.Dislike
+        });
+        if (Content.Interaction == Interactions.Like)
+        {
+            Content.Interaction = Interactions.Dislike;
+            Content.Likes--;
+            Content.Dislikes++;
+        }
+        else if (Content.Interaction == null)
+        {
+            Content.Interaction = Interactions.Dislike;
+            Content.Dislikes++;
+        }
+        else
+        {
+            Content.Interaction = null;
+            Content.Dislikes--;
+        }
+
+        StateHasChanged();
     }
 
     private async Task OnComment(MouseEventArgs mouseEvent)
@@ -88,7 +134,7 @@
     private async Task Reply()
     {
         if (NewComment is null or "") return;
-    //Execute reply procedure
+
         var comment = await DiscussionItemService.AddComment(new AddCommentRequest
         {
             DiscussionItemId = Content.Id,
@@ -110,7 +156,7 @@
             Limit = limit
         });
         Content.Comments ??= new List<CommentTreeViewModel>();
-        Content.Comments = Content.Comments.Concat(comments.Items.Select(CommentTreeViewModel.Map));
+        Content.Comments = Content.Comments.Concat(comments.Items.Select(CommentTreeViewModel.Map)).ToList();
         Content.HasMore = comments.HasMore;
         _commentOpen = true;
     }
@@ -120,23 +166,33 @@
         Content.Comments = new List<CommentTreeViewModel>();
         Content.HasMore = true;
         _commentOpen = false;
+        NewComment = "";
+        _replyOpen = "";
     }
 
 }
+
 
 <div class="comment-item">
     <div class="discussion d-flex">
         <img src="/Images/avatar.png" class="discussion__avatar" alt="user avatar"/>
         <div class="@_replyOpen" style="padding-left: 10px; width: 100%">
-            <MudText Typo="Typo.body1">@Content.AuthorUsername</MudText>
+            <div class="d-flex">
+                <MudText Typo="Typo.body2" Style="font-weight: bold;font-size: 13px">@Content.AuthorUsername</MudText>
+                @if (Content.NumberOfStars != null)
+                {
+                    <MudRating SelectedValue="@Content.NumberOfStars.Value" ReadOnly="true" Style="margin: auto 5px auto 5px;" Size="Size.Small" FullIcon="@Icons.Material.Filled.Favorite" EmptyIcon="@Icons.Material.Filled.FavoriteBorder" Color="Color.Secondary"/>
+                }
+            </div>
+
             <MudText Typo="Typo.body2">@Content.Text</MudText>
             <div class="d-flex" style="font-size: 18px;">
                 <div @onmouseup="@OnVoteUp" class="discussion__icon" id="discussion__voteUp">
-                    <p>&#129145;</p>
+                    <p style="@(Content.Interaction == Interactions.Like ? "color: #008d41" : "")">&#129145;</p>
                 </div>
                 <p class="discussion__iconText" style="margin-left: 3px; margin-right: 5px;">@Content.Likes</p>
                 <div @onmouseup="@OnVoteDown" class="discussion__icon" id="discussion__voteDown">
-                    <p>&#129147;</p>
+                    <p style="@(Content.Interaction == Interactions.Dislike ? "color: #dc0000" : "")">&#129147;</p>
                 </div>
                 <p class="discussion__iconText" style="margin-left: 3px; margin-right: 5px">@Content.Dislikes</p>
                 <div @onmouseup="@OnComment" class="discussion__icon" id="discussion__commentAct" style="margin-left: 5px">
@@ -148,11 +204,11 @@
             {
                 @if (!_commentOpen)
                 {
-                    <p class="moreComments" style="font-size: 12px; color: #4234aa" @onmouseup="() => OnGetComments()">View comments</p>
+                    <p class="moreDiscussion" style="font-size: 12px; color: #4234aa" @onmouseup="() => OnGetComments()">View comments</p>
                 }
                 else
                 {
-                    <p class="moreComments" style="font-size: 12px; color: #4234aa" @onmouseup="() => OnCloseComments()">Hide comments</p>
+                    <p class="moreDiscussion" style="font-size: 12px; color: #4234aa" @onmouseup="() => OnCloseComments()">Hide comments</p>
                 }
             }
         </div>
@@ -167,13 +223,13 @@
             }
             @if (Content.HasMore)
             {
-                <p class="moreComments moreComments__edge" @onmouseup="() => OnGetComments()">View more comments</p>
+                <p class="moreDiscussion moreDiscussion__edge" @onmouseup="() => OnGetComments()">View more comments</p>
             }
         </div>
     }
     @if (_replyOpen.Equals("discussion__main"))
     {
-        <div class="discussion__commentSection discussion__commentEdge d-flex" style="margin-left: 16px">
+        <div class="discussion__makeNew discussion__commentEdge d-flex" style="margin-left: 16px">
             <MudTextField Class="discussion__comment" @bind-Value="NewComment" Label="@_user.Username" Placeholder="Comment..."/>
             <MudButton Style="height: fit-content; margin-top: auto; border:1px solid #594ae2" OnClick="Reply">Reply</MudButton>
         </div>

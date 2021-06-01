@@ -164,7 +164,7 @@
 }
 
 #discussion__voteDown:hover {
-    color: orangered;
+    color: #dc0000;
 }
 
 #discussion__commentAct:hover {
@@ -180,8 +180,8 @@
 }
 
 
-.discussion__commentSection {
-    margin-top: 5px;
+.discussion__makeNew {
+    margin: 5px 0 5px 0;
     position: relative;
     background-color: #f3f3f3;
     padding: 5px 10px 5px 10px;
@@ -220,7 +220,7 @@
 }
 
 
-.moreComments {
+.moreDiscussion {
     cursor: pointer;
     font-size: 13px;
     font-weight: bold;
@@ -228,16 +228,16 @@
     margin-bottom: 5px;
 }
 
-.moreComments:hover {
+.moreDiscussion:hover {
     text-decoration: underline;
 }
 
-.moreComments__edge {
+.moreDiscussion__edge {
     padding-left: 30px;
     position: relative;
 }
 
-.moreComments__edge:before {
+.moreDiscussion__edge:before {
     content: '';
     display: block;
     position: absolute;
@@ -247,7 +247,7 @@
     border-top: 2px solid purple;
 }
 
-.moreComments__edge:after {
+.moreDiscussion__edge:after {
     content: '';
     display: block;
     position: absolute;
