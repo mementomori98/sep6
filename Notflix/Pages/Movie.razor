@@ -114,13 +114,13 @@
         {
             <MudTabs Elevation="1" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
                 <MudTabPanel Text="Comments" ToolTip="ToolTip One" Class="mud-tabs-panels pa-2">
-                    <CommentsDiscussion MovieId="@_movieModel.Id"/>
+                    <CommentsDiscussion User="@_user" MovieId="@_movieModel.Id"/>
                 </MudTabPanel>
                 <MudTabPanel Text="Reviews" ToolTip="ToolTip Two">
-                    <ReviewsDiscussion MovieId="@_movieModel.Id" LoadReview="@LoadReview"/>
+                    <ReviewsDiscussion User="@_user" MovieId="@_movieModel.Id" LoadReview="@LoadReview"/>
                 </MudTabPanel>
                 <MudTabPanel Text="Fun Facts" ToolTip="ToolTip Three">
-                    <FunFactsDiscussion MovieId="@_movieModel.Id"/>
+                    <FunFactsDiscussion User="@_user" MovieId="@_movieModel.Id"/>
                 </MudTabPanel>
             </MudTabs>
         }
