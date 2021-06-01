@@ -11,9 +11,8 @@ namespace Core.Data.Models
     {
         public long UserId { get; set; }
         public int TopRatedRecommendationPage { get; set; }
-        public List<ReviewRecommendation> Recommendations { get; set; }
 
-        public RecommendationsGetModel MapToGetRecommendationsModel()
+        public RecommendationsGetModel MapToGetRecommendationsModel(List<ReviewRecommendation> Recommendations)
         {
             return new RecommendationsGetModel()
             {
@@ -27,7 +26,6 @@ namespace Core.Data.Models
         {
             this.UserId = getModel.UserId;
             this.TopRatedRecommendationPage = getModel.TopRatedRecommendationPageNumber;
-            this.Recommendations = getModel.Recommendations;
         }
     }
 }

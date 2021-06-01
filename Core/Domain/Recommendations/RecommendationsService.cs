@@ -48,6 +48,7 @@ namespace Core.Domain.Recommendations
         {
             MovieContext context = new MovieContext();
             RecommendationRequestDao dao = await context.Set<RecommendationRequestDao>().SingleOrDefaultAsync(rec => rec.UserId == userId);
+            List<ReviewRecommendation> reviewRecommendations = await context.Set<ReviewRecommendation>().Where(r => r.UserId == userId).ToListAsync();
             if (dao == null)
             {
                 return new RecommendationsGetModel()
@@ -60,7 +61,7 @@ namespace Core.Domain.Recommendations
             }
             else
             {
-                RecommendationsGetModel getModel = dao.MapToGetRecommendationsModel();
+                RecommendationsGetModel getModel = dao.MapToGetRecommendationsModel(reviewRecommendations);
                 if (getModel.Recommendations == null)
                 {
                     getModel.Recommendations = new List<ReviewRecommendation>();
@@ -91,18 +92,22 @@ namespace Core.Domain.Recommendations
 
         private async Task<List<MovieDao>> GetMoviesFromReviewRecommendations(RecommendationsGetModel recommendationsGetModel)
         {
-            List<MovieDao> recommendations = new List<MovieDao>();
-            if (recommendations.Count == 0)
+            if (recommendationsGetModel.Recommendations.Count == 0)
                 return await GetTopRated(recommendationsGetModel);
+            List<MovieDao> recommendations = new List<MovieDao>();
             for(int i = recommendationsGetModel.Recommendations.Count()-1; i > recommendationsGetModel.Recommendations.Count()-4; --i)
             {
                 ++recommendationsGetModel.Recommendations[i].NumberOfPagesShown;
                 var tmdbIds = await GetSimilarMoviesTmdbIds(recommendationsGetModel.Recommendations[i]);
                 
-                foreach(TmdbIdModel movieId in tmdbIds)
+                if(tmdbIds != null)
                 {
-                    recommendations.Add(await _movieService.GetMovieRecommendation(movieId.id));
+                    foreach(TmdbIdModel movieId in tmdbIds)
+                    {
+                        recommendations.Add(await _movieService.GetMovieRecommendation(movieId.id));
+                    }
                 }
+                
             }
             await SaveRecommendationsGetModel(recommendationsGetModel);
             return recommendations;
@@ -129,6 +134,7 @@ namespace Core.Domain.Recommendations
                     {
                         i--;
                         recommendations.RemoveAt(i+1);
+                        break;
                     }
                 }
             }
@@ -199,18 +205,45 @@ namespace Core.Domain.Recommendations
 
         private async Task SaveRecommendationsGetModel(RecommendationsGetModel getModel)
         {
-            RecommendationRequestDao dao = new RecommendationRequestDao();
-            dao.FromGetRecommendationsModel(getModel);
-            MovieContext context = new MovieContext();
-            try
+            using MovieContext context = new MovieContext();
+            var existingDao = await context.Set<RecommendationRequestDao>().SingleOrDefaultAsync(r => r.UserId == getModel.UserId);
+            if(existingDao != null)
             {
-                context.Set<RecommendationRequestDao>().Update(dao);
-                await context.SaveChangesAsync();
-            } catch (DbUpdateConcurrencyException e)
+                existingDao.TopRatedRecommendationPage = getModel.TopRatedRecommendationPageNumber;
+                context.Set<RecommendationRequestDao>().Update(existingDao);
+            } else
             {
+                RecommendationRequestDao dao = new RecommendationRequestDao();
+                dao.FromGetRecommendationsModel(getModel);
                 context.Set<RecommendationRequestDao>().Add(dao);
-                await context.SaveChangesAsync();
             }
+
+            var existingReommendations = (await context.Set<ReviewRecommendation>().Where(r => r.UserId == getModel.UserId).ToListAsync());
+            var existingRecommendationsId = existingReommendations.Select(e => e.ReviewId);
+
+            var toUpdateRecommendations = getModel.Recommendations.Where(r => existingRecommendationsId.Contains(r.ReviewId));
+            var toAddRecommendations = getModel.Recommendations.Where(r => !existingRecommendationsId.Contains(r.ReviewId));
+                        
+            foreach(ReviewRecommendation existingRecommendation in existingReommendations)
+            {
+                foreach(ReviewRecommendation recommendation in toUpdateRecommendations)
+                {
+                    if(existingRecommendation.ReviewId == recommendation.ReviewId)
+                    {
+                        existingRecommendation.NumberOfPagesShown = recommendation.NumberOfPagesShown;
+                        existingRecommendation.HasMore = recommendation.HasMore;
+                        context.Set<ReviewRecommendation>().Update(existingRecommendation);
+                    }
+                }
+            }
+            
+            
+            foreach (ReviewRecommendation recommendation in toAddRecommendations)
+            {
+                context.Set<ReviewRecommendation>().Add(recommendation);
+            }
+
+            await context.SaveChangesAsync();
         }
     }
 }

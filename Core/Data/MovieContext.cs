@@ -125,7 +125,7 @@ namespace Core.Data
                       .IsRequired()
                       .OnDelete(DeleteBehavior.Cascade), x => 
                    x.HasOne<RecommendationRequestDao>()
-                        .WithMany(r => r.Recommendations)
+                        .WithMany()
                         .HasForeignKey(r => r.UserId)
                         .IsRequired()
                         .OnDelete(DeleteBehavior.Cascade));
