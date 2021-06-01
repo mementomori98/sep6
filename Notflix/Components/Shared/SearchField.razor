@@ -15,7 +15,7 @@
     public string Class { get; set; }
 
     [Parameter]
-    public Func<string, IEnumerable<TItem>> Search { get; set; }
+    public Func<string, Task<IEnumerable<TItem>>> Search { get; set; }
 
     [Parameter]
     public RenderFragment<TItem> ResultItem { get; set; }
@@ -25,6 +25,9 @@
 
     [Parameter]
     public string PlaceHolder { get; set; }
+    
+    [Parameter]
+    public bool? Immediate { get; set; }
 
     private IEnumerable<TItem> _results;
     private bool PopoverOpen => _isOpen;
@@ -34,7 +37,7 @@
 
     private async Task OnSearch()
     {
-        _results = Search.Invoke(Text);
+        _results = await Search.Invoke(Text);
         if (_results?.Any() ?? false)
             _isOpen = true;
     }
@@ -67,7 +70,7 @@
         @bind-Value="@Text"
         OnDebounceIntervalElapsed="OnSearch"
         Immediate="true"
-        DebounceInterval="100"
+        DebounceInterval="1000"
         Placeholder="@PlaceHolder"
         Variant="Variant.Outlined"
         Class="@Class"
