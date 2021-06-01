@@ -13,22 +13,14 @@
 
     [Parameter]
     public UserDao User { get; set; }
+    
+    [Parameter]
+    public IEnumerable<CommentTreeViewModel> FunFacts{ get; set; }
+    
+    [Parameter]
+    public bool HasMoreFunFacts { get; set; }
 
     private string NewFunFact { get; set; }
-    private IEnumerable<CommentTreeViewModel> _funFacts;
-    private bool HasMoreFunFacts { get; set; }
-
-    protected override async Task OnParametersSetAsync()
-    {
-        var funFacts = await DiscussionItemService.GetFunFacts(new GetFunFactsRequest
-        {
-            DiscussableId = MovieId,
-            ToDate = DateTime.Now,
-            Token = await GetAuthToken(),
-        });
-        HasMoreFunFacts = funFacts.HasMore;
-        _funFacts = funFacts.Items.Select(CommentTreeViewModel.Map).OrderByDescending(c => c.Created).ToList();
-    }
 
     private async Task MakeFunFact()
     {
@@ -39,20 +31,20 @@
             Text = NewFunFact,
             Token = await GetAuthToken(),
         });
-        _funFacts = _funFacts.Prepend(CommentTreeViewModel.Map(funFacts)).OrderByDescending(c => c.Created).ToList();
+        FunFacts = FunFacts.Prepend(CommentTreeViewModel.Map(funFacts)).OrderByDescending(c => c.Created).ToList();
         NewFunFact = "";
     }
 
-    private async Task OnGetFunFacts(int limit = 10)
+    private async Task GetMoreFunFacts(int limit = 10)
     {
         var funFacts = await DiscussionItemService.GetFunFacts(new GetFunFactsRequest
         {
             DiscussableId = MovieId,
-            ToDate = _funFacts.LastOrDefault()?.Created,
+            ToDate = FunFacts.LastOrDefault()?.Created,
             Token = await GetAuthToken()
         });
         HasMoreFunFacts = funFacts.HasMore;
-        _funFacts = _funFacts.Concat(funFacts.Items.Select(CommentTreeViewModel.Map)).OrderByDescending(c => c.Created).ToList();
+        FunFacts = FunFacts.Concat(funFacts.Items.Select(CommentTreeViewModel.Map)).OrderByDescending(c => c.Created).ToList();
     }
 
 }
@@ -69,11 +61,11 @@ else
     <MudText Style="font-style: italic; padding-bottom: 10px">You have to log in, to write a fun fact!</MudText>
 }
 
-@foreach (var funFact in _funFacts ?? new CommentTreeViewModel[0])
+@foreach (var funFact in FunFacts ?? new CommentTreeViewModel[0])
 {
     <CommentItem Content="@funFact"/>
 }
 @if (HasMoreFunFacts)
 {
-    <p class="moreDiscussion" @onmouseup="() => OnGetFunFacts()">Load more fun facts</p>
+    <p class="moreDiscussion" @onmouseup="() => GetMoreFunFacts()">Load more fun facts</p>
 }

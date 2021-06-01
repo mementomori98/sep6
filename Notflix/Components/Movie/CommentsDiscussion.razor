@@ -13,22 +13,14 @@
 
     [Parameter]
     public UserDao User { get; set; }
+    
+    [Parameter]
+    public IEnumerable<CommentTreeViewModel> Comments { get; set; }
+    
+    [Parameter]
+    public bool HasMoreComments { get; set; }
 
     private string NewComment { get; set; }
-    private IEnumerable<CommentTreeViewModel> _comments;
-    private bool HasMoreComments { get; set; }
-
-    protected override async Task OnParametersSetAsync()
-    {
-        var comments = await DiscussionItemService.GetComments(new GetCommentsRequest
-        {
-            DiscussableId = MovieId,
-            ToDate = DateTime.Now,
-            Token = await GetAuthToken(),
-        });
-        HasMoreComments = comments.HasMore;
-        _comments = comments.Items.Select(CommentTreeViewModel.Map).OrderByDescending(c => c.Created).ToList();
-    }
 
     private async Task MakeComment()
     {
@@ -39,20 +31,20 @@
             Text = NewComment,
             Token = await GetAuthToken(),
         });
-        _comments = _comments.Prepend(CommentTreeViewModel.Map(comment)).OrderByDescending(c => c.Created).ToList();
+        Comments = Comments.Prepend(CommentTreeViewModel.Map(comment)).OrderByDescending(c => c.Created).ToList();
         NewComment = "";
     }
 
-    private async Task OnGetComments(int limit = 10)
+    private async Task GetMoreComments(int limit = 10)
     {
         var comments = await DiscussionItemService.GetComments(new GetCommentsRequest
         {
             DiscussableId = MovieId,
-            ToDate = _comments.LastOrDefault()?.Created,
+            ToDate = Comments.LastOrDefault()?.Created,
             Token = await GetAuthToken()
         });
         HasMoreComments = comments.HasMore;
-        _comments = _comments.Concat(comments.Items.Select(CommentTreeViewModel.Map)).OrderByDescending(c => c.Created).ToList();
+        Comments = Comments.Concat(comments.Items.Select(CommentTreeViewModel.Map)).OrderByDescending(c => c.Created).ToList();
     }
 
 }
@@ -69,11 +61,11 @@ else
     <MudText Style="font-style: italic; padding-bottom: 10px">You have to log in, to write a comment!</MudText>
 }
 
-@foreach (var comment in _comments ?? new CommentTreeViewModel[0])
+@foreach (var comment in Comments ?? new CommentTreeViewModel[0])
 {
     <CommentItem Content="@comment"/>
 }
 @if (HasMoreComments)
 {
-    <p class="moreDiscussion" @onmouseup="() => OnGetComments()">Load more comments</p>
+    <p class="moreDiscussion" @onmouseup="() => GetMoreComments()">Load more comments</p>
 }
