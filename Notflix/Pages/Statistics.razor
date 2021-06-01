@@ -54,7 +54,7 @@
     {
         _loadingRatings = true;
         StateHasChanged();
-        var url = $"http://127.0.0.1:5000/actor/{actorId}/movieratings";
+        var url = $"https://sep6movies-statiscics.herokuapp.com/actor/{actorId}/movieratings";
         var result = await Client.GetAsync(url);
         var resp = JsonSerializer.Deserialize<List<MovieRating>>(
             await result.Content.ReadAsStringAsync(),
@@ -76,7 +76,7 @@
         if (string.IsNullOrEmpty(query)) return Enumerable.Empty<ActorResult>();
         _loadingSearch = true;
         StateHasChanged();
-        var url = $"http://127.0.0.1:5000/search/people?query={query}";
+        var url = $"https://sep6movies-statiscics.herokuapp.com/search/people?query={query}";
         var result = await Client.GetAsync(url);
         var resp = JsonSerializer.Deserialize<List<ActorResult>>(
             await result.Content.ReadAsStringAsync(),
