@@ -163,7 +163,7 @@ namespace Core.Domain.Recommendations
 
         private async Task<List<MovieDao>> GetTopRated(RecommendationsGetModel recommendationsGetModel)
         {
-            var response = await client.GetAsync($"https://api.themoviedb.org/3/movie/top_rated?api_key={ApiKey}&language=en-US&page={recommendationsGetModel.TopRatedRecommendationPageNumber++}");
+            var response = await client.GetAsync($"https://api.themoviedb.org/3/movie/top_rated?api_key={ApiKey}&language=en-US&page={++recommendationsGetModel.TopRatedRecommendationPageNumber}");
             var content = await response.Content.ReadAsStringAsync();
 
             var model = JsonSerializer.Deserialize<TmdbSearchResult>(content);
@@ -174,7 +174,7 @@ namespace Core.Domain.Recommendations
 
         private async Task<List<MovieDao>> GetTopRatedMovies(TmdbSearchResult model)
         {
-            if (model == null) return new List<MovieDao>();
+            if (model == null || model.results == null) return new List<MovieDao>();
             var toReturn = model.results.Select(r => _movieService.GetMovieRecommendation(r.id)).ToList();
             await Task.WhenAll(toReturn);
             return toReturn.Select(x => x.Result).ToList();
