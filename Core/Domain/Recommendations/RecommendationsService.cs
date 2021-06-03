@@ -174,6 +174,7 @@ namespace Core.Domain.Recommendations
 
         private async Task<List<MovieDao>> GetTopRatedMovies(TmdbSearchResult model)
         {
+            if (model == null) return new List<MovieDao>();
             var toReturn = model.results.Select(r => _movieService.GetMovieRecommendation(r.id)).ToList();
             await Task.WhenAll(toReturn);
             return toReturn.Select(x => x.Result).ToList();
